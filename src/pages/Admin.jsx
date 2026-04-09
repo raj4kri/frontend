@@ -399,7 +399,7 @@ console.log(API);
             {products.map((p) => (
               <div key={p._id} style={card}>
                 <img src={p.image}  style={img} />
-                <img src={`${API}/uploads/${p.image}`} style={img} />
+                {/* <img src={`${API}/uploads/${p.image}`} style={img} /> */}
                 <p>{p.name}</p>
                 <p>₹{p.price}</p>
                 <button onClick={() => handleEdit(p)}>Edit</button>{" "}
