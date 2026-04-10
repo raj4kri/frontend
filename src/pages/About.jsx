@@ -61,7 +61,7 @@ function About() {
           {team.map((member) => (
             <div key={member._id} style={teamCard}>
               <img
-                src={`${API}/uploads/${member.image}`}
+                src={member.image}
                 alt=""
                 style={teamImg}
               />
