@@ -329,8 +329,8 @@ console.log(API);
           <div style={list}>
             {sliders.map((s) => (
               <div key={s._id} style={card}>
-                 {/* <img src={s.image}  style={img} /> */}
-               <img src={`${API}/uploads/${s.image}`} style={img} />
+                 <img src={s.image}  style={img} />
+               {/* <img src={`${API}/uploads/${s.image}`} style={img} /> */}
                 <button onClick={() => deleteSlider(s._id)} style={deleteBtn}>
                   Delete
                 </button>
