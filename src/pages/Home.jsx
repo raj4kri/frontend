@@ -69,7 +69,7 @@ const API = import.meta.env.VITE_API_URL;
       }}
     >
       <img
-        src={`${API}/uploads/${item.image}`}
+        src={item.image}
         alt="slider"
         style={slideImage}
       />
