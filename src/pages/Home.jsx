@@ -1,12 +1,12 @@
-// src/pages/Home.jsx
 import { useEffect, useState } from "react";
 
 function Home() {
-  const API = import.meta.env.VITE_API_URL;
-
-  const [slider, setSlider] = useState([]);
+const API = import.meta.env.VITE_API_URL;
+  // ✅ Hooks must be INSIDE component
+    const [slider, setSlider] = useState([]);
   const [index, setIndex] = useState(0);
   const [pause, setPause] = useState(false);
+
 
   // why: fix mixed content
   const fixImageUrl = (url) => {
@@ -14,18 +14,24 @@ function Home() {
     return url.replace("http://", "https://");
   };
 
-  // why: prevent broken UI
+   // why: prevent broken UI
   const handleImageError = (e) => {
     e.target.src = "/fallback.jpg";
   };
 
+
+  // Fetch slider
   useEffect(() => {
     fetch(`${API}/slider`)
       .then((res) => res.json())
-      .then((data) => setSlider(data || []))
+      .then((data) => setSlider(data))
       .catch((err) => console.log(err));
-  }, [API]);
+  }, []);
 
+
+
+  
+  // Auto slide
   useEffect(() => {
     if (slider.length === 0 || pause) return;
 
@@ -47,7 +53,7 @@ function Home() {
   };
 
   return (
-    <div>
+    <div >
 
       {/* HERO */}
       <div style={hero}>
@@ -60,15 +66,16 @@ function Home() {
         </a>
       </div>
 
-      {/* SLIDER */}
+
+   {/* SLIDER */}
       <div
         style={sliderContainer}
         onMouseEnter={() => setPause(true)}
         onMouseLeave={() => setPause(false)}
       >
-        {slider.map((item) => (
+        {slider.map((item, i) => (
           <div
-            key={item._id}
+            key={i}
             style={{
               ...slideWrapper,
               opacity: i === index ? 1 : 0
@@ -105,11 +112,59 @@ function Home() {
         </div>
       </div>
 
+
+{/* </div> */}
+      {/* 🔧 Services */}
+      <div style={{ padding: "40px", textAlign: "center" }}>
+        <h2 style={{ color: "#ff0000" }}>Our Services</h2>
+
+        <div style={flexBox}>
+          <div style={cardStyle}>📱 Screen Replacement</div>
+          <div style={cardStyle}>🔋 Battery Replacement</div>
+          <div style={cardStyle}>💻 Software Issue</div>
+          <div style={cardStyle}>🔌 Charging Problem</div>
+          <div style={cardStyle}>📶 Network Fix</div>
+          <div style={cardStyle}>🔓 Mobile Unlock</div>
+          <div style={cardStyle}>Mother Board Repair</div>
+        </div>
+      </div>
+
+      {/* ⭐ Why Choose Us */}
+      <div style={{
+        background: "#fff3cd",
+        padding: "40px",
+        textAlign: "center"
+      }}>
+        <h2 style={{ color: "#d40000" }}>Why Choose Us?</h2>
+
+        <div style={flexBox}>
+          <div style={cardStyle}>⚡ Fast Service</div>
+          <div style={cardStyle}>💰 Affordable Price</div>
+          <div style={cardStyle}>🛠️ Expert Technicians</div>
+        </div>
+      </div>
+
+      {/* 📞 CTA */}
+      <div style={{
+        background: "#ff0000",
+        color: "white",
+        padding: "40px",
+        textAlign: "center"
+      }}>
+        <h2>Need Mobile Repair?</h2>
+        <p>Contact us today</p>
+
+        <a href="tel:7903182706">
+          <button style={secondaryBtn}>Call Now</button>
+        </a>
+      </div>
+
     </div>
   );
 }
 
 export default Home;
+// ================= STYLES =================
 
 // styles (keep yours)
 const hero = {
@@ -118,10 +173,6 @@ const hero = {
   padding: "30px 20px",
   textAlign: "center"
 };
-
-
-
-// ================= STYLES =================
 
 const flexBox = {
   display: "flex",
