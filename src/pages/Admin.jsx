@@ -102,20 +102,24 @@ console.log(API);
   }, []);
 
   const uploadSlider = async () => {
-    const formData = new FormData();
-    formData.append("image", sliderImage);
+  if (!sliderImage) {
+    alert("Select image first");
+    return;
+  }
 
-    await fetch(`${API}/slider`, {
-      method: "POST",
-      
-      body: formData,
-    });
+  const formData = new FormData();
+  formData.append("image", sliderImage);
 
-    setSliderImage(null);
-    setSliderPreview("");
-    fetchSlider();
-  };
+  const res = await fetch(`${API}/slider`, {
+    method: "POST",
+    body: formData, // ❌ no headers
+  });
 
+  const data = await res.json();
+  console.log("UPLOAD RESPONSE:", data);
+
+  fetchSlider();
+};
   const deleteSlider = async (id) => {
     await fetch(`${API}/slider/${id}`, {
       method: "DELETE",
