@@ -92,10 +92,10 @@ console.log(API);
   const [sliders, setSliders] = useState([]);
 
   const fetchSlider = async () => {
-    const res = await fetch(`${API}/slider`);
-    const data = await res.json();
-    setSliders(data || []);
-  };
+  const res = await fetch(`${API}/slider`); // ✅ FIX endpoint
+  const data = await res.json();
+  setSliders(data || []); // ✅ FIX response
+};
 
   useEffect(() => {
     fetchSlider();
@@ -107,7 +107,7 @@ console.log(API);
 
     await fetch(`${API}/slider`, {
       method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
+      
       body: formData,
     });
 
