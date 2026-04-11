@@ -66,9 +66,9 @@ function Home() {
         onMouseEnter={() => setPause(true)}
         onMouseLeave={() => setPause(false)}
       >
-        {slider.map((item, i) => (
+        {slider.map((item) => (
           <div
-            key={i}
+            key={item._id}
             style={{
               ...slideWrapper,
               opacity: i === index ? 1 : 0
