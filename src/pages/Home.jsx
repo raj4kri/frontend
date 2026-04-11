@@ -73,16 +73,16 @@ const API = import.meta.env.VITE_API_URL;
         onMouseEnter={() => setPause(true)}
         onMouseLeave={() => setPause(false)}
       >
-        {slider.map((item, i) => (
+        {slider.map((item) => (
           <div
-            key={i}
+            key={item._id}
             style={{
               ...slideWrapper,
               opacity: i === index ? 1 : 0
             }}
           >
             <img
-              src={fixImageUrl(item.image)}
+              src={item.image}
               alt="slider"
               style={slideImage}
               onError={handleImageError}
