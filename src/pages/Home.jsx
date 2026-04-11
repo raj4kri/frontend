@@ -68,7 +68,7 @@ const API = import.meta.env.VITE_API_URL;
         opacity: i === index ? 1 : 0
       }}
     >
-      <div key={item._id} style >
+      <div key={item._id} >
          <img
         src={item.image}
         alt="alter"
