@@ -1,21 +1,31 @@
+// src/pages/Home.jsx
 import { useEffect, useState } from "react";
 
 function Home() {
-const API = import.meta.env.VITE_API_URL;
-  // ✅ Hooks must be INSIDE component
-    const [slider, setSlider] = useState([]);
+  const API = import.meta.env.VITE_API_URL;
+
+  const [slider, setSlider] = useState([]);
   const [index, setIndex] = useState(0);
   const [pause, setPause] = useState(false);
 
-  // Fetch slider
+  // why: fix mixed content
+  const fixImageUrl = (url) => {
+    if (!url) return "/fallback.jpg";
+    return url.replace("http://", "https://");
+  };
+
+  // why: prevent broken UI
+  const handleImageError = (e) => {
+    e.target.src = "/fallback.jpg";
+  };
+
   useEffect(() => {
     fetch(`${API}/slider`)
       .then((res) => res.json())
-      .then((data) => setSlider(data))
+      .then((data) => setSlider(data || []))
       .catch((err) => console.log(err));
-  }, []);
+  }, [API]);
 
-  // Auto slide
   useEffect(() => {
     if (slider.length === 0 || pause) return;
 
@@ -37,15 +47,10 @@ const API = import.meta.env.VITE_API_URL;
   };
 
   return (
-    <div >
+    <div>
 
-      {/* 🔥 Hero Section */}
-      <div style={{
-        background: "linear-gradient(to right, #ff0000, #ffcc00)",
-        color: "white",
-        padding: "30px 20px",
-        textAlign: "center"
-      }}>
+      {/* HERO */}
+      <div style={hero}>
         <h1>📱 Deepak Communication</h1>
         <h2>Fast & Trusted Mobile Repair Services | 7+ Years</h2>
         <p>We fix all smartphone issues at affordable prices</p>
@@ -55,103 +60,67 @@ const API = import.meta.env.VITE_API_URL;
         </a>
       </div>
 
-     <div
-  style={sliderContainer}
-  onMouseEnter={() => setPause(true)}
-  onMouseLeave={() => setPause(false)}
->
-  {slider.map((item, i) => (
-    <div
-      key={i}
-      style={{
-        ...slideWrapper,
-        opacity: i === index ? 1 : 0
-      }}
-    >
-      
-         <img
-        src={item.image}
-        alt="alter"
-        style={slideImage}
-      />
-      
-      
-    </div>
-  ))}
+      {/* SLIDER */}
+      <div
+        style={sliderContainer}
+        onMouseEnter={() => setPause(true)}
+        onMouseLeave={() => setPause(false)}
+      >
+        {slider.map((item, i) => (
+          <div
+            key={i}
+            style={{
+              ...slideWrapper,
+              opacity: i === index ? 1 : 0
+            }}
+          >
+            <img
+              src={fixImageUrl(item.image)}
+              alt="slider"
+              style={slideImage}
+              onError={handleImageError}
+            />
+          </div>
+        ))}
 
-  {/* Overlay */}
-  <div style={overlay}>
-    <h2>Deepak Communication</h2>
-    <p>Fast Mobile Repair Service</p>
-  </div>
-
-  {/* Buttons */}
-  <button style={prevBtn} onClick={prevSlide}>❮</button>
-  <button style={nextBtn} onClick={nextSlide}>❯</button>
-
-  {/* Dots */}
-  <div style={dotsContainer}>
-    {slider.map((_, i) => (
-      <span
-        key={i}
-        onClick={() => setIndex(i)}
-        style={{
-          ...dot,
-          background: i === index ? "#ff0000" : "#ccc"
-        }}
-      />
-    ))}
-  </div>
-</div>
-{/* </div> */}
-      {/* 🔧 Services */}
-      <div style={{ padding: "40px", textAlign: "center" }}>
-        <h2 style={{ color: "#ff0000" }}>Our Services</h2>
-
-        <div style={flexBox}>
-          <div style={cardStyle}>📱 Screen Replacement</div>
-          <div style={cardStyle}>🔋 Battery Replacement</div>
-          <div style={cardStyle}>💻 Software Issue</div>
-          <div style={cardStyle}>🔌 Charging Problem</div>
-          <div style={cardStyle}>📶 Network Fix</div>
-          <div style={cardStyle}>🔓 Mobile Unlock</div>
-          <div style={cardStyle}>Mother Board Repair</div>
+        <div style={overlay}>
+          <h2>Deepak Communication</h2>
+          <p>Fast Mobile Repair Service</p>
         </div>
-      </div>
 
-      {/* ⭐ Why Choose Us */}
-      <div style={{
-        background: "#fff3cd",
-        padding: "40px",
-        textAlign: "center"
-      }}>
-        <h2 style={{ color: "#d40000" }}>Why Choose Us?</h2>
+        <button style={prevBtn} onClick={prevSlide}>❮</button>
+        <button style={nextBtn} onClick={nextSlide}>❯</button>
 
-        <div style={flexBox}>
-          <div style={cardStyle}>⚡ Fast Service</div>
-          <div style={cardStyle}>💰 Affordable Price</div>
-          <div style={cardStyle}>🛠️ Expert Technicians</div>
+        <div style={dotsContainer}>
+          {slider.map((_, i) => (
+            <span
+              key={i}
+              onClick={() => setIndex(i)}
+              style={{
+                ...dot,
+                background: i === index ? "#ff0000" : "#ccc"
+              }}
+            />
+          ))}
         </div>
-      </div>
-
-      {/* 📞 CTA */}
-      <div style={{
-        background: "#ff0000",
-        color: "white",
-        padding: "40px",
-        textAlign: "center"
-      }}>
-        <h2>Need Mobile Repair?</h2>
-        <p>Contact us today</p>
-
-        <a href="tel:7903182706">
-          <button style={secondaryBtn}>Call Now</button>
-        </a>
       </div>
 
     </div>
   );
 }
+
+export default Home;
+
+// styles (keep yours)
+const hero = {
+  background: "linear-gradient(to right, #ff0000, #ffcc00)",
+  color: "white",
+  padding: "30px 20px",
+  textAlign: "center"
+};
+
+
+
 // ================= STYLES =================
 
 const flexBox = {
@@ -278,4 +247,3 @@ const dot = {
 
 
 
-export default Home;
