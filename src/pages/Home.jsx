@@ -75,11 +75,7 @@ const API = import.meta.env.VITE_API_URL;
         style={slideImage}
       />
       </div>
-      <img
-        src={item.image}
-        alt="alter"
-        style={slideImage}
-      />
+      
     </div>
   ))}
 
