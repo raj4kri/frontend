@@ -57,7 +57,7 @@ const API = import.meta.env.VITE_API_URL;
 
       {/* HERO */}
       <div style={hero}>
-        <h1>📱 Deepak Communication</h1>
+        <h1>Deepak Communication</h1>
         <h2>Fast & Trusted Mobile Repair Services | 7+ Years Experience</h2>
         <p>We fix all smartphone issues at affordable prices</p>
 
