@@ -1,5 +1,5 @@
 // src/components/Navbar.jsx
-
+import logoImg from "../assets/logo.png"; // adjust path
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -10,7 +10,7 @@ function Navbar() {
   return (
     <nav style={nav}>
       {/* LOGO */}
-      <div style={logo}>📱 Deepak</div>
+       <img src={logoImg} alt="logo" style={logoImgStyle} />
 
       {/* DESKTOP MENU */}
       <div className="desktop-menu">
@@ -102,6 +102,18 @@ function Navbar() {
 }
 
 export default Navbar;
+
+
+const logoContainer = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+};
+
+const logoImgStyle = {
+  height: "40px", // adjust
+  width: "auto",
+};
 
 /* STYLES */
 const nav = {
