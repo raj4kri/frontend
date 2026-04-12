@@ -10,13 +10,10 @@ function Navbar() {
   return (
     <nav style={nav}>
       {/* LOGO */}
-       <div
-      style={logoContainer}
-      onClick={() => navigate("/")}
-    >
-      <img src={logoImg} alt="Logo" style={logoImgStyle} />
-      <span style={logoText}>Deepak</span>
-    </div>
+      <Link to="/" style={logoContainer}>
+  <img src={logoImg} alt="Logo" style={logoImgStyle} />
+  <span style={logoText}>Deepak</span>
+</Link>
       {/* DESKTOP MENU */}
       <div className="desktop-menu">
         <Link to="/" style={link}>Home</Link>
