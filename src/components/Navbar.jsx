@@ -111,7 +111,7 @@ const logoContainer = {
 };
 
 const logoImgStyle = {
-  height: "40px", // adjust
+  height: "80px", // adjust
   width: "auto",
 };
 
