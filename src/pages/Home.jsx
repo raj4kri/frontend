@@ -91,8 +91,8 @@ const API = import.meta.env.VITE_API_URL;
         ))}
 
         <div style={overlay}>
-          <h2>Deepak Communication</h2>
-          <p>Fast Mobile Repair Service</p>
+          <h2>Gallery</h2>
+          <p></p>
         </div>
 
         <button style={prevBtn} onClick={prevSlide}>❮</button>
