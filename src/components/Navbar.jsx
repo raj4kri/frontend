@@ -116,6 +116,7 @@ const logoContainer = {
   alignItems: "center",
   gap: "8px",
   cursor: "pointer",
+  textDecoration: "none"
 };
 
 const logoImgStyle = {
