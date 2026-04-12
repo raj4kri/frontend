@@ -91,7 +91,7 @@ const API = import.meta.env.VITE_API_URL;
         ))}
 
         <div style={overlay}>
-          <h5>Gallery</h5>
+          <h1>Gallery</h1>
           {/* <></> */}
         </div>
 
