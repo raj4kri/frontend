@@ -12,7 +12,7 @@ function Navbar() {
       {/* LOGO */}
       <Link to="/" style={logoContainer}>
   <img src={logoImg} alt="Logo" style={logoImgStyle} />
-  <span style={logoText}>Deepak</span>
+  <span style={logoText}>Deepak Communication</span>
 </Link>
       {/* DESKTOP MENU */}
       <div className="desktop-menu">
