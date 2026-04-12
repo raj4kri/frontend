@@ -130,7 +130,9 @@ const nav = {
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  position: "relative",
+  position: "sticky", // ⭐ main
+  top: 0,             // ⭐ stick to top
+  zIndex: 1000,       // why: stay above slider
 };
 
 const logo = {
