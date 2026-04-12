@@ -109,6 +109,7 @@ const logoText = {
   fontWeight: "bold",
   fontSize: "18px",
   color: "#fff",
+  textDecoration: "none",
 };
 const logoContainer = {
   display: "flex",
