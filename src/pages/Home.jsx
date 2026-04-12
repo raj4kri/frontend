@@ -58,7 +58,7 @@ const API = import.meta.env.VITE_API_URL;
       {/* HERO */}
       <div style={hero}>
         <h1>📱 Deepak Communication</h1>
-        <h2>Fast & Trusted Mobile Repair Services | 7+ Years</h2>
+        <h2>Fast & Trusted Mobile Repair Services | 7+ Years Experience</h2>
         <p>We fix all smartphone issues at affordable prices</p>
 
         <a href="https://wa.me/917903182706">
@@ -91,8 +91,8 @@ const API = import.meta.env.VITE_API_URL;
         ))}
 
         <div style={overlay}>
-          <h2>Gallery</h2>
-          <p></p>
+          <h5>Gallery</h5>
+          {/* <></> */}
         </div>
 
         <button style={prevBtn} onClick={prevSlide}>❮</button>
