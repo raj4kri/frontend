@@ -17,6 +17,7 @@ function App() {
     <BrowserRouter>
       <Navbar />
       <WhatsAppButton />
+          <SocialBar />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
@@ -25,7 +26,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/admin" element={<Admin />} />
-         <SocialBar />
+     
       </Routes>
     </BrowserRouter>
   );
