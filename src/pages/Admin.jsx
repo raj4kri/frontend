@@ -303,12 +303,12 @@ console.log(API);
     
       {/* TABS */}
       <div style={tabContainer}>
-        <button onClick={() => setActiveTab("slider")}>Slider</button>
+        <button onClick={() => setActiveTab("slider")}>Gallery</button>
         <button onClick={() => setActiveTab("product")}>Products</button>
         <button onClick={() => setActiveTab("category")}>Category</button>
         <button onClick={() => setActiveTab("team")}>Team</button>
         <button onClick={() => setActiveTab("contact")}>
-          Contact
+          Messages and Notifications
           {unreadCount > 0 && (
             <span
               style={{
@@ -328,7 +328,7 @@ console.log(API);
       {/* ================= SLIDER ================= */}
       {activeTab === "slider" && (
         <div style={section}>
-          <h3>Slider Management</h3>
+          <h3>Gallery Management</h3>
 
           <input
             type="file"
@@ -366,7 +366,7 @@ console.log(API);
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="Enter category"
           />
-          <button onClick={addCategory}>Add</button>
+          <button onClick={addCategory}>Add Category</button>
 
           <div style={list}>
             {categories.map((cat) => (
@@ -467,7 +467,7 @@ console.log(API);
       {/* ================= CONTACT ================= */}
       {activeTab === "contact" && (
         <div style={section}>
-          <h3>Contact Messages</h3>
+          <h3>Messages</h3>
 
           {messages.map((msg) => (
             <div key={msg._id} style={cardContact}>
