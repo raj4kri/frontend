@@ -10,8 +10,13 @@ function Navbar() {
   return (
     <nav style={nav}>
       {/* LOGO */}
-       <img src={logoImg} alt="logo" style={logoImgStyle} />
-
+       <div
+      style={logoContainer}
+      onClick={() => navigate("/")}
+    >
+      <img src={logoImg} alt="Logo" style={logoImgStyle} />
+      <span style={logoText}>Deepak</span>
+    </div>
       {/* DESKTOP MENU */}
       <div className="desktop-menu">
         <Link to="/" style={link}>Home</Link>
@@ -108,10 +113,11 @@ const logoContainer = {
   display: "flex",
   alignItems: "center",
   gap: "8px",
+  cursor: "pointer",
 };
 
 const logoImgStyle = {
-  height: "60px", // adjust
+  height: "40px", // adjust
   width: "auto",
 };
 
