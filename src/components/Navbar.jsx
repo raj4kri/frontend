@@ -105,7 +105,11 @@ function Navbar() {
 
 export default Navbar;
 
-
+const logoText = {
+  fontWeight: "bold",
+  fontSize: "18px",
+  color: "#fff",
+};
 const logoContainer = {
   display: "flex",
   alignItems: "center",
