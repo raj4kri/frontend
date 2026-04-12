@@ -7,49 +7,103 @@ function Navbar() {
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
-  const toggleMenu = () => setIsOpen(!isOpen);
-
   return (
     <nav style={nav}>
       {/* LOGO */}
-      <div style={logo}>📱 </div>
+      <div style={logo}>📱 Deepak</div>
 
-      {/* HAMBURGER */}
-      <div style={hamburger} onClick={toggleMenu}>
+      {/* DESKTOP MENU */}
+      <div className="desktop-menu">
+        <Link to="/" style={link}>Home</Link>
+        <Link to="/products" style={link}>Products</Link>
+        <Link to="/services" style={link}>Services</Link>
+        <Link to="/about" style={link}>About</Link>
+        <Link to="/contact" style={link}>Contact</Link>
+
+        <button style={loginBtn} onClick={() => navigate("/login")}>
+          Admin Login
+        </button>
+      </div>
+
+      {/* HAMBURGER (MOBILE ONLY) */}
+      <div className="hamburger" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? "✖" : "☰"}
       </div>
 
-      {/* MENU */}
+      {/* MOBILE MENU */}
       <div
+        className="mobile-menu"
         style={{
-          ...menu,
           transform: isOpen ? "translateY(0)" : "translateY(-120%)",
         }}
       >
-        <Link to="/" style={link} onClick={toggleMenu}>Home</Link>
-        <Link to="/products" style={link} onClick={toggleMenu}>Products</Link>
-        <Link to="/services" style={link} onClick={toggleMenu}>Services</Link>
-        <Link to="/about" style={link} onClick={toggleMenu}>About</Link>
-        <Link to="/contact" style={link} onClick={toggleMenu}>Contact</Link>
+        <Link to="/" style={link} onClick={() => setIsOpen(false)}>Home</Link>
+        <Link to="/products" style={link} onClick={() => setIsOpen(false)}>Products</Link>
+        <Link to="/services" style={link} onClick={() => setIsOpen(false)}>Services</Link>
+        <Link to="/about" style={link} onClick={() => setIsOpen(false)}>About</Link>
+        <Link to="/contact" style={link} onClick={() => setIsOpen(false)}>Contact</Link>
 
         <button
           style={loginBtn}
           onClick={() => {
             navigate("/login");
-            toggleMenu();
+            setIsOpen(false);
           }}
         >
           Admin Login
         </button>
       </div>
+
+      {/* CSS */}
+      <style>{`
+        .desktop-menu {
+          display: none;
+          gap: 20px;
+          align-items: center;
+        }
+
+        .hamburger {
+          font-size: 24px;
+          cursor: pointer;
+        }
+
+        .mobile-menu {
+          position: absolute;
+          top: 60px;
+          left: 0;
+          width: 100%;
+          background: #111;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 15px;
+          padding: 20px 0;
+          transition: transform 0.4s ease-in-out;
+          z-index: 1000;
+        }
+
+        /* ✅ DESKTOP VIEW */
+        @media (min-width: 768px) {
+          .desktop-menu {
+            display: flex;
+          }
+
+          .hamburger {
+            display: none;
+          }
+
+          .mobile-menu {
+            display: none;
+          }
+        }
+      `}</style>
     </nav>
   );
 }
 
 export default Navbar;
 
-/* ================= STYLES ================= */
-
+/* STYLES */
 const nav = {
   background: "#000",
   color: "#fff",
@@ -65,34 +119,14 @@ const logo = {
   fontSize: "18px",
 };
 
-const hamburger = {
-  fontSize: "24px",
-  cursor: "pointer",
-};
-
-const menu = {
-  position: "absolute",
-  top: "60px",
-  left: 0,
-  width: "100%",
-  background: "#111",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "15px",
-  padding: "20px 0",
-  transition: "transform 0.4s ease-in-out", // ⭐ animation
-  zIndex: 1000,
-};
-
 const link = {
   color: "#fff",
   textDecoration: "none",
-  fontSize: "18px",
+  fontSize: "16px",
 };
 
 const loginBtn = {
-  padding: "10px 20px",
+  padding: "8px 15px",
   background: "red",
   color: "#fff",
   border: "none",
