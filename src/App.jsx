@@ -8,6 +8,7 @@ import WhatsAppButton from "./components/WhatsAppButton";
 import Products from "./pages/Products";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import SocialBar from "./components/SocialBar";
 
 
 
