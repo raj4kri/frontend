@@ -217,6 +217,7 @@ const sliderContainer = {
   overflow: "hidden",
   borderRadius:"10px",
   marginTop:"20px",
+  background:"white"
 };
 
 const slideWrapper = {
@@ -229,7 +230,7 @@ const slideWrapper = {
 };
 
 const slideImage = {
-  width: "100%",
+  width: "70%",
   height: "100%",
   objectFit: "center",   // ✅ full screen fill
   objectPosition: "center"
@@ -295,6 +296,5 @@ const dot = {
   borderRadius: "50%",
   cursor: "pointer"
 };
-
 
 
