@@ -212,11 +212,12 @@ const secondaryBtn = {
 
 const sliderContainer = {
   position: "relative",
-  width: "100%",
+  width: "90%",
   height: "400px",
   overflow: "hidden",
   borderRadius:"10px",
   marginTop:"20px",
+  marginLeft:"50px",
   background:"white"
 };
 
