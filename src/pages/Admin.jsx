@@ -1,14 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 function Admin() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("slider");
-const API = import.meta.env.VITE_API_URL;
   
-console.log(API);
+  
+
+  const API = import.meta.env.VITE_API_URL;
+
+  console.log(API);
   // ================= CONTACT =================
   const [messages, setMessages] = useState([]);
   const unreadCount = messages.filter((m) => !m.isRead).length;
@@ -18,12 +19,11 @@ console.log(API);
     const res = await fetch(`${API}/contact`);
     const data = await res.json();
     setMessages(data);
-
   };
-  
-    useEffect(() => {
-  fetchMessages();
-}, []);
+
+  useEffect(() => {
+    fetchMessages();
+  }, []);
 
   // ============== TOGGLE READ STATUS =================
 
@@ -92,46 +92,48 @@ console.log(API);
   const [sliders, setSliders] = useState([]);
 
   const fetchSlider = async () => {
-  const res = await fetch(`${API}/slider`); // ✅ FIX endpoint
-  const data = await res.json();
-  setSliders(data || []); // ✅ FIX response
-};
+    const res = await fetch(`${API}/slider`); // ✅ FIX endpoint
+    const data = await res.json();
+    setSliders(data || []); // ✅ FIX response
+  };
 
   useEffect(() => {
     fetchSlider();
   }, []);
 
- const uploadSlider = async () => {
-  if (!sliderImage) {
-    alert("Select image first");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("image", sliderImage);
-
-  try {
-    const res = await fetch(`${API}/slider`, {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await res.json();
-    console.log("UPLOAD RESPONSE:", data);
-
-    if (!res.ok) {
-      alert(data.error || "Upload failed");
+  const uploadSlider = async () => {
+    if (!sliderImage) {
+      alert("Select image first");
       return;
     }
 
-    fetchSlider();
-    setSliderImage(null);
-    setSliderPreview("");
+    const formData = new FormData();
+    formData.append("image", sliderImage);
 
-  } catch (err) {
-    console.error("UPLOAD ERROR:", err);
-  }
-};
+    try {
+      const res = await fetch(`${API}/slider`, {
+        method: "POST",
+         headers: {
+    Authorization: `Bearer ${token}`, // ✅ ADD HERE
+  },
+        body: formData,
+      });
+
+      const data = await res.json();
+      console.log("UPLOAD RESPONSE:", data);
+
+      if (!res.ok) {
+        alert(data.error || "Upload failed");
+        return;
+      }
+
+      fetchSlider();
+      setSliderImage(null);
+      setSliderPreview("");
+    } catch (err) {
+      console.error("UPLOAD ERROR:", err);
+    }
+  };
   const deleteSlider = async (id) => {
     await fetch(`${API}/slider/${id}`, {
       method: "DELETE",
@@ -180,7 +182,8 @@ console.log(API);
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
-  const [image, setImage] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
   const [category, setCategory] = useState("");
   const [editId, setEditId] = useState(null);
 
@@ -195,33 +198,46 @@ console.log(API);
   }, []);
 
   const addProduct = async () => {
-    if (editId) {
-      // 🔄 UPDATE
-      await fetch(`${API}/products/${editId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name, price, image, category }),
-      });
-    } else {
-      // ➕ ADD
-      await fetch(`${API}/products`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ name, price, image, category }),
-      });
-    }
+  if (!name || !price || !category) {
+    alert("All fields required");
+    return;
+  }
 
-    fetchProducts();
-    resetForm();
-    setEditId(null); // reset edit mode
-  };
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("price", price);
+  formData.append("category", category);
 
+  // ONLY ONE KEY (IMPORTANT)
+  if (imageFile) {
+    formData.append("image", imageFile);
+  }
+
+  const url = editId
+    ? `${API}/products/${editId}`
+    : `${API}/products`;
+
+  const method = editId ? "PUT" : "POST";
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  const data = await res.json();
+  console.log("PRODUCT RESPONSE:", data);
+
+  if (!res.ok) {
+    alert(data.error || "Error");
+    return;
+  }
+
+  fetchProducts();
+  resetForm();
+};
   const deleteProduct = async (id) => {
     await fetch(`${API}/products/${id}`, {
       method: "DELETE",
@@ -232,38 +248,44 @@ console.log(API);
   };
 
   const handleEdit = (product) => {
-    console.log("EDIT CLICKED:", product); // 🔍 debug
+  setEditId(product._id);
+  setName(product.name);
+  setPrice(product.price);
+  setCategory(product.category);
 
-    setEditId(product._id);
-    setName(product.name);
-    setPrice(product.price);
-    setImage(product.image);
-    setCategory(product.category);
-  };
+  // IMPORTANT: image preview only
+  setImagePreview(product.image);
 
-  const handleImage = (e) => {
-    const reader = new FileReader();
-    reader.onloadend = () => setImage(reader.result);
-    reader.readAsDataURL(e.target.files[0]);
-  };
+  // don't set file here ❌
+  // setImageFile(null);
+};
+const handleImage = (e) => {
+  const file = e.target.files[0];
+  setImageFile(file);
+  setImagePreview(URL.createObjectURL(file));
+};
 
   const resetForm = () => {
-    setName("");
-    setPrice("");
-    setImage("");
-    setCategory("");
-  };
-
+  setName("");
+  setPrice("");
+  setCategory("");
+  setImageFile(null);
+  setImagePreview("");
+  setEditId(null);
+};
   // ================= TEAM =================
   const [team, setTeam] = useState([]);
   const [memberName, setMemberName] = useState("");
   const [role, setRole] = useState("");
-  const [file, setFile] = useState(null);
+  const [teamImage, setTeamImage] = useState(null);
+  const [teamPreview, setTeamPreview] = useState(""); 
 
   const fetchTeam = async () => {
-    const res = await fetch(`${API}/team`);
-    const data = await res.json();
-    setTeam(data || []);
+    
+      const res = await fetch(`${API}/team`);
+      const data = await res.json();
+      setTeam(data || []);
+
   };
 
   useEffect(() => {
@@ -271,18 +293,45 @@ console.log(API);
   }, []);
 
   const addTeam = async () => {
+    if (!teamImage) return alert("Select image");
+
+    // const token =
+    //   localStorage.getItem("token") || sessionStorage.getItem("token");
+
     const formData = new FormData();
+    formData.append("image", teamImage);
     formData.append("name", memberName);
     formData.append("role", role);
-    formData.append("image", file);
+    
 
-    await fetch(`${API}/team`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData,
-    });
+    try {
+      const res = await fetch(`${API}/team`, {
+        method: "POST",
+         headers: {
+    Authorization: `Bearer ${token}`, // ✅ ADD HERE
+  },
+      
+        body: formData,
+      });
 
-    fetchTeam();
+      const data = await res.json();
+      console.log("TEAM RESPONSE:", data);
+
+      if (!res.ok) {
+        alert(data.error || "Upload failed");
+        return;
+      }
+
+      fetchTeam();
+        setTeamImage(null);
+        setTeamPreview("");
+      setMemberName("");
+      setRole("");
+    
+      
+    } catch (err) {
+      console.log("TEAM ERROR:", err);
+    }
   };
 
   const deleteTeam = async (id) => {
@@ -300,7 +349,6 @@ console.log(API);
       <h2 style={title}>Admin Dashboard</h2>
       <button onClick={logout}>Logout</button>
 
-    
       {/* TABS */}
       <div style={tabContainer}>
         <button onClick={() => setActiveTab("slider")}>Gallery</button>
@@ -345,9 +393,48 @@ console.log(API);
           <div style={list}>
             {sliders.map((s) => (
               <div key={s._id} style={card}>
-                 <img src={s.image}  style={img} />
-               {/* <img src={`${API}/uploads/${s.image}`} style={img} /> */}
+                <img src={s.image} style={img} />
+                {/* <img src={`${API}/uploads/${s.image}`} style={img} /> */}
                 <button onClick={() => deleteSlider(s._id)} style={deleteBtn}>
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ================= TEAM ================= */}
+      {activeTab === "team" && (
+        <div style={section}>
+          <h3>Team Management</h3>
+
+          <input
+            placeholder="Name"
+            value={memberName}
+            onChange={(e) => setMemberName(e.target.value)}
+          />
+          <input
+            placeholder="Role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          />
+          <input type="file" onChange={(e) => {
+            setTeamImage(e.target.files[0]);
+            setTeamPreview(URL.createObjectURL(e.target.files[0]));
+          }} />
+
+          {teamPreview && <img src={teamPreview} width="200" />}
+
+          <button onClick={addTeam}>Add Member</button>
+
+          <div style={list}>
+            {team.map((m) => (
+              <div key={m._id} style={card}>
+                <img src={m.image} style={img} />
+                <p>{m.name}</p>
+                <p>{m.role}</p>
+                <button onClick={() => deleteTeam(m._id)} style={deleteBtn}>
                   Delete
                 </button>
               </div>
@@ -400,6 +487,23 @@ console.log(API);
             onChange={(e) => setPrice(e.target.value)}
           />
           <input type="file" onChange={handleImage} />
+          {/* IMAGE PREVIEW */}
+          {imagePreview && (
+            <div style={{ marginTop: "10px" }}>
+              <p>Image Preview:</p>
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{
+                  width: "120px",
+                  height: "120px",
+                  objectFit: "cover",
+                  borderRadius: "10px",
+                  border: "1px solid #fff",
+                }}
+              />
+            </div>
+          )}
 
           <select onChange={(e) => setCategory(e.target.value)}>
             <option>Select Category</option>
@@ -415,47 +519,13 @@ console.log(API);
           <div style={list}>
             {products.map((p) => (
               <div key={p._id} style={card}>
-                <img src={p.image}  style={img} />
+                <img src={p.image} style={img} />
                 {/* <img src={`${API}/uploads/${p.image}`} style={img} /> */}
                 <p>{p.name}</p>
                 <p>₹{p.price}</p>
                 <button onClick={() => handleEdit(p)}>Edit</button>{" "}
                 {/* ✅ ADD THIS */}
                 <button onClick={() => deleteProduct(p._id)} style={deleteBtn}>
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ================= TEAM ================= */}
-      {activeTab === "team" && (
-        <div style={section}>
-          <h3>Team Management</h3>
-
-          <input
-            placeholder="Name"
-            value={memberName}
-            onChange={(e) => setMemberName(e.target.value)}
-          />
-          <input
-            placeholder="Role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          />
-          <input type="file" onChange={(e) => setFile(e.target.files[0])} />
-
-          <button onClick={addTeam}>Add Member</button>
-
-          <div style={list}>
-            {team.map((m) => (
-              <div key={m._id} style={card}>
-                <img src={m.image} style={img} />
-                <p>{m.name}</p>
-                <p>{m.role}</p>
-                <button onClick={() => deleteTeam(m._id)} style={deleteBtn}>
                   Delete
                 </button>
               </div>
