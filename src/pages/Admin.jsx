@@ -94,7 +94,7 @@ function Admin() {
   const fetchSlider = async () => {
     const res = await fetch(`${API}/slider`); // ✅ FIX endpoint
     const data = await res.json();
-    setSliders(data || []); // ✅ FIX response
+    setSliders(Array.isArray(data) ? data : []); // ✅ FIX response
   };
 
   useEffect(() => {
