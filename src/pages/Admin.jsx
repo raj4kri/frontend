@@ -92,13 +92,9 @@ function Admin() {
   const [sliders, setSliders] = useState([]);
 
   const fetchSlider = async () => {
-    const res = await fetch(`${API}/slider`,{ // ✅ FIX endpoint
-    headers: {
-      Authorization: `Bearer ${token}`,
-     },
-  });
+    const res = await fetch(`${API}/slider`); // ✅ FIX endpoint
     const data = await res.json();
-    setSliders(Array.isArray(data) ? data : []); // ✅ FIX response
+    setSliders(data || []); // ✅ FIX response
   };
 
   useEffect(() => {
