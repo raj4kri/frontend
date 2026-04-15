@@ -2,6 +2,8 @@ import React, { useState } from "react";
 
 function Contact() {
   const API = import.meta.env.VITE_API_URL;
+
+
   // ✅ FORM STATE
   const [form, setForm] = useState({
     name: "",
@@ -11,6 +13,16 @@ function Contact() {
     dob: "",
     message: "",
   });
+
+
+  // 👉 YAHAN ADD KARO
+const [toast, setToast] = useState({
+  show: false,
+  message: "",
+  type: "",
+});
+
+  
 
   // ✅ HANDLE CHANGE
   const handleChange = (e) => {
@@ -35,28 +47,63 @@ function Contact() {
     // 🔍 DEBUG
     console.log("RESPONSE:", data);
 
-    if (res.ok) {
-      alert("Message sent successfully ✅");
+ if (res.ok) {
+  setToast({
+    show: true,
+    message: "Message sent successfully ✅",
+    type: "success",
+  });
 
-      setForm({
-        name: "",
-        email: "",
-        phone: "",
-        whatsapp: "",
-        dob: "",
-        message: "",
-      });
-    } else {
-      alert(data.error || "Something went wrong ❌");
-    }
+  setForm({
+    name: "",
+    email: "",
+    phone: "",
+    whatsapp: "",
+    dob: "",
+    message: "",
+  });
+} else {
+  setToast({
+    show: true,
+    message: data.error || "Something went wrong ❌",
+    type: "error",
+  });
+}
 
   } catch (err) {
-    console.log("ERROR:", err);
-    alert("Server error ❌");
-  }
+  setToast({
+    show: true,
+    message: "Server error ❌",
+    type: "error",
+  });
+}
+
+setTimeout(() => {
+  setToast({ show: false, message: "", type: "" });
+}, 3000);
 };
   return (
     <div style={container}>
+
+     {/* ✅ TOAST YAHAN ADD KARO */}
+    {toast.show && (
+      <div
+        style={{
+          position: "fixed",
+          top: "20px",
+          right: "20px",
+          padding: "12px 20px",
+          borderRadius: "8px",
+          color: "#fff",
+          background:
+            toast.type === "success" ? "#28a745" : "#dc3545",
+          boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+          zIndex: 9999,
+        }}
+      >
+        {toast.message}
+      </div>
+    )}
       <h1 style={title}>Contact Us</h1>
       <p style={subtitle}>Get in touch with us for any mobile repair service</p>
 
