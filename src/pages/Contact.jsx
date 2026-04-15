@@ -19,31 +19,42 @@ function Contact() {
 
   // ✅ HANDLE SUBMIT
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const res = await fetch(`${API}/contact`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
+  try {
+    const res = await fetch(`${API}/contact`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(form),
+    });
+
+    const data = await res.json();
+
+    // 🔍 DEBUG
+    console.log("RESPONSE:", data);
+
+    if (res.ok) {
+      alert("Message sent successfully ✅");
+
+      setForm({
+        name: "",
+        email: "",
+        phone: "",
+        whatsapp: "",
+        dob: "",
+        message: "",
       });
-
-      const data = await res.json();
-
-      if (res.ok) {
-        alert("Message sent successfully ✅");
-        setForm({ name: "", email: "", phone: "", message: "" });
-      } else {
-        alert(data.error || "Something went wrong ❌");
-      }
-    } catch (err) {
-      console.log(err);
-      alert("Server error ❌");
+    } else {
+      alert(data.error || "Something went wrong ❌");
     }
-  };
 
+  } catch (err) {
+    console.log("ERROR:", err);
+    alert("Server error ❌");
+  }
+};
   return (
     <div style={container}>
       <h1 style={title}>Contact Us</h1>
