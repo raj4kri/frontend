@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import { Link, useNavigate } from "react-router-dom";
 function Home() {
 const API = import.meta.env.VITE_API_URL;
   // ✅ Hooks must be INSIDE component
@@ -115,8 +115,13 @@ const API = import.meta.env.VITE_API_URL;
 
 {/* </div> */}
       {/* 🔧 Services */}
-      <div style={{ padding: "40px", textAlign: "center" }}>
-        <h2 style={{ color: "#ff0000" }}>Our Services</h2>
+      <div style={{ padding: "40px", textAlign: "center", textDecoration:"none" }}>
+
+        <Link to="/services">
+        <h2 style={{ color: "#ff0000", cursor:"pointer" }}>Our Services</h2>
+        </Link>
+        
+        {/* <h2 style={{ color: "#ff0000" }}>Our Services</h2> */}
 
         <div style={flexBox}>
           <div style={cardStyle}>📱 Screen Replacement</div>
@@ -171,7 +176,8 @@ const hero = {
   background: "linear-gradient(to right, #ff0000, #ffcc00)",
   color: "white",
   padding: "30px 20px",
-  textAlign: "center"
+  textAlign: "center",
+  borderRadius: "0 0 10px 10px ",
 };
 
 const flexBox = {

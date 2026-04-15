@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 
 function About() {
 
+  
   const [team, setTeam] = useState([]);
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    fetch(`${API}/team`)
+    fetch(`${API}/team`) // FIXED
       .then(res => res.json())
       .then(data => setTeam(data))
-      .catch(err => console.log(err));
+      .catch(err => console.log("TEAM FETCH ERROR:", err));
   }, []);
 
   return (
@@ -53,7 +54,7 @@ function About() {
         </p>
       </div>
 
-      {/* Team Section */}
+     {/* Team Section */}
       <div style={card}>
         <h2 style={heading}>Our Team</h2>
 
@@ -61,9 +62,10 @@ function About() {
           {team.map((member) => (
             <div key={member._id} style={teamCard}>
               <img
-                src={member.image}
-                alt=""
+                src={member.image || "/fallback.jpg"}
+                alt={member.name}
                 style={teamImg}
+                onError={(e) => (e.target.src = "/fallback.jpg")}
               />
               <h3>{member.name}</h3>
               <p>{member.role}</p>

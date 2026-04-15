@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 
 function Contact() {
-
   const API = import.meta.env.VITE_API_URL;
   // ✅ FORM STATE
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
+    whatsapp: "",
+    dob: "",
     message: "",
   });
 
@@ -46,12 +47,9 @@ function Contact() {
   return (
     <div style={container}>
       <h1 style={title}>Contact Us</h1>
-      <p style={subtitle}>
-        Get in touch with us for any mobile repair service
-      </p>
+      <p style={subtitle}>Get in touch with us for any mobile repair service</p>
 
       <div style={wrapper}>
-        
         {/* LEFT SIDE - FORM */}
         <div style={formBox}>
           <h3 style={sectionTitle}>Send Message</h3>
@@ -80,6 +78,22 @@ function Contact() {
               name="phone"
               placeholder="Phone"
               value={form.phone}
+              onChange={handleChange}
+            />
+
+            <input
+              style={input}
+              name="whatsapp"
+              placeholder="WhatsApp Number"
+             value={form.whatsapp}
+              onChange={handleChange}
+            />
+
+            <input
+              style={input}
+              type="date"
+              name="dob"
+             value={form.dob}
               onChange={handleChange}
             />
 

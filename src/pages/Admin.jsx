@@ -4,8 +4,6 @@ import { useNavigate } from "react-router-dom";
 function Admin() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("slider");
-  
-  
 
   const API = import.meta.env.VITE_API_URL;
 
@@ -24,6 +22,17 @@ function Admin() {
   useEffect(() => {
     fetchMessages();
   }, []);
+
+  const today = new Date().toISOString().slice(5, 10);
+
+  const birthdayUsers = messages.filter((m) => {
+    if (!m.dob) return false;
+    return m.dob.slice(5, 10) === today;
+  });
+
+  const getWhatsAppLink = (number, name) => {
+    return `https://wa.me/${number}?text=Happy Birthday ${name} 🎉 - Deepak Communication`;
+  };
 
   // ============== TOGGLE READ STATUS =================
 
@@ -113,9 +122,9 @@ function Admin() {
     try {
       const res = await fetch(`${API}/slider`, {
         method: "POST",
-         headers: {
-    Authorization: `Bearer ${token}`, // ✅ ADD HERE
-  },
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ ADD HERE
+        },
         body: formData,
       });
 
@@ -198,46 +207,44 @@ function Admin() {
   }, []);
 
   const addProduct = async () => {
-  if (!name || !price || !category) {
-    alert("All fields required");
-    return;
-  }
+    if (!name || !price || !category) {
+      alert("All fields required");
+      return;
+    }
 
-  const formData = new FormData();
-  formData.append("name", name);
-  formData.append("price", price);
-  formData.append("category", category);
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("price", price);
+    formData.append("category", category);
 
-  // ONLY ONE KEY (IMPORTANT)
-  if (imageFile) {
-    formData.append("image", imageFile);
-  }
+    // ONLY ONE KEY (IMPORTANT)
+    if (imageFile) {
+      formData.append("image", imageFile);
+    }
 
-  const url = editId
-    ? `${API}/products/${editId}`
-    : `${API}/products`;
+    const url = editId ? `${API}/products/${editId}` : `${API}/products`;
 
-  const method = editId ? "PUT" : "POST";
+    const method = editId ? "PUT" : "POST";
 
-  const res = await fetch(url, {
-    method,
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    body: formData,
-  });
+    const res = await fetch(url, {
+      method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
 
-  const data = await res.json();
-  console.log("PRODUCT RESPONSE:", data);
+    const data = await res.json();
+    console.log("PRODUCT RESPONSE:", data);
 
-  if (!res.ok) {
-    alert(data.error || "Error");
-    return;
-  }
+    if (!res.ok) {
+      alert(data.error || "Error");
+      return;
+    }
 
-  fetchProducts();
-  resetForm();
-};
+    fetchProducts();
+    resetForm();
+  };
   const deleteProduct = async (id) => {
     await fetch(`${API}/products/${id}`, {
       method: "DELETE",
@@ -248,44 +255,42 @@ function Admin() {
   };
 
   const handleEdit = (product) => {
-  setEditId(product._id);
-  setName(product.name);
-  setPrice(product.price);
-  setCategory(product.category);
+    setEditId(product._id);
+    setName(product.name);
+    setPrice(product.price);
+    setCategory(product.category);
 
-  // IMPORTANT: image preview only
-  setImagePreview(product.image);
+    // IMPORTANT: image preview only
+    setImagePreview(product.image);
 
-  // don't set file here ❌
-  // setImageFile(null);
-};
-const handleImage = (e) => {
-  const file = e.target.files[0];
-  setImageFile(file);
-  setImagePreview(URL.createObjectURL(file));
-};
+    // don't set file here ❌
+    // setImageFile(null);
+  };
+  const handleImage = (e) => {
+    const file = e.target.files[0];
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  };
 
   const resetForm = () => {
-  setName("");
-  setPrice("");
-  setCategory("");
-  setImageFile(null);
-  setImagePreview("");
-  setEditId(null);
-};
+    setName("");
+    setPrice("");
+    setCategory("");
+    setImageFile(null);
+    setImagePreview("");
+    setEditId(null);
+  };
   // ================= TEAM =================
   const [team, setTeam] = useState([]);
   const [memberName, setMemberName] = useState("");
   const [role, setRole] = useState("");
   const [teamImage, setTeamImage] = useState(null);
-  const [teamPreview, setTeamPreview] = useState(""); 
+  const [teamPreview, setTeamPreview] = useState("");
 
   const fetchTeam = async () => {
-    
-      const res = await fetch(`${API}/team`);
-      const data = await res.json();
-      setTeam(data || []);
-
+    const res = await fetch(`${API}/team`);
+    const data = await res.json();
+    setTeam(data || []);
   };
 
   useEffect(() => {
@@ -302,15 +307,14 @@ const handleImage = (e) => {
     formData.append("image", teamImage);
     formData.append("name", memberName);
     formData.append("role", role);
-    
 
     try {
       const res = await fetch(`${API}/team`, {
         method: "POST",
-         headers: {
-    Authorization: `Bearer ${token}`, // ✅ ADD HERE
-  },
-      
+        headers: {
+          Authorization: `Bearer ${token}`, // ✅ ADD HERE
+        },
+
         body: formData,
       });
 
@@ -323,12 +327,10 @@ const handleImage = (e) => {
       }
 
       fetchTeam();
-        setTeamImage(null);
-        setTeamPreview("");
+      setTeamImage(null);
+      setTeamPreview("");
       setMemberName("");
       setRole("");
-    
-      
     } catch (err) {
       console.log("TEAM ERROR:", err);
     }
@@ -386,7 +388,7 @@ const handleImage = (e) => {
             }}
           />
 
-          {sliderPreview && <img src={sliderPreview} width="200" />}
+          {sliderPreview && <img src={sliderPreview} width="100" />}
 
           <button onClick={uploadSlider}>Upload</button>
 
@@ -419,10 +421,13 @@ const handleImage = (e) => {
             value={role}
             onChange={(e) => setRole(e.target.value)}
           />
-          <input type="file" onChange={(e) => {
-            setTeamImage(e.target.files[0]);
-            setTeamPreview(URL.createObjectURL(e.target.files[0]));
-          }} />
+          <input
+            type="file"
+            onChange={(e) => {
+              setTeamImage(e.target.files[0]);
+              setTeamPreview(URL.createObjectURL(e.target.files[0]));
+            }}
+          />
 
           {teamPreview && <img src={teamPreview} width="200" />}
 
@@ -452,6 +457,8 @@ const handleImage = (e) => {
             value={newCategory}
             onChange={(e) => setNewCategory(e.target.value)}
             placeholder="Enter category"
+            type="text"
+            required
           />
           <button onClick={addCategory}>Add Category</button>
 
@@ -541,21 +548,33 @@ const handleImage = (e) => {
 
           {messages.map((msg) => (
             <div key={msg._id} style={cardContact}>
-              <p>
-                <b>Name:</b> {msg.name}
-              </p>
-              <p>
-                <b>Email:</b> {msg.email}
-              </p>
-              <p>
-                <b>Phone:</b> {msg.phone}
-              </p>
-              <p>
-                <b>Message:</b> {msg.message}
-              </p>
+              <div style={leftBox}>
 
-              {/* ✉️ Reply Box */}
+                 <div style={infoRow}>
+                <b>Name:</b> {msg.name}
+              </div>
+              <div style={infoRow}>
+                <b>Email:</b> {msg.email}
+              </div>
+              <div style={infoRow}>
+                <b>Phone:</b> {msg.phone}
+              </div>
+              <div style={infoRow}>
+                <b>WhatsApp:</b> {msg.whatsapp || "N/A"}
+              </div>
+              <div style={infoRow}>
+                <b>DOB:</b> {msg.dob || "N/A"}
+              </div>
+              <div style={infoRow}>
+                <b>Message:</b> {msg.message}
+              </div>
+              </div>
+             
+
+              {/* Reply Box */}
+              <div style={rightBox}>
               <textarea
+                style={replyBox}
                 placeholder="Write reply..."
                 value={replyInputs[msg._id] || ""}
                 onChange={(e) =>
@@ -566,25 +585,62 @@ const handleImage = (e) => {
                 }
               />
 
-              <button onClick={() => sendReply(msg._id, replyInputs[msg._id])}>
-                Reply
-              </button>
+              {/* Buttons */}
+              <div style={btnGroup}>
+                <button
+                  onClick={() => sendReply(msg._id, replyInputs[msg._id])}
+                >
+                  Reply
+                </button>
 
-              {/* 🔴 Delete */}
-              <button onClick={() => deleteMessage(msg._id)} style={deleteBtn}>
-                Delete
-              </button>
+                <button
+                  onClick={() => deleteMessage(msg._id)}
+                  style={deleteBtn}
+                >
+                  Delete
+                </button>
 
-              <button onClick={() => toggleRead(msg._id)}>
-                {msg.isRead ? "Mark Unread" : "Mark Read"}
-              </button>
+                <button onClick={() => toggleRead(msg._id)}>
+                  {msg.isRead ? "Mark Unread" : "Mark Read"}
+                </button>
+              </div>
 
-              {/* Show Reply */}
+              {/* Reply show */}
               {msg.reply && (
                 <p style={{ color: "lightgreen" }}>
                   <b>Reply:</b> {msg.reply}
                 </p>
               )}
+
+              <h3 style={{ marginTop: "30px", color: "#ffcc00" }}>
+                🎂 Today's Birthdays
+              </h3>
+
+              <div style={birthdayBox}>
+                {messages
+                  .filter((m) => {
+                    if (!m.dob) return false;
+                    const today = new Date();
+                    const dob = new Date(m.dob);
+                    return (
+                      dob.getDate() === today.getDate() &&
+                      dob.getMonth() === today.getMonth()
+                    );
+                  })
+                  .map((b) => (
+                    <div key={b._id} style={birthdayCard}>
+                      <p>{b.name}</p>
+
+                      <a
+                        href={`https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`}
+                        target="_blank"
+                      >
+                        🎉 Wish on WhatsApp
+                      </a>
+                    </div>
+                  ))}
+              </div>
+            </div>
             </div>
           ))}
         </div>
@@ -593,7 +649,88 @@ const handleImage = (e) => {
   );
 }
 
+// {/* ==================birthdays ================= */}
+//               <h3>🎂 Today's Birthdays</h3>
+
+// {birthdayUsers.map((user) => (
+//   <div key={user._id} style={card}>
+//     <p>{user.name}</p>
+//     <p>{user.whatsapp}</p>
+
+//     <a
+//       href={`https://wa.me/${user.whatsapp}?text=Happy Birthday ${user.name} 🎉`}
+//       target="_blank"
+//     >
+//       <button>Send WhatsApp Wish</button>
+//     </a>
+//   </div>
+// ))}
+
 export default Admin;
+
+const birthdayBox = {
+  marginTop: "10px",
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap",
+  justifyContent: "center",
+};
+
+const birthdayCard = {
+  background: "#222",
+  padding: "10px 15px",
+  borderRadius: "10px",
+  border: "1px solid #ffcc00",
+
+};
+
+const cardContact = {
+  border: "1px solid #ffcc00",
+  padding: "20px",
+  margin: "20px auto",
+  borderRadius: "10px",
+  maxWidth: "900px",
+  background: "#111",
+
+  display: "flex",
+  justifyContent: "space-between",
+  gap: "20px",
+  flexWrap: "wrap", // 👈 important
+};
+const infoRow = {
+  marginBottom: "1px",
+  fontSize: "12px",
+};
+
+const leftBox = {
+  flex: "1",
+  minWidth: "250px",
+};
+
+const rightBox = {
+  flex: "1",
+  minWidth: "250px",
+};
+
+const replyBox = {
+  width: "100%",
+  padding: "10px",
+  borderRadius: "5px",
+  border: "1px solid #ccc",
+  background: "#222",
+  color: "#fff",
+};
+
+const btnGroup = {
+  display: "flex",
+  gap: "10px",
+  marginTop: "10px",
+  flexWrap: "wrap",
+};
+
+
+
+
 
 // 🎨 STYLES
 const container = {
@@ -647,20 +784,3 @@ const activeTabBtn = {
   ...tabBtn,
   background: "red",
 };
-
-const cardContact = {
-  border: "1px solid #ccc",
-  padding: "10px",
-  margin: "10px",
-  borderRadius: "5px",
-};
-
-// const container = { padding: "20px" };
-// const title = { textAlign: "center" };
-// const section = { marginTop: "20px" };
-// const tabContainer = { display: "flex", gap: "10px" };
-// const cardContact = {
-//   border: "1px solid #ccc",
-//   padding: "10px",
-//   margin: "10px",
-// };
