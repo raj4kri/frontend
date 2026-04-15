@@ -543,65 +543,80 @@ function Admin() {
 
       {/* ================= CONTACT ================= */}
       {activeTab === "contact" && (
-       <div style={section}>
-  <h3>Messages</h3>
+        <div style={section}>
+          <h3>Messages</h3>
 
-  {/* ✅ MESSAGES LOOP */}
-  {messages.map((msg) => (
-    <div key={msg._id} style={cardContact}>
-      
-      <div style={leftBox}>
-        <div style={infoRow}><b>Name:</b> {msg.name}</div>
-        <div style={infoRow}><b>Email:</b> {msg.email}</div>
-        <div style={infoRow}><b>Phone:</b> {msg.phone}</div>
-        <div style={infoRow}><b>WhatsApp:</b> {msg.whatsapp || "N/A"}</div>
-        <div style={infoRow}><b>DOB:</b> {msg.dob || "N/A"}</div>
-        <div style={infoRow}><b>Message:</b> {msg.message}</div>
-      </div>
+          {messages.map((msg) => (
+            <div key={msg._id} style={cardContact}>
+              <div style={leftBox}>
 
-      {/* RIGHT SIDE */}
-      <div style={rightBox}>
-        <textarea
-          style={replyBox}
-          placeholder="Write reply..."
-          value={replyInputs[msg._id] || ""}
-          onChange={(e) =>
-            setReplyInputs({
-              ...replyInputs,
-              [msg._id]: e.target.value,
-            })
-          }
-        />
+                 <div style={infoRow}>
+                <b>Name:</b> {msg.name}
+              </div>
+              <div style={infoRow}>
+                <b>Email:</b> {msg.email}
+              </div>
+              <div style={infoRow}>
+                <b>Phone:</b> {msg.phone}
+              </div>
+              <div style={infoRow}>
+                <b>WhatsApp:</b> {msg.whatsapp || "N/A"}
+              </div>
+              <div style={infoRow}>
+                <b>DOB:</b> {msg.dob || "N/A"}
+              </div>
+              <div style={infoRow}>
+                <b>Message:</b> {msg.message}
+              </div>
+              </div>
+             
 
-        <div style={btnGroup}>
-          <button onClick={() => sendReply(msg._id, replyInputs[msg._id])}>
-            Reply
-          </button>
+              {/* Reply Box */}
+              <div style={rightBox}>
+              <textarea
+                style={replyBox}
+                placeholder="Write reply..."
+                value={replyInputs[msg._id] || ""}
+                onChange={(e) =>
+                  setReplyInputs({
+                    ...replyInputs,
+                    [msg._id]: e.target.value,
+                  })
+                }
+              />
 
-          <button onClick={() => deleteMessage(msg._id)} style={deleteBtn}>
-            Delete
-          </button>
+              {/* Buttons */}
+              <div style={btnGroup}>
+                <button
+                  onClick={() => sendReply(msg._id, replyInputs[msg._id])}
+                >
+                  Reply
+                </button>
 
-          <button onClick={() => toggleRead(msg._id)}>
-            {msg.isRead ? "Mark Unread" : "Mark Read"}
-          </button>
-        </div>
+                <button
+                  onClick={() => deleteMessage(msg._id)}
+                  style={deleteBtn}
+                >
+                  Delete
+                </button>
 
-        {msg.reply && (
-          <p style={{ color: "lightgreen" }}>
-            <b>Reply:</b> {msg.reply}
-          </p>
-        )}
-      </div>
-    </div>
-  ))}
+                <button onClick={() => toggleRead(msg._id)}>
+                  {msg.isRead ? "Mark Unread" : "Mark Read"}
+                </button>
+              </div>
 
-  {/* ✅ 🔥 BIRTHDAY SECTION (ONLY ONCE) */}
-  <h3 style={{ marginTop: "30px", color: "#ffcc00" }}>
-    🎂 Today's Birthdays
-  </h3>
+              {/* Reply show */}
+              {msg.reply && (
+                <p style={{ color: "lightgreen" }}>
+                  <b>Reply:</b> {msg.reply}
+                </p>
+              )}
 
-  <div style={birthdayBox}>
+              <h3 style={{ marginTop: "30px", color: "#ffcc00" }}>
+                🎂 Today's Birthdays
+              </h3>
+
+              <div style={birthdayBox}>
     {messages
       .filter((m) => {
         if (!m.dob) return false;
@@ -624,10 +639,13 @@ function Admin() {
           >
             🎉 Wish on WhatsApp
           </a>
+                    </div>
+                  ))}
+              </div>
+            </div>
+            </div>
+          ))}
         </div>
-      ))}
-  </div>
-</div>
       )}
     </div>
   );
