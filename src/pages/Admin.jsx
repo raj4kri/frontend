@@ -543,107 +543,91 @@ function Admin() {
 
       {/* ================= CONTACT ================= */}
       {activeTab === "contact" && (
-        <div style={section}>
-          <h3>Messages</h3>
+       <div style={section}>
+  <h3>Messages</h3>
 
-          {messages.map((msg) => (
-            <div key={msg._id} style={cardContact}>
-              <div style={leftBox}>
+  {/* ✅ MESSAGES LOOP */}
+  {messages.map((msg) => (
+    <div key={msg._id} style={cardContact}>
+      
+      <div style={leftBox}>
+        <div style={infoRow}><b>Name:</b> {msg.name}</div>
+        <div style={infoRow}><b>Email:</b> {msg.email}</div>
+        <div style={infoRow}><b>Phone:</b> {msg.phone}</div>
+        <div style={infoRow}><b>WhatsApp:</b> {msg.whatsapp || "N/A"}</div>
+        <div style={infoRow}><b>DOB:</b> {msg.dob || "N/A"}</div>
+        <div style={infoRow}><b>Message:</b> {msg.message}</div>
+      </div>
 
-                 <div style={infoRow}>
-                <b>Name:</b> {msg.name}
-              </div>
-              <div style={infoRow}>
-                <b>Email:</b> {msg.email}
-              </div>
-              <div style={infoRow}>
-                <b>Phone:</b> {msg.phone}
-              </div>
-              <div style={infoRow}>
-                <b>WhatsApp:</b> {msg.whatsapp || "N/A"}
-              </div>
-              <div style={infoRow}>
-                <b>DOB:</b> {msg.dob || "N/A"}
-              </div>
-              <div style={infoRow}>
-                <b>Message:</b> {msg.message}
-              </div>
-              </div>
-             
+      {/* RIGHT SIDE */}
+      <div style={rightBox}>
+        <textarea
+          style={replyBox}
+          placeholder="Write reply..."
+          value={replyInputs[msg._id] || ""}
+          onChange={(e) =>
+            setReplyInputs({
+              ...replyInputs,
+              [msg._id]: e.target.value,
+            })
+          }
+        />
 
-              {/* Reply Box */}
-              <div style={rightBox}>
-              <textarea
-                style={replyBox}
-                placeholder="Write reply..."
-                value={replyInputs[msg._id] || ""}
-                onChange={(e) =>
-                  setReplyInputs({
-                    ...replyInputs,
-                    [msg._id]: e.target.value,
-                  })
-                }
-              />
+        <div style={btnGroup}>
+          <button onClick={() => sendReply(msg._id, replyInputs[msg._id])}>
+            Reply
+          </button>
 
-              {/* Buttons */}
-              <div style={btnGroup}>
-                <button
-                  onClick={() => sendReply(msg._id, replyInputs[msg._id])}
-                >
-                  Reply
-                </button>
+          <button onClick={() => deleteMessage(msg._id)} style={deleteBtn}>
+            Delete
+          </button>
 
-                <button
-                  onClick={() => deleteMessage(msg._id)}
-                  style={deleteBtn}
-                >
-                  Delete
-                </button>
-
-                <button onClick={() => toggleRead(msg._id)}>
-                  {msg.isRead ? "Mark Unread" : "Mark Read"}
-                </button>
-              </div>
-
-              {/* Reply show */}
-              {msg.reply && (
-                <p style={{ color: "lightgreen" }}>
-                  <b>Reply:</b> {msg.reply}
-                </p>
-              )}
-
-              <h3 style={{ marginTop: "30px", color: "#ffcc00" }}>
-                🎂 Today's Birthdays
-              </h3>
-
-              <div style={birthdayBox}>
-                {messages
-                  .filter((m) => {
-                    if (!m.dob) return false;
-                    const today = new Date();
-                    const dob = new Date(m.dob);
-                    return (
-                      dob.getDate() === today.getDate() &&
-                      dob.getMonth() === today.getMonth()
-                    );
-                  })
-                  .map((b) => (
-                    <div key={b._id} style={birthdayCard}>
-                      <p>{b.name}</p>
-
-                      <a
-                        href={`https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`}
-                        target="_blank"
-                      >
-                        🎉 Wish on WhatsApp
-                      </a>
-                    </div>
-                  ))}
-              </div>
-            </div>
-            </div>
-          ))}
+          <button onClick={() => toggleRead(msg._id)}>
+            {msg.isRead ? "Mark Unread" : "Mark Read"}
+          </button>
         </div>
+
+        {msg.reply && (
+          <p style={{ color: "lightgreen" }}>
+            <b>Reply:</b> {msg.reply}
+          </p>
+        )}
+      </div>
+    </div>
+  ))}
+
+  {/* ✅ 🔥 BIRTHDAY SECTION (ONLY ONCE) */}
+  <h3 style={{ marginTop: "30px", color: "#ffcc00" }}>
+    🎂 Today's Birthdays
+  </h3>
+
+  <div style={birthdayBox}>
+    {messages
+      .filter((m) => {
+        if (!m.dob) return false;
+        const today = new Date();
+        const dob = new Date(m.dob);
+
+        return (
+          dob.getDate() === today.getDate() &&
+          dob.getMonth() === today.getMonth()
+        );
+      })
+      .map((b) => (
+        <div key={b._id} style={birthdayCard}>
+          <p>{b.name}</p>
+
+          <a
+            href={`https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`}
+            target="_blank"
+            rel="noreferrer"
+          >
+            🎉 Wish on WhatsApp
+          </a>
+        </div>
+      ))}
+  </div>
+</div>
       )}
     </div>
   );
