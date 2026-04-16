@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 function Admin() {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("slider");
 
@@ -22,17 +24,6 @@ function Admin() {
   useEffect(() => {
     fetchMessages();
   }, []);
-
-  const today = new Date().toISOString().slice(5, 10);
-
-  const birthdayUsers = messages.filter((m) => {
-    if (!m.dob) return false;
-    return m.dob.slice(5, 10) === today;
-  });
-
-  const getWhatsAppLink = (number, name) => {
-    return `https://wa.me/${number}?text=Happy Birthday ${name} 🎉 - Deepak Communication`;
-  };
 
   // ============== TOGGLE READ STATUS =================
 
@@ -152,13 +143,18 @@ function Admin() {
   };
 
   // ================= CATEGORY =================
+  // ================= CATEGORY =================
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
 
   const fetchCategories = async () => {
-    const res = await fetch(`${API}/categories`);
-    const data = await res.json();
-    setCategories(data || []);
+    try {
+      const res = await fetch(`${API}/categories`);
+      const data = await res.json();
+      setCategories(data || []);
+    } catch (err) {
+      console.error("Fetch categories failed:", err);
+    }
   };
 
   useEffect(() => {
@@ -166,25 +162,54 @@ function Admin() {
   }, []);
 
   const addCategory = async () => {
-    await fetch(`${API}/categories`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ name: newCategory }),
-    });
+    const trimmed = newCategory.trim().toLowerCase();
 
-    setNewCategory("");
-    fetchCategories();
+    if (!trimmed) {
+      toast.error("Category cannot be empty");
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const res = await fetch(`${API}/categories`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+       body: JSON.stringify({ name: trimmed }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // 👇 show backend message (duplicate etc.)
+        toast.error(data.message || "Something went wrong");
+        return;
+      }
+
+      toast.success(data.message || "Category added");
+
+      setNewCategory("");
+      fetchCategories();
+    } catch (err) {
+      toast.error("Server error");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const deleteCategory = async (id) => {
-    await fetch(`${API}/categories/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    fetchCategories();
+    try {
+      await fetch(`${API}/categories/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      fetchCategories();
+    } catch (err) {
+      console.error("Delete failed:", err);
+    }
   };
 
   // ================= PRODUCTS =================
@@ -195,6 +220,7 @@ function Admin() {
   const [imagePreview, setImagePreview] = useState("");
   const [category, setCategory] = useState("");
   const [editId, setEditId] = useState(null);
+  const [files, setFiles] = useState([]);
 
   const fetchProducts = async () => {
     const res = await fetch(`${API}/products`);
@@ -206,44 +232,50 @@ function Admin() {
     fetchProducts();
   }, []);
 
+  const handleFileChange = (e) => {
+    setFiles(Array.from(e.target.files)); // convert FileList → array
+  };
+
   const addProduct = async () => {
-    if (!name || !price || !category) {
-      alert("All fields required");
+    if (!files || files.length === 0) {
+      toast.error("Please select images");
       return;
     }
 
     const formData = new FormData();
+
+    files.forEach((file) => {
+      formData.append("images", file);
+    });
+
     formData.append("name", name);
     formData.append("price", price);
     formData.append("category", category);
+    try {
+      const res = await fetch(`${API}/products`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-    // ONLY ONE KEY (IMPORTANT)
-    if (imageFile) {
-      formData.append("image", imageFile);
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.error || "Upload failed");
+        return;
+      }
+
+      toast.success("Product added");
+      // ✅ ADD RESET HERE
+setFiles([]);
+setName("");
+setPrice("");
+setCategory("");
+    } catch (err) {
+      toast.error("Server error");
     }
-
-    const url = editId ? `${API}/products/${editId}` : `${API}/products`;
-
-    const method = editId ? "PUT" : "POST";
-
-    const res = await fetch(url, {
-      method,
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
-
-    const data = await res.json();
-    console.log("PRODUCT RESPONSE:", data);
-
-    if (!res.ok) {
-      alert(data.error || "Error");
-      return;
-    }
-
-    fetchProducts();
-    resetForm();
   };
   const deleteProduct = async (id) => {
     await fetch(`${API}/products/${id}`, {
@@ -346,6 +378,22 @@ function Admin() {
   };
 
   // ================= UI =================
+
+  const today = new Date().toISOString().slice(5, 10);
+
+  const birthdayUsers = messages.filter((m) => {
+    if (!m.dob) return false;
+    return m.dob.slice(5, 10) === today;
+  });
+
+  const getWhatsAppLink = (number, name) => {
+    return `https://wa.me/${number}?text=Happy Birthday ${name} 🎉 - Deepak Communication`;
+  };
+
+  const sortedMessages = [...messages].sort((a, b) => {
+    return b.isRead - a.isRead;
+  });
+
   return (
     <div style={container}>
       <h2 style={title}>Admin Dashboard</h2>
@@ -429,7 +477,7 @@ function Admin() {
             }}
           />
 
-          {teamPreview && <img src={teamPreview} width="200" />}
+          {teamPreview && <img src={teamPreview} width="100" />}
 
           <button onClick={addTeam}>Add Member</button>
 
@@ -460,7 +508,12 @@ function Admin() {
             type="text"
             required
           />
-          <button onClick={addCategory}>Add Category</button>
+          <button
+            onClick={addCategory}
+            disabled={loading || !newCategory.trim()}
+          >
+            {loading ? "Adding..." : "Add Category"}
+          </button>
 
           <div style={list}>
             {categories.map((cat) => (
@@ -493,7 +546,11 @@ function Admin() {
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
-          <input type="file" onChange={handleImage} />
+          <input
+            type="file"
+            multiple
+            onChange={(e) => setFiles(Array.from(e.target.files))}
+          />
           {/* IMAGE PREVIEW */}
           {imagePreview && (
             <div style={{ marginTop: "10px" }}>
@@ -526,7 +583,7 @@ function Admin() {
           <div style={list}>
             {products.map((p) => (
               <div key={p._id} style={card}>
-                <img src={p.image} style={img} />
+                {p.images?.[0] && <img src={p.images[0]} style={img} />}
                 {/* <img src={`${API}/uploads/${p.image}`} style={img} /> */}
                 <p>{p.name}</p>
                 <p>₹{p.price}</p>
@@ -543,165 +600,181 @@ function Admin() {
 
       {/* ================= CONTACT ================= */}
       {activeTab === "contact" && (
-        <div style={section}>
-          <h3>Messages</h3>
+        <div style={mainContainer}>
+          {/* 🔹 LEFT SIDE - MESSAGES */}
+          <div style={leftPanel}>
+            <h3>Messages</h3>
 
-          {messages.map((msg) => (
-            <div key={msg._id} style={cardContact}>
-              <div style={leftBox}>
+            {sortedMessages.map((msg) => (
+              <div
+                key={msg._id}
+                style={{
+                  ...cardContact,
+                  borderLeft: msg.isRead ? "5px solid #555" : "5px solid red",
+                }}
+              >
+                <div style={leftBox}>
+                  <div style={infoRow}>
+                    <b>Name:</b> {msg.name}
+                  </div>
+                  <div style={infoRow}>
+                    <b>Email:</b> {msg.email}
+                  </div>
+                  <div style={infoRow}>
+                    <b>Phone:</b> {msg.phone}
+                  </div>
+                  <div style={infoRow}>
+                    <b>WhatsApp:</b> {msg.whatsapp || "N/A"}
+                  </div>
+                  <div style={infoRow}>
+                    <b>DOB:</b> {msg.dob || "N/A"}
+                  </div>
+                  <div style={infoRow}>
+                    <b>Message:</b> {msg.message}
+                  </div>
+                </div>
 
-                 <div style={infoRow}>
-                <b>Name:</b> {msg.name}
+                <div style={rightBox}>
+                  <textarea
+                    style={replyBox}
+                    placeholder="Write reply..."
+                    value={replyInputs[msg._id] || ""}
+                    onChange={(e) =>
+                      setReplyInputs({
+                        ...replyInputs,
+                        [msg._id]: e.target.value,
+                      })
+                    }
+                  />
+
+                  <div style={btnGroup}>
+                    <button
+                      onClick={() => sendReply(msg._id, replyInputs[msg._id])}
+                    >
+                      Reply
+                    </button>
+
+                    <button
+                      onClick={() => deleteMessage(msg._id)}
+                      style={deleteBtn}
+                    >
+                      Delete
+                    </button>
+
+                    <button onClick={() => toggleRead(msg._id)}>
+                      {msg.isRead ? "Unread" : "Read"}
+                    </button>
+                  </div>
+                </div>
               </div>
-              <div style={infoRow}>
-                <b>Email:</b> {msg.email}
-              </div>
-              <div style={infoRow}>
-                <b>Phone:</b> {msg.phone}
-              </div>
-              <div style={infoRow}>
-                <b>WhatsApp:</b> {msg.whatsapp || "N/A"}
-              </div>
-              <div style={infoRow}>
-                <b>DOB:</b> {msg.dob || "N/A"}
-              </div>
-              <div style={infoRow}>
-                <b>Message:</b> {msg.message}
-              </div>
-              </div>
-             
+            ))}
+          </div>
 
-              {/* Reply Box */}
-              <div style={rightBox}>
-              <textarea
-                style={replyBox}
-                placeholder="Write reply..."
-                value={replyInputs[msg._id] || ""}
-                onChange={(e) =>
-                  setReplyInputs({
-                    ...replyInputs,
-                    [msg._id]: e.target.value,
-                  })
-                }
-              />
+          {/* 🔥 RIGHT SIDE - BIRTHDAY */}
 
-              {/* Buttons */}
-              <div style={btnGroup}>
-                <button
-                  onClick={() => sendReply(msg._id, replyInputs[msg._id])}
-                >
-                  Reply
-                </button>
+          <div style={rightPanel}>
+            <h3>🎂 Today's Birthdays</h3>
 
-                <button
-                  onClick={() => deleteMessage(msg._id)}
-                  style={deleteBtn}
-                >
-                  Delete
-                </button>
+            <div style={birthdayBox}>
+              {messages
+                .filter((m) => {
+                  if (!m.dob) return false;
 
-                <button onClick={() => toggleRead(msg._id)}>
-                  {msg.isRead ? "Mark Unread" : "Mark Read"}
-                </button>
-              </div>
+                  const today = new Date();
+                  const dob = new Date(m.dob);
 
-              {/* Reply show */}
-              {msg.reply && (
-                <p style={{ color: "lightgreen" }}>
-                  <b>Reply:</b> {msg.reply}
-                </p>
-              )}
+                  return (
+                    dob.getDate() === today.getDate() &&
+                    dob.getMonth() === today.getMonth()
+                  );
+                })
+                .map((b) => (
+                  <div key={b._id} style={birthdayCard}>
+                    <p>{b.name}</p>
 
-              <h3 style={{ marginTop: "30px", color: "#ffcc00" }}>
-                🎂 Today's Birthdays
-              </h3>
-
-              <div style={birthdayBox}>
-    {messages
-      .filter((m) => {
-        if (!m.dob) return false;
-        const today = new Date();
-        const dob = new Date(m.dob);
-
-        return (
-          dob.getDate() === today.getDate() &&
-          dob.getMonth() === today.getMonth()
-        );
-      })
-      .map((b) => (
-        <div key={b._id} style={birthdayCard}>
-          <p>{b.name}</p>
-
-          <a
-            href={`https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            🎉 Wish on WhatsApp
-          </a>
-                    </div>
-                  ))}
-              </div>
+                    <a
+                      href={
+                        b.whatsapp
+                          ? `https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`
+                          : "#"
+                      }
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      🎉 Wish on WhatsApp
+                    </a>
+                  </div>
+                ))}
             </div>
-            </div>
-          ))}
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-// {/* ==================birthdays ================= */}
-//               <h3>🎂 Today's Birthdays</h3>
-
-// {birthdayUsers.map((user) => (
-//   <div key={user._id} style={card}>
-//     <p>{user.name}</p>
-//     <p>{user.whatsapp}</p>
-
-//     <a
-//       href={`https://wa.me/${user.whatsapp}?text=Happy Birthday ${user.name} 🎉`}
-//       target="_blank"
-//     >
-//       <button>Send WhatsApp Wish</button>
-//     </a>
-//   </div>
-// ))}
-
 export default Admin;
 
-const birthdayBox = {
-  marginTop: "10px",
+// ================= LAYOUT =================
+
+const title = { textAlign: "center", color: "yellow" };
+const section = {
+  marginTop: "30px",
+  padding: "20px",
+  border: "1px solid #370e0e",
+  borderRadius: "10px",
+};
+
+const tabContainer = {
   display: "flex",
   gap: "10px",
-  flexWrap: "wrap",
   justifyContent: "center",
+  margin: "20px 0",
+  color: "#ffcc00",
 };
 
-const birthdayCard = {
-  background: "#222",
-  padding: "10px 15px",
+const list = { display: "flex", gap: "20px", flexWrap: "wrap" };
+const mainContainer = {
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "20px",
+  alignItems: "flex-start",
+};
+const card = {
+  background: "#111",
+  padding: "15px",
   borderRadius: "10px",
-  border: "1px solid #ffcc00",
-
+  textAlign: "center",
+  width: "180px",
+};
+const img = { width: "100%", height: "120px", objectFit: "cover" };
+const leftPanel = {
+  flex: "2",
+  minWidth: "250px",
 };
 
+const rightPanel = {
+  flex: "1",
+  minWidth: "250px",
+  // background: "#111",
+  // padding: "15px",
+  // borderRadius: "10px",
+  // border: "1px solid #ffcc00",
+  // position: "sticky",
+  // top: "10px",
+};
+
+// ================= MESSAGE CARD =================
 const cardContact = {
   border: "1px solid #ffcc00",
   padding: "20px",
-  margin: "20px auto",
+  marginBottom: "20px",
   borderRadius: "10px",
-  maxWidth: "900px",
   background: "#111",
-
   display: "flex",
   justifyContent: "space-between",
   gap: "20px",
-  flexWrap: "wrap", // 👈 important
-};
-const infoRow = {
-  marginBottom: "1px",
-  fontSize: "12px",
+  flexWrap: "wrap",
 };
 
 const leftBox = {
@@ -714,6 +787,12 @@ const rightBox = {
   minWidth: "250px",
 };
 
+const infoRow = {
+  marginBottom: "5px",
+  fontSize: "13px",
+};
+
+// ================= REPLY =================
 const replyBox = {
   width: "100%",
   padding: "10px",
@@ -730,59 +809,32 @@ const btnGroup = {
   flexWrap: "wrap",
 };
 
+// ================= BIRTHDAY =================
+const birthdayBox = {
+  marginTop: "10px",
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap",
+};
 
+const birthdayCard = {
+  background: "#222",
+  padding: "10px 15px",
+  borderRadius: "10px",
+  border: "1px solid #ffcc00",
+  textAlign: "center",
+};
 
-
-
-// 🎨 STYLES
+// ================= COMMON =================
 const container = {
   background: "#000",
   color: "#fff",
   minHeight: "100vh",
   padding: "20px",
 };
-const title = { textAlign: "center", color: "yellow" };
-const section = {
-  marginTop: "30px",
-  padding: "20px",
-  border: "1px solid #370e0e",
-  borderRadius: "10px",
-};
-const sectionTitle = { color: "red" };
-const list = { display: "flex", gap: "20px", flexWrap: "wrap" };
-const card = {
-  background: "#111",
-  padding: "15px",
-  borderRadius: "10px",
-  textAlign: "center",
-  width: "180px",
-};
-const img = { width: "100%", height: "120px", objectFit: "cover" };
+
 const deleteBtn = {
   background: "red",
   color: "#fff",
   padding: "5px 10px",
-  marginTop: "5px",
-};
-
-const tabContainer = {
-  display: "flex",
-  gap: "10px",
-  justifyContent: "center",
-  margin: "20px 0",
-  color: "#ffcc00",
-};
-
-const tabBtn = {
-  padding: "10px 20px",
-  background: "#222222",
-  color: "#fff",
-  border: "none",
-  cursor: "pointer",
-  borderRadius: "5px",
-};
-
-const activeTabBtn = {
-  ...tabBtn,
-  background: "red",
 };

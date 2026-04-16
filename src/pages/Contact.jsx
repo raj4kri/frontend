@@ -53,6 +53,9 @@ const [toast, setToast] = useState({
     message: "Message sent successfully ✅",
     type: "success",
   });
+  setTimeout(() => {
+  setToast({ show: false, message: "", type: "" });
+}, 3000);
 
   setForm({
     name: "",
@@ -68,6 +71,10 @@ const [toast, setToast] = useState({
     message: data.error || "Something went wrong ❌",
     type: "error",
   });
+
+    setTimeout(() => {
+    setToast({ show: false, message: "", type: "" });
+  }, 3000);
 }
 
   } catch (err) {
@@ -76,34 +83,43 @@ const [toast, setToast] = useState({
     message: "Server error ❌",
     type: "error",
   });
+   // ✅ ADD THIS
+  setTimeout(() => {
+    setToast({ show: false, message: "", type: "" });
+  }, 3000);
+
+
 }
 
-setTimeout(() => {
-  setToast({ show: false, message: "", type: "" });
-}, 3000);
+
 };
   return (
     <div style={container}>
 
-     {/* ✅ TOAST YAHAN ADD KARO */}
-    {toast.show && (
-      <div
-        style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          padding: "12px 20px",
-          borderRadius: "8px",
-          color: "#fff",
-          background:
-            toast.type === "success" ? "#28a745" : "#dc3545",
-          boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
-          zIndex: 9999,
-        }}
-      >
-        {toast.message}
-      </div>
-    )}
+
+      {/* ✅ TOAST */}
+{toast.show && (
+  <div
+   style={{
+  position: "fixed",
+  top: "20px",
+  right: "20px",
+  padding: "12px 20px",
+  borderRadius: "8px",
+  color: "#fff",
+  background:
+    toast.type === "success" ? "#28a745" : "#dc3545",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.3)",
+  zIndex: 9999,
+  transform: toast.show ? "translateX(0)" : "translateX(100%)",
+  transition: "all 0.3s ease",
+}}
+  >
+    {toast.message}
+  </div>
+)}
+
+    
       <h1 style={title}>Contact Us</h1>
       <p style={subtitle}>Get in touch with us for any mobile repair service</p>
 
@@ -117,7 +133,7 @@ setTimeout(() => {
               style={input}
               name="name"
               placeholder="Name"
-              value={form.name}
+              value={form.name || ""}
               onChange={handleChange}
               required
             />
@@ -126,7 +142,7 @@ setTimeout(() => {
               style={input}
               name="email"
               placeholder="Email"
-              value={form.email}
+              value={form.email || ""}
               onChange={handleChange}
               required
             />
@@ -135,7 +151,7 @@ setTimeout(() => {
               style={input}
               name="phone"
               placeholder="Phone"
-              value={form.phone}
+              value={form.phone || ""}
               onChange={handleChange}
             />
 
@@ -143,7 +159,7 @@ setTimeout(() => {
               style={input}
               name="whatsapp"
               placeholder="WhatsApp Number"
-             value={form.whatsapp}
+             value={form.whatsapp || ""}
               onChange={handleChange}
             />
 
@@ -151,7 +167,7 @@ setTimeout(() => {
               style={input}
               type="date"
               name="dob"
-             value={form.dob}
+             value={form.dob || ""}
               onChange={handleChange}
             />
 
@@ -159,7 +175,7 @@ setTimeout(() => {
               style={textarea}
               name="message"
               placeholder="Message"
-              value={form.message}
+              value={form.message || ""}
               onChange={handleChange}
               required
             />
@@ -216,11 +232,13 @@ const wrapper = {
   flexWrap: "wrap",
   gap: "20px",
   justifyContent: "center",
+
 };
 
 const formBox = {
   flex: "1",
   minWidth: "300px",
+  // maxWidth: "400px",
   background: "#1e1e1e",
   padding: "20px",
   borderRadius: "15px",
