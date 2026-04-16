@@ -137,10 +137,10 @@ const nav = {
   zIndex: 1000,       // why: stay above slider
 };
 
-const logo = {
-  fontWeight: "bold",
-  fontSize: "18px",
-};
+// const logo = {
+//   fontWeight: "bold",
+//   fontSize: "18px",
+// };
 
 const link = {
   color: "#fff",
