@@ -9,6 +9,8 @@ import Products from "./pages/Products";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import SocialBar from "./components/SocialBar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 
 
@@ -18,6 +20,7 @@ function App() {
       <Navbar />
       <WhatsAppButton />
           <SocialBar />
+           <ToastContainer />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
