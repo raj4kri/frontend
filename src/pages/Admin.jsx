@@ -102,38 +102,44 @@ function Admin() {
   }, []);
 
   const uploadSlider = async () => {
-    if (!sliderImage) {
-      alert("Select image first");
+  if (!sliderImage) {
+    alert("Select image first");
+    return;
+  }
+
+  const storedToken =
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
+
+  console.log("TOKEN:", storedToken); // debug
+
+  const formData = new FormData();
+  formData.append("image", sliderImage);
+
+  try {
+    const res = await fetch(`${API}/slider`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${storedToken}`,
+      },
+      body: formData,
+    });
+
+    const data = await res.json();
+    console.log("UPLOAD RESPONSE:", data);
+
+    if (!res.ok) {
+      alert(data.error || "Upload failed");
       return;
     }
 
-    const formData = new FormData();
-    formData.append("image", sliderImage);
-
-    try {
-      const res = await fetch(`${API}/slider`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`, // ✅ ADD HERE
-        },
-        body: formData,
-      });
-
-      const data = await res.json();
-      console.log("UPLOAD RESPONSE:", data);
-
-      if (!res.ok) {
-        alert(data.error || "Upload failed");
-        return;
-      }
-
-      fetchSlider();
-      setSliderImage(null);
-      setSliderPreview("");
-    } catch (err) {
-      console.error("UPLOAD ERROR:", err);
-    }
-  };
+    fetchSlider();
+    setSliderImage(null);
+    setSliderPreview("");
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+  }
+};
   const deleteSlider = async (id) => {
     await fetch(`${API}/slider/${id}`, {
       method: "DELETE",
@@ -141,6 +147,8 @@ function Admin() {
     });
     fetchSlider();
   };
+
+  
 
   // ================= CATEGORY =================
   // ================= CATEGORY =================
@@ -212,6 +220,8 @@ function Admin() {
     }
   };
 
+
+ 
   // ================= PRODUCTS =================
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
@@ -269,10 +279,10 @@ function Admin() {
 
       toast.success("Product added");
       // ✅ ADD RESET HERE
-setFiles([]);
-setName("");
-setPrice("");
-setCategory("");
+      setFiles([]);
+      setName("");
+      setPrice("");
+      setCategory("");
     } catch (err) {
       toast.error("Server error");
     }
