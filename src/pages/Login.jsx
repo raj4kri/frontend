@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const API = import.meta.env.VITE_API_URL;
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -12,10 +13,12 @@ function Login() {
 
   // ✅ AUTO LOGIN
   useEffect(() => {
+
+   
     const token =
       localStorage.getItem("token") ||
       sessionStorage.getItem("token");
-
+// console.log("TOKEN:", token);
     if (token) {
       navigate("/admin");
     }
@@ -41,21 +44,26 @@ function Login() {
       const data = await res.json();
       setLoading(false);
 
+      if (!res.ok) {
+        alert(data.message || "Login failed ❌");
+        return;
+      }
+
       if (data.token) {
-        // ✅ CLEAR OLD TOKENS (IMPORTANT FIX)
+        // ✅ clear old tokens
         localStorage.removeItem("token");
         sessionStorage.removeItem("token");
 
-        // ✅ SAVE BASED ON REMEMBER
+        // ✅ save based on remember me
         if (rememberMe) {
           localStorage.setItem("token", data.token);
         } else {
           sessionStorage.setItem("token", data.token);
         }
 
+        console.log("TOKEN SAVED:", data.token);
+
         navigate("/admin");
-      } else {
-        alert(data.message || "Login failed ❌");
       }
     } catch (err) {
       setLoading(false);
@@ -83,7 +91,7 @@ function Login() {
         style={input}
       />
 
-      {/* ✅ REMEMBER ME */}
+      {/* Remember Me */}
       <div style={{ margin: "10px", color: "white" }}>
         <input
           type="checkbox"

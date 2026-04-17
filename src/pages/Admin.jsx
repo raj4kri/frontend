@@ -4,12 +4,11 @@ import { toast } from "react-toastify";
 
 function Admin() {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  
   const [activeTab, setActiveTab] = useState("slider");
 
   const API = import.meta.env.VITE_API_URL;
 
-  console.log(API);
   // ================= CONTACT =================
   const [messages, setMessages] = useState([]);
   const unreadCount = messages.filter((m) => !m.isRead).length;
@@ -40,15 +39,17 @@ function Admin() {
   }, [activeTab]);
 
   // ================= AUTH =================
-  const [token, setToken] = useState("");
+  const navigate = useNavigate();
 
+  const getToken = () =>
+    localStorage.getItem("token") || sessionStorage.getItem("token");
+
+  // ✅ SAFE AUTH CHECK
   useEffect(() => {
-    const t = localStorage.getItem("token") || sessionStorage.getItem("token");
+    const token = getToken();
 
-    if (!t) {
+    if (!token) {
       navigate("/");
-    } else {
-      setToken(t);
     }
   }, [navigate]);
 
@@ -92,7 +93,13 @@ function Admin() {
   const [sliders, setSliders] = useState([]);
 
   const fetchSlider = async () => {
-    const res = await fetch(`${API}/slider`); // ✅ FIX endpoint
+
+    const token = getToken();
+    const res = await fetch(`${API}/slider`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     const data = await res.json();
     setSliders(data || []); // ✅ FIX response
   };
@@ -107,48 +114,41 @@ function Admin() {
     return;
   }
 
-  const storedToken =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
-
-  console.log("TOKEN:", storedToken); // debug
-
+  
   const formData = new FormData();
   formData.append("image", sliderImage);
+  const token = getToken();
+  const res = await fetch(`${API}/slider`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`
+    },
+    body: formData
+  });
 
-  try {
-    const res = await fetch(`${API}/slider`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${storedToken}`,
-      },
-      body: formData,
-    });
+  const data = await res.json();
 
-    const data = await res.json();
-    console.log("UPLOAD RESPONSE:", data);
-
-    if (!res.ok) {
-      alert(data.error || "Upload failed");
-      return;
-    }
-
-    fetchSlider();
-    setSliderImage(null);
-    setSliderPreview("");
-  } catch (err) {
-    console.error("UPLOAD ERROR:", err);
+  if (!res.ok) {
+    alert(data.message || "Upload failed");
+    return;
   }
+
+  fetchSlider();
+  setSliderImage(null);
+  setSliderPreview("");
 };
   const deleteSlider = async (id) => {
+    const token = getToken();
+
     await fetch(`${API}/slider/${id}`, {
       method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
+
     fetchSlider();
   };
-
-  
 
   // ================= CATEGORY =================
   // ================= CATEGORY =================
@@ -186,7 +186,7 @@ function Admin() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-       body: JSON.stringify({ name: trimmed }),
+        body: JSON.stringify({ name: trimmed }),
       });
 
       const data = await res.json();
@@ -220,8 +220,6 @@ function Admin() {
     }
   };
 
-
- 
   // ================= PRODUCTS =================
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
@@ -261,6 +259,8 @@ function Admin() {
     formData.append("name", name);
     formData.append("price", price);
     formData.append("category", category);
+
+    const token = getToken();
     try {
       const res = await fetch(`${API}/products`, {
         method: "POST",
@@ -349,6 +349,8 @@ function Admin() {
     formData.append("image", teamImage);
     formData.append("name", memberName);
     formData.append("role", role);
+
+    const token = getToken();
 
     try {
       const res = await fetch(`${API}/team`, {
