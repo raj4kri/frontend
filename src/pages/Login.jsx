@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const API = import.meta.env.VITE_API_URL;
-
+console.log("API:", API);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -33,7 +33,7 @@ function Login() {
     try {
       setLoading(true);
 
-      const res = await fetch(`${API}/login`, {
+      const res = await fetch(`${API}/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
