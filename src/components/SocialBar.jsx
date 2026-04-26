@@ -32,10 +32,10 @@ export default SocialBar;
 const container = {
   position: "fixed",
   
-  top: "50%",
-  left: "10px",
+  top: "30%",
+  right: "10px",
     color: "#fff",
-  transform: "translateY(-50%)",
+  transform: "translateY(50%)",
   display: "flex",
   flexDirection: "column",
    borderRadius: "2px",
@@ -43,13 +43,3 @@ const container = {
   zIndex: 999
 };
 
-// const iconStyle = {
-//   // background: "#000",
-//   flexDirection: "column",
-//   color: "#fff",
-//   padding: "10px",
-//   borderRadius: "50%",
-//   fontSize: "18px",
-//   cursor: "pointer",
-//   transition: "0.3s"
-// };
