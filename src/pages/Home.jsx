@@ -1,26 +1,15 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+
 function Home() {
-const API = import.meta.env.VITE_API_URL;
-  // ✅ Hooks must be INSIDE component
-    const [slider, setSlider] = useState([]);
-  const [index, setIndex] = useState(0);
-  const [pause, setPause] = useState(false);
+  const API = import.meta.env.VITE_API_URL;
 
+  const [slider, setSlider] = useState([]);
+  const [loopSlider, setLoopSlider] = useState([]);
+  const [index, setIndex] = useState(1);
+  const [transition, setTransition] = useState(true);
 
-  // why: fix mixed content
-  const fixImageUrl = (url) => {
-    if (!url) return "/fallback.jpg";
-    return url.replace("http://", "https://");
-  };
-
-   // why: prevent broken UI
-  const handleImageError = (e) => {
-    e.target.src = "/fallback.jpg";
-  };
-
-
-  // Fetch slider
+  // ✅ Fetch images
   useEffect(() => {
     fetch(`${API}/slider`)
       .then((res) => res.json())
@@ -28,280 +17,314 @@ const API = import.meta.env.VITE_API_URL;
       .catch((err) => console.log(err));
   }, []);
 
-
-
-  
-  // Auto slide
+  // ✅ Create infinite loop array
   useEffect(() => {
-    if (slider.length === 0 || pause) return;
+    if (slider.length > 0) {
+      setLoopSlider([slider[slider.length - 1], ...slider, slider[0]]);
+      setIndex(1);
+    }
+  }, [slider]);
 
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % slider.length);
-    }, 3000);
+  // ✅ Auto slide
+useEffect(() => {
+  if (!loopSlider.length) return;
 
-    return () => clearInterval(interval);
-  }, [slider, pause]);
+  const interval = setInterval(() => {
+    setIndex((prev) => prev + 1);
+  }, 3000);
 
-  const nextSlide = () => {
-    setIndex((prev) => (prev + 1) % slider.length);
-  };
+  return () => clearInterval(interval);
+}, [loopSlider]);
 
-  const prevSlide = () => {
-    setIndex((prev) =>
-      prev === 0 ? slider.length - 1 : prev - 1
-    );
+  // ✅ Infinite loop fix
+  useEffect(() => {
+  if (!loopSlider.length) return;
+
+  if (index === loopSlider.length - 1) {
+    setTimeout(() => {
+      setTransition(false);
+      setIndex(1);
+    }, 500);
+  } else if (index === 0) {
+    setTimeout(() => {
+      setTransition(false);
+      setIndex(loopSlider.length - 2);
+    }, 500);
+  } else {
+    setTransition(true);
+  }
+}, [index, loopSlider]);
+
+  const nextSlide = () => setIndex((prev) => prev + 1);
+  const prevSlide = () => setIndex((prev) => prev - 1);
+
+  const fixImageUrl = (url) =>
+    url ? url.replace("http://", "https://") : "/fallback.jpg";
+
+  const handleImageError = (e) => {
+    e.target.src = "/fallback.jpg";
   };
 
   return (
-    <div >
+    <div style={{ width: "100%", overflowX: "hidden" }}>
+      {/* 🔥 HERO */}
+      <section style={hero}>
+        <h1>Best Mobile Repair Shop in Rukanpura, Patna</h1>
+<h2>Deepak Communication</h2>
+        <p>
+          We offers fast & trusted mobile repair services in Rukanpura. Screen
+          replacement, battery, charging & software repair at affordable prices.
+        </p>
 
-      {/* HERO */}
-      <div style={hero}>
-        <h1>Deepak Communication</h1>
-        <h2>Fast & Trusted Mobile Repair Services | 7+ Years Experience</h2>
-        <p>We fix all smartphone issues at affordable prices</p>
+        <div>
+          <a href="tel:7903182706">
+            <button style={primaryBtn}>Call Now</button>
+          </a>
 
-        <a href="https://wa.me/917903182706">
-          <button style={primaryBtn}>Book Repair</button>
-        </a>
-      </div>
+          <a href="https://wa.me/917903182706">
+            <button style={secondaryBtn}>WhatsApp</button>
+          </a>
+        </div>
+      </section>
 
+      {/* 🔥 PREMIUM SLIDER */}
+      <div style={sliderWrapper}>
+        <button style={navBtnLeft} onClick={prevSlide}>
+          ❮
+        </button>
 
-   {/* SLIDER */}
-      <div
-        style={sliderContainer}
-        onMouseEnter={() => setPause(true)}
-        onMouseLeave={() => setPause(false)}
-      >
-        {slider.map((item, i) => (
+        <div style={sliderViewport}>
           <div
-            key={i}
             style={{
-              ...slideWrapper,
-              opacity: i === index ? 1 : 0
+              ...sliderTrack,
+              transform: `translateX(-${index * 100}%)`,
+              transition: transition ? "0.5s ease" : "none",
             }}
           >
-            <img
-              src={fixImageUrl(item.image)}
-              alt="slider"
-              style={slideImage}
-              onError={handleImageError}
-            />
+            {loopSlider.map((item, i) => (
+              <div  key={item._id || i} style={slide}>
+                <img
+                  alt="Mobile repair work in Rukanpura"
+                  src={fixImageUrl(item.image)}
+                    loading="lazy"
+                  style={galleryImage}
+                  onError={handleImageError}
+                />
+              </div>
+            ))}
           </div>
-        ))}
-
-        <div style={overlay}>
-          <h1>Gallery</h1>
-          {/* <></> */}
         </div>
 
-        <button style={prevBtn} onClick={prevSlide}>❮</button>
-        <button style={nextBtn} onClick={nextSlide}>❯</button>
+        <button style={navBtnRight} onClick={nextSlide}>
+          ❯
+        </button>
+      </div>
 
-        <div style={dotsContainer}>
-          {slider.map((_, i) => (
-            <span
-              key={i}
-              onClick={() => setIndex(i)}
-              style={{
-                ...dot,
-                background: i === index ? "#ff0000" : "#ccc"
-              }}
-            />
+      {/* 🔥 SERVICES */}
+      <section style={section}>
+        <h2>Our Mobile Repair Services</h2>
+        <Link to="/services">View All Services</Link>
+
+        <div style={grid}>
+          {services.map((s, i) => (
+            <div key={i} style={card}>
+              <h3>
+                {s.icon} {s.title}
+              </h3>
+              <p>{s.desc}</p>
+            </div>
           ))}
         </div>
-      </div>
+      </section>
 
+      <section style={section}>
+        <h2>Mobile Repair Services Rukanpura</h2>
 
-{/* </div> */}
-      {/* 🔧 Services */}
-      <div style={{ padding: "40px", textAlign: "center", textDecoration:"none" }}>
+        <p>
+          Looking for a reliable mobile repair shop in Rukanpura, Patna? Deepak
+          Communication provides expert solutions for screen replacement,
+          battery issues, charging problems, and software repairs. With 7+ years
+          of experience, we ensure fast, affordable, and high-quality service.
+        </p>
 
-        <Link to="/services">
-        <h2 style={{ color: "#ff0000", cursor:"pointer" }}>Our Services</h2>
-        </Link>
-        
-        {/* <h2 style={{ color: "#ff0000" }}>Our Services</h2> */}
+        <p>
+          We serve customers across Rukanpura and nearby areas with genuine
+          parts and skilled technicians.
+        </p>
+      </section>
 
-        <div style={flexBox}>
-          <div style={cardStyle}>📱 Screen Replacement</div>
-          <div style={cardStyle}>🔋 Battery Replacement</div>
-          <div style={cardStyle}>💻 Software Issue</div>
-          <div style={cardStyle}>🔌 Charging Problem</div>
-          <div style={cardStyle}>📶 Network Fix</div>
-          <div style={cardStyle}>🔓 Mobile Unlock</div>
-          <div style={cardStyle}>Mother Board Repair</div>
-        </div>
-      </div>
+      <section style={section}>
+        <h2>Frequently Asked Questions</h2>
 
-      {/* ⭐ Why Choose Us */}
-      <div style={{
-        background: "#fff3cd",
-        padding: "40px",
-        textAlign: "center"
-      }}>
-        <h2 style={{ color: "#d40000" }}>Why Choose Us?</h2>
+        <p>
+          <strong>How much does mobile repair cost?</strong>
+        </p>
+        <p>Repair cost depends on the issue. Screen repair starts from ₹499.</p>
 
-        <div style={flexBox}>
-          <div style={cardStyle}>⚡ Fast Service</div>
-          <div style={cardStyle}>💰 Affordable Price</div>
-          <div style={cardStyle}>🛠️ Expert Technicians</div>
-        </div>
-      </div>
+        <p>
+          <strong>How long does repair take?</strong>
+        </p>
+        <p>
+          Most repairs are completed within 30–60 minutes, depends on problem.
+        </p>
+      </section>
 
-      {/* 📞 CTA */}
-      <div style={{
-        background: "#ff0000",
-        color: "white",
-        padding: "40px",
-        textAlign: "center"
-      }}>
+      {/* 🔥 STATS */}
+      <section style={statsSection}>
+        <div style={statsBox}>1000+ Repairs</div>
+        <div style={statsBox}>500+ Customers</div>
+        <div style={statsBox}>7+ Years</div>
+      </section>
+
+      {/* 🔥 CTA */}
+      <section style={cta}>
         <h2>Need Mobile Repair?</h2>
-        <p>Contact us today</p>
+        <p>Contact us now</p>
 
-        <a href="tel:7903182706">
-          <button style={secondaryBtn}>Call Now</button>
+        <a href="https://wa.me/917903182706">
+          <button style={primaryBtn}>Chat Now</button>
         </a>
-      </div>
+      </section>
 
+      {/* 🔥 FOOTER */}
+      <footer style={footer}>
+        <p>© 2026 Deepak Communication</p>
+        <p>📍 Mithapur | 📞 7903182706</p>
+      </footer>
     </div>
   );
 }
 
 export default Home;
-// ================= STYLES =================
 
-// styles (keep yours)
+/* ================= DATA ================= */
+
+const services = [
+  { icon: "📱", title: "Screen Repair", desc: "Original display replacement" },
+  { icon: "🔋", title: "Battery", desc: "Fast battery replacement" },
+  { icon: "🔌", title: "Charging Issue", desc: "Fix charging problems" },
+  { icon: "💻", title: "Software", desc: "All software issues fixed" },
+];
+
+/* ================= STYLES ================= */
+
 const hero = {
-  background: "linear-gradient(to right, #ff0000, #ffcc00)",
-  color: "white",
-  padding: "30px 20px",
-  textAlign: "center",
-  borderRadius: "0 0 10px 10px ",
-};
-
-const flexBox = {
-  display: "flex",
-  justifyContent: "center",
-  gap: "20px",
-  marginTop: "20px",
-  flexWrap: "wrap"
-};
-
-const cardStyle = {
-  background: "white",
-  padding: "20px",
-  width: "200px",
-  borderRadius: "10px",
-  boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-  borderTop: "5px solid #ff0000"
-};
-
-const primaryBtn = {
-  padding: "12px 25px",
-  background: "#000",
-  color: "#ffcc00",
-  border: "none",
-  cursor: "pointer",
-  marginTop: "20px",
-  borderRadius: "5px"
-};
-
-const secondaryBtn = {
-  padding: "12px 25px",
-  background: "#ffcc00",
-  color: "#000",
-  border: "none",
-  cursor: "pointer",
-  borderRadius: "5px"
-};
-
-const sliderContainer = {
-  position: "relative",
-  width: "100%",
-  height: "400px",
-  overflow: "hidden",
-  borderRadius:"10px",
-  marginTop:"20px",
-  // marginLeft:"50px",
-  background:"white"
-};
-
-const slideWrapper = {
-  position: "absolute",
-  width: "100%",
-  height: "100%",
-  top: 0,
-  left: 0,
-  transition: "opacity 0.8s ease-in-out"
-};
-
-const slideImage = {
-  width: "70%",
-  height: "100%",
-  objectFit: "center",   // ✅ full screen fill
-  objectPosition: "center"
-};
-
-const overlay = {
-  
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  background: "linear-gradient(135deg,#ff0000,#ffcc00)",
   color: "#fff",
   textAlign: "center",
-  background: "rgba(0,0,0,0.3)",
-  padding: "20px",
-  borderRadius: "10px",
-  zIndex: 2
+  padding: "60px 20px",
 };
 
-const prevBtn = {
+const sliderWrapper = {
+  position: "relative",
+  width: "100%",
+  overflow: "hidden",
+  color: "#fff",
+};
+
+const sliderViewport = {
+  overflow: "hidden",
+};
+
+const sliderTrack = {
+  display: "flex",
+  width: "100%",
+};
+
+const slide = {
+  minWidth: "100%",
+  height: "350px",
+};
+
+const galleryImage = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover", // keep this
+  imageRendering: "auto", // ✅ important
+};
+
+const navBtnLeft = {
   position: "absolute",
   top: "50%",
   left: "10px",
   transform: "translateY(-50%)",
-  background: "rgba(0,0,0,0.5)",
+  zIndex: 2,
+  background: "#000",
   color: "#fff",
   border: "none",
   padding: "10px",
   cursor: "pointer",
-  fontSize: "20px",
-  borderRadius:"10px",
-  zIndex: 2
 };
 
-const nextBtn = {
+const navBtnRight = {
   position: "absolute",
   top: "50%",
   right: "10px",
   transform: "translateY(-50%)",
-  background: "rgba(0,0,0,0.5)",
+  zIndex: 2,
+  background: "#000",
   color: "#fff",
   border: "none",
   padding: "10px",
   cursor: "pointer",
-  fontSize: "20px",
-  borderRadius:"10px",
-  zIndex: 2
 };
 
-const dotsContainer = {
-  position: "absolute",
-  bottom: "10px",
-  width: "100%",
+const section = {
+  padding: "50px 20px",
   textAlign: "center",
-  zIndex: 2
 };
 
-const dot = {
-  display: "inline-block",
-  width: "10px",
-  height: "10px",
-  margin: "5px",
-  borderRadius: "50%",
-  cursor: "pointer"
+const grid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+  gap: "20px",
 };
 
+const card = {
+  background: "#111",
+  color: "#fff",
+  padding: "20px",
+  borderRadius: "10px",
+};
 
+const statsSection = {
+  display: "flex",
+  justifyContent: "space-around",
+  padding: "40px",
+  background: "#222",
+  color: "#fff",
+};
+
+const statsBox = {
+  fontSize: "20px",
+};
+
+const cta = {
+  background: "#ff0000",
+  color: "#fff",
+  textAlign: "center",
+  padding: "50px 20px",
+};
+
+const footer = {
+  background: "#000",
+  color: "#aaa",
+  textAlign: "center",
+  padding: "20px",
+};
+
+const primaryBtn = {
+  padding: "10px 20px",
+  margin: "10px",
+  background: "#000",
+  color: "#ffcc00",
+  border: "none",
+};
+
+const secondaryBtn = {
+  padding: "10px 20px",
+  margin: "10px",
+  background: "#fff",
+  color: "#000",
+  border: "none",
+};

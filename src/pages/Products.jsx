@@ -1,13 +1,10 @@
 import { useEffect, useState } from "react";
 
 function Products() {
-
-
-
   const [touchStart, setTouchStart] = useState(null);
-const [touchEnd, setTouchEnd] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
-const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -19,42 +16,42 @@ const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [imageIndexes, setImageIndexes] = useState({});
   const [hovered, setHovered] = useState(null);
-// ================= DEBOUNCE SEARCH =================
+  // ================= DEBOUNCE SEARCH =================
   useEffect(() => {
-  const timer = setTimeout(() => {
-    setDebouncedSearch(search);
-  }, 500); // ⏱ delay
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 500); // ⏱ delay
 
-  return () => clearTimeout(timer);
-}, [search]);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-// ================= TOUCH HANDLERS (for mobile swipe) =================
+  // ================= TOUCH HANDLERS (for mobile swipe) =================
 
   const handleTouchStart = (e) => {
-  setTouchEnd(null); // reset
-  setTouchStart(e.targetTouches[0].clientX);
-};
+    setTouchEnd(null); // reset
+    setTouchStart(e.targetTouches[0].clientX);
+  };
 
-const handleTouchMove = (e) => {
-  setTouchEnd(e.targetTouches[0].clientX);
-};
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
 
-const handleTouchEnd = (id, images) => {
-  if (!touchStart || !touchEnd) return;
+  const handleTouchEnd = (id, images) => {
+    if (!touchStart || !touchEnd) return;
 
-  const distance = touchStart - touchEnd;
+    const distance = touchStart - touchEnd;
 
-  // 👇 threshold (avoid accidental swipe)
-  if (distance > 50) {
-    // swipe left → next
-    nextImage(id, images);
-  }
+    // 👇 threshold (avoid accidental swipe)
+    if (distance > 50) {
+      // swipe left → next
+      nextImage(id, images);
+    }
 
-  if (distance < -50) {
-    // swipe right → prev
-    prevImage(id, images);
-  }
-};
+    if (distance < -50) {
+      // swipe right → prev
+      prevImage(id, images);
+    }
+  };
 
   // ================= FETCH CATEGORIES =================
   useEffect(() => {
@@ -66,7 +63,7 @@ const handleTouchEnd = (id, images) => {
   // ================= FETCH PRODUCTS =================
   const fetchProducts = async () => {
     const res = await fetch(
-      `${API}/products?search=${debouncedSearch}&category=${filter}&page=${page}`
+      `${API}/products?search=${debouncedSearch}&category=${filter}&page=${page}`,
     );
     const data = await res.json();
 
@@ -80,9 +77,9 @@ const handleTouchEnd = (id, images) => {
     setImageIndexes(initial);
   };
 
- useEffect(() => {
-  fetchProducts();
-}, [debouncedSearch, page, filter]);
+  useEffect(() => {
+    fetchProducts();
+  }, [debouncedSearch, page, filter]);
 
   // ================= AUTO SLIDER =================
   useEffect(() => {
@@ -92,8 +89,7 @@ const handleTouchEnd = (id, images) => {
 
         products.forEach((p) => {
           if (p.images?.length && hovered !== p._id) {
-            updated[p._id] =
-              (prev[p._id] + 1) % p.images.length;
+            updated[p._id] = (prev[p._id] + 1) % p.images.length;
           }
         });
 
@@ -115,8 +111,7 @@ const handleTouchEnd = (id, images) => {
   const prevImage = (id, images) => {
     setImageIndexes((prev) => ({
       ...prev,
-      [id]:
-        (prev[id] - 1 + images.length) % images.length,
+      [id]: (prev[id] - 1 + images.length) % images.length,
     }));
   };
 
@@ -165,10 +160,12 @@ const handleTouchEnd = (id, images) => {
             onMouseEnter={() => setHovered(p._id)}
             onMouseLeave={() => setHovered(null)}
           >
-            <div style={imageWrapper}
-  onTouchStart={handleTouchStart}
-  onTouchMove={handleTouchMove}
-  onTouchEnd={() => handleTouchEnd(p._id, p.images)}>
+            <div
+              style={imageWrapper}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={() => handleTouchEnd(p._id, p.images)}
+            >
               {p.images?.length > 0 && (
                 <img
                   src={p.images[imageIndexes[p._id] || 0]}
@@ -204,16 +201,30 @@ const handleTouchEnd = (id, images) => {
                   onClick={() => setDot(p._id, i)}
                   style={{
                     ...dot,
-                    opacity:
-                      imageIndexes[p._id] === i ? 1 : 0.3,
+                    opacity: imageIndexes[p._id] === i ? 1 : 0.3,
                   }}
                 />
               ))}
             </div>
 
             <h3 style={nameStyle}>{p.name}</h3>
-            <p style={priceStyle}>₹{p.price}</p>
+
+            {/* ✅ DISCOUNT LOGIC */}
+            {p.discount > 0 ? (
+              <>
+
+                <p style={{ textDecoration: "line-through", color: "#999" }}>
+                  ₹{p.price}
+                </p>
+                <p style={{ color: "green" }}>{p.discount}% OFF</p>
+                                <p style={priceStyle}>₹{p.finalPrice}</p>
+              </>
+            ) : (
+              <p style={priceStyle}>₹{p.price}</p>
+            )}
+
             <p style={{ color: "#555" }}>{p.category}</p>
+            <span style={availabilityBadge}>Available in Store</span>
           </div>
         ))}
       </div>
@@ -242,6 +253,44 @@ const handleTouchEnd = (id, images) => {
 export default Products;
 
 // ================= STYLES =================
+
+const cornerBadge = {
+  position: "absolute",
+  top: "8px",
+  left: "8px",
+  background: "red",
+  color: "#fff",
+  padding: "4px 8px",
+  fontSize: "12px",
+  borderRadius: "5px",
+  fontWeight: "bold",
+};
+
+const oldPrice = {
+  textDecoration: "line-through",
+  color: "#999",
+  fontSize: "14px",
+};
+
+const discountBadge = {
+  display: "inline-block",
+  marginTop: "5px",
+  padding: "3px 8px",
+  background: "red",
+  color: "#fff",
+  fontSize: "12px",
+  borderRadius: "5px",
+  fontWeight: "bold",
+};
+const availabilityBadge = {
+  display: "inline-block",
+  marginTop: "8px",
+  padding: "4px 8px",
+  background: "#28a745",
+  color: "#fff",
+  fontSize: "12px",
+  borderRadius: "5px",
+};
 
 const mainContainer = {
   background: "#000",

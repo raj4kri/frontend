@@ -4,11 +4,60 @@ import { toast } from "react-toastify";
 
 function Admin() {
   const [loading, setLoading] = useState(false);
-
   const [activeTab, setActiveTab] = useState("slider");
+  const [menuOpen, setMenuOpen] = useState(false);
 
+  // const isMobile = window.innerWidth < 768;
   const API = import.meta.env.VITE_API_URL;
 
+  // ===
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  // const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize(); // ✅ initial
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+  const sidebarStyle = {
+    ...baseSidebar,
+    width: isMobile ? "200px" : "220px",
+    padding: "20px",
+    transform: isMobile
+      ? menuOpen
+        ? "translateX(0)"
+        : "translateX(-100%)"
+      : "translateX(0)",
+  };
+
+  const contentStyle = {
+    padding: "15px",
+    marginLeft: isMobile ? "0" : "240px",
+    marginTop: isMobile ? "60px" : "0",
+  };
+
+  const sectionHeader = {
+    ...sectionHeaderBase,
+    top: isMobile ? "60px" : "90px",
+    display: "flex",
+    flexDirection: isMobile ? "column" : "row",
+    alignItems: isMobile ? "flex-start" : "center",
+    gap: "10px",
+  };
+
+  const gridStyle = {
+    ...baseGrid,
+    gridTemplateColumns: isMobile
+      ? "repeat(2, 1fr)"
+      : "repeat(auto-fill, minmax(140px, 1fr))",
+  };
   // ================= CONTACT =================
   const [messages, setMessages] = useState([]);
   const unreadCount = messages.filter((m) => !m.isRead).length;
@@ -151,7 +200,6 @@ function Admin() {
   };
 
   // ================= CATEGORY =================
-  // ================= CATEGORY =================
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
 
@@ -231,6 +279,14 @@ function Admin() {
   const [editId, setEditId] = useState(null);
   const [files, setFiles] = useState([]);
 
+  const [discount, setDiscount] = useState("");
+
+  const handleChange = (e) => {
+    if (e.target.name === "discount") {
+      setDiscount(e.target.value);
+    }
+  };
+
   const fetchProducts = async () => {
     const res = await fetch(`${API}/products`);
     const data = await res.json();
@@ -246,10 +302,7 @@ function Admin() {
   };
 
   const addProduct = async () => {
-    if (!files || files.length === 0) {
-      toast.error("Please select images");
-      return;
-    }
+    const token = getToken();
 
     const formData = new FormData();
 
@@ -259,31 +312,47 @@ function Admin() {
 
     formData.append("name", name);
     formData.append("price", price);
+    formData.append("discount", discount || 0);
     formData.append("category", category);
 
-    const token = getToken();
     try {
-      const res = await fetch(`${API}/products`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      let res;
+
+      if (editId) {
+        res = await fetch(`${API}/products/${editId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            name,
+            price: Number(price),
+            discount: Number(discount || 0),
+            category,
+          }),
+        });
+      } else {
+        res = await fetch(`${API}/products`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        });
+      }
 
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || "Upload failed");
+        toast.error(data.error || "Failed");
         return;
       }
 
-      toast.success("Product added");
-      // ✅ ADD RESET HERE
-      setFiles([]);
-      setName("");
-      setPrice("");
-      setCategory("");
+      toast.success(editId ? "Product updated" : "Product added");
+
+      fetchProducts();
+      resetForm();
     } catch (err) {
       toast.error("Server error");
     }
@@ -303,12 +372,7 @@ function Admin() {
     setName(product.name);
     setPrice(product.price);
     setCategory(product.category);
-
-    // IMPORTANT: image preview only
-    setImagePreview(product.image);
-
-    // don't set file here ❌
-    // setImageFile(null);
+    setDiscount(product.discount || 0); // ✅ ADD THIS
   };
   const handleImage = (e) => {
     const file = e.target.files[0];
@@ -320,9 +384,9 @@ function Admin() {
     setName("");
     setPrice("");
     setCategory("");
-    setImageFile(null);
-    setImagePreview("");
+    setFiles([]);
     setEditId(null);
+    setDiscount("");
   };
   // ================= TEAM =================
   const [team, setTeam] = useState([]);
@@ -411,445 +475,603 @@ function Admin() {
 
   return (
     <div style={container}>
-      <h2 style={title}>Admin Dashboard</h2>
-      <button onClick={logout}>Logout</button>
+      {/* LEFT SIDEBAR */}
 
-      {/* TABS */}
-      <div style={tabContainer}>
-        <button onClick={() => setActiveTab("slider")}>Gallery</button>
-        <button onClick={() => setActiveTab("product")}>Products</button>
-        <button onClick={() => setActiveTab("category")}>Category</button>
-        <button onClick={() => setActiveTab("team")}>Team</button>
-        <button onClick={() => setActiveTab("contact")}>
-          Messages and Notifications
-          {unreadCount > 0 && (
-            <span
-              style={{
-                background: "red",
-                color: "#fff",
-                padding: "2px 8px",
-                borderRadius: "50%",
-                marginLeft: "5px",
-              }}
-            >
-              {unreadCount}
-            </span>
-          )}
+      {isMobile && (
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            position: "fixed",
+            top: "70px",
+            left: "10px",
+            zIndex: 1200,
+            background: "#111",
+            color: "#fff",
+            border: "none",
+            padding: "8px 12px",
+            borderRadius: "5px",
+          }}
+        >
+          ☰
         </button>
+      )}
+      <div style={sidebarStyle}>
+        <h2 style={logo}>Admin</h2>
+
+        {/* 🔥 SMALL LOGOUT BELOW TITLE */}
+        <button onClick={logout} style={logoutBtn}>
+          Logout
+        </button>
+
+        {/* MENU */}
+        <div style={menu}>
+          <button onClick={() => setActiveTab("slider")} style={tabBtn}>
+            Gallery
+          </button>
+          <button onClick={() => setActiveTab("product")} style={tabBtn}>
+            Products
+          </button>
+          <button onClick={() => setActiveTab("category")} style={tabBtn}>
+            Category
+          </button>
+          <button onClick={() => setActiveTab("team")} style={tabBtn}>
+            Team
+          </button>
+          <button onClick={() => setActiveTab("contact")} style={tabBtn}>
+            Messages {unreadCount > 0 && `(${unreadCount})`}
+          </button>
+        </div>
       </div>
 
-      {/* ================= SLIDER ================= */}
-      {activeTab === "slider" && (
-        <div style={section}>
-          <h3>Gallery Management</h3>
+      {/* RIGHT CONTENT */}
+      <div style={contentStyle}>
+        {/* ===== GALLERY ===== */}
+        {activeTab === "slider" && (
+          <div style={sectionWrapper}>
+            {/* 🔥 FIXED HEADER */}
+            <div style={sectionHeader}>
+              <h3 style={{ margin: 0 }}>Gallery Management</h3>
 
-          <input
-            type="file"
-            onChange={(e) => {
-              setSliderImage(e.target.files[0]);
-              setSliderPreview(URL.createObjectURL(e.target.files[0]));
-            }}
-          />
-
-          {sliderPreview && <img src={sliderPreview} width="100" />}
-
-          <button onClick={uploadSlider}>Upload</button>
-
-          <div style={list}>
-            {sliders.map((s) => (
-              <div key={s._id} style={card}>
-                <img src={s.image} style={img} />
-                {/* <img src={`${API}/uploads/${s.image}`} style={img} /> */}
-                <button onClick={() => deleteSlider(s._id)} style={deleteBtn}>
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ================= TEAM ================= */}
-      {activeTab === "team" && (
-        <div style={section}>
-          <h3>Team Management</h3>
-
-          <input
-            placeholder="Name"
-            value={memberName}
-            onChange={(e) => setMemberName(e.target.value)}
-          />
-          <input
-            placeholder="Role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          />
-          <input
-            type="file"
-            onChange={(e) => {
-              setTeamImage(e.target.files[0]);
-              setTeamPreview(URL.createObjectURL(e.target.files[0]));
-            }}
-          />
-
-          {teamPreview && <img src={teamPreview} width="100" />}
-
-          <button onClick={addTeam}>Add Member</button>
-
-          <div style={list}>
-            {team.map((m) => (
-              <div key={m._id} style={card}>
-                <img src={m.image} style={img} />
-                <p>{m.name}</p>
-                <p>{m.role}</p>
-                <button onClick={() => deleteTeam(m._id)} style={deleteBtn}>
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ================= CATEGORY ================= */}
-      {activeTab === "category" && (
-        <div style={section}>
-          <h3>Category Management</h3>
-
-          <input
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-            placeholder="Enter category"
-            type="text"
-            required
-          />
-          <button
-            onClick={addCategory}
-            disabled={loading || !newCategory.trim()}
-          >
-            {loading ? "Adding..." : "Add Category"}
-          </button>
-
-          <div style={list}>
-            {categories.map((cat) => (
-              <div key={cat._id} style={card}>
-                <p>{cat.name}</p>
-                <button
-                  onClick={() => deleteCategory(cat._id)}
-                  style={deleteBtn}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ================= PRODUCTS ================= */}
-      {activeTab === "product" && (
-        <div style={section}>
-          <h3>Product Management</h3>
-
-          <input
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <input
-            placeholder="Price"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-          />
-          <input
-            type="file"
-            multiple
-            onChange={(e) => setFiles(Array.from(e.target.files))}
-          />
-          {/* IMAGE PREVIEW */}
-          {imagePreview && (
-            <div style={{ marginTop: "10px" }}>
-              <p>Image Preview:</p>
-              <img
-                src={imagePreview}
-                alt="preview"
-                style={{
-                  width: "120px",
-                  height: "120px",
-                  objectFit: "cover",
-                  borderRadius: "10px",
-                  border: "1px solid #fff",
-                }}
-              />
-            </div>
-          )}
-
-          <select onChange={(e) => setCategory(e.target.value)}>
-            <option>Select Category</option>
-            {categories.map((c) => (
-              <option key={c._id}>{c.name}</option>
-            ))}
-          </select>
-
-          <button onClick={addProduct}>
-            {editId ? "Update Product" : "Add Product"}
-          </button>
-
-          <div style={list}>
-            {products.map((p) => (
-              <div key={p._id} style={card}>
-                {p.images?.[0] && <img src={p.images[0]} style={img} />}
-                {/* <img src={`${API}/uploads/${p.image}`} style={img} /> */}
-                <p>{p.name}</p>
-                <p>₹{p.price}</p>
-                <button onClick={() => handleEdit(p)}>Edit</button>{" "}
-                {/* ✅ ADD THIS */}
-                <button onClick={() => deleteProduct(p._id)} style={deleteBtn}>
-                  Delete
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* ================= CONTACT ================= */}
-      {activeTab === "contact" && (
-        <div style={mainContainer}>
-          {/* 🔹 LEFT SIDE - MESSAGES */}
-          <div style={leftPanel}>
-            <h3>Messages</h3>
-
-            {sortedMessages.map((msg) => (
               <div
-                key={msg._id}
-                style={{
-                  ...cardContact,
-                  borderLeft: msg.isRead ? "5px solid #555" : "5px solid red",
-                }}
+                style={{ display: "flex", gap: "10px", alignItems: "center" }}
               >
-                <div style={leftBox}>
-                  <div style={infoRow}>
-                    <b>Name:</b> {msg.name}
-                  </div>
-                  <div style={infoRow}>
-                    <b>Email:</b> {msg.email}
-                  </div>
-                  <div style={infoRow}>
-                    <b>Phone:</b> {msg.phone}
-                  </div>
-                  <div style={infoRow}>
-                    <b>WhatsApp:</b> {msg.whatsapp || "N/A"}
-                  </div>
-                  <div style={infoRow}>
-                    <b>DOB:</b> {msg.dob || "N/A"}
-                  </div>
-                  <div style={infoRow}>
-                    <b>Message:</b> {msg.message}
-                  </div>
+                <div style={headerControls}>
+                  <input
+                    type="file"
+                    onChange={(e) => {
+                      setSliderImage(e.target.files[0]);
+                      setSliderPreview(URL.createObjectURL(e.target.files[0]));
+                    }}
+                  />
                 </div>
 
-                <div style={rightBox}>
-                  <textarea
-                    style={replyBox}
-                    placeholder="Write reply..."
-                    value={replyInputs[msg._id] || ""}
-                    onChange={(e) =>
-                      setReplyInputs({
-                        ...replyInputs,
-                        [msg._id]: e.target.value,
-                      })
-                    }
-                  />
+                <button onClick={uploadSlider}>Upload</button>
+              </div>
+            </div>
 
-                  <div style={btnGroup}>
-                    <button
-                      onClick={() => sendReply(msg._id, replyInputs[msg._id])}
-                    >
-                      Reply
-                    </button>
+            {/* 🔽 SCROLLABLE CONTENT */}
+            <div style={sectionContent}>
+              {sliderPreview && <img src={sliderPreview} style={previewImg} />}
 
+              <div style={gridStyle}>
+                {sliders.map((s) => (
+                  <div key={s._id} style={card}>
+                    <img src={s.image} style={img} />
                     <button
-                      onClick={() => deleteMessage(msg._id)}
+                      onClick={() => deleteSlider(s._id)}
                       style={deleteBtn}
                     >
                       Delete
                     </button>
-
-                    <button onClick={() => toggleRead(msg._id)}>
-                      {msg.isRead ? "Unread" : "Read"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 🔥 RIGHT SIDE - BIRTHDAY */}
-
-          <div style={rightPanel}>
-            <h3>🎂 Today's Birthdays</h3>
-
-            <div style={birthdayBox}>
-              {messages
-                .filter((m) => {
-                  if (!m.dob) return false;
-
-                  const today = new Date();
-                  const dob = new Date(m.dob);
-
-                  return (
-                    dob.getDate() === today.getDate() &&
-                    dob.getMonth() === today.getMonth()
-                  );
-                })
-                .map((b) => (
-                  <div key={b._id} style={birthdayCard}>
-                    <p>{b.name}</p>
-
-                    <a
-                      href={
-                        b.whatsapp
-                          ? `https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`
-                          : "#"
-                      }
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      🎉 Wish on WhatsApp
-                    </a>
                   </div>
                 ))}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* ===== PRODUCTS ===== */}
+        {activeTab === "product" && (
+          <>
+            <h3>Products</h3>
+
+            <input
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+            <input
+              placeholder="Price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
+            <input
+              type="number"
+              placeholder="Discount %"
+              onChange={(e) => setDiscount(e.target.value)}
+            />
+            <input type="file" multiple onChange={handleFileChange} />
+
+            <div style={{ display: "flex", gap: "10px" }}>
+              {files.map((file, i) => (
+                <img
+                  key={i}
+                  src={URL.createObjectURL(file)}
+                  style={{ width: "60px", height: "60px" }}
+                />
+              ))}
+            </div>
+
+            <select onChange={(e) => setCategory(e.target.value)}>
+              <option value="">Select Category</option>
+              {categories.map((c) => (
+                <option key={c._id} value={c.name}>
+                  {c.name}
+                </option>
+              ))}
+            </select>
+
+            {/* <p>Final Price: ₹{finalPrice}</p> */}
+
+            <button onClick={addProduct}>
+              {editId ? "Update Product" : "Add Product"}
+            </button>
+
+            <div style={gridStyle}>
+              {products.map((p) => (
+                <div key={p._id} style={card}>
+                  {p.images?.[0] && <img src={p.images[0]} style={img} />}
+                  <p>{p.name}</p>
+                  <p>
+                    <span style={{ textDecoration: "line-through" }}>
+                      ₹{p.price}
+                    </span>{" "}
+                    <b>₹{p.finalPrice}</b>
+                  </p>
+
+                  {p.discount > 0 && (
+                    <p style={{ color: "green" }}>{p.discount}% OFF</p>
+                  )}
+                  <button
+                    onClick={() => deleteProduct(p._id)}
+                    style={deleteBtn}
+                  >
+                    Delete
+                  </button>
+                  <button onClick={() => handleEdit(p)}>Edit</button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ===== CATEGORY ===== */}
+        {activeTab === "category" && (
+          <>
+            <h3>Category</h3>
+
+            <input
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+              placeholder="New Category"
+            />
+
+            <button onClick={addCategory}>Add</button>
+
+            <div style={gridStyle}>
+              {categories.map((c) => (
+                <div key={c._id} style={card}>
+                  <p>{c.name}</p>
+                  <button
+                    onClick={() => deleteCategory(c._id)}
+                    style={deleteBtn}
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ===== TEAM ===== */}
+        {activeTab === "team" && (
+          <>
+            <h3>Team</h3>
+
+            <input
+              placeholder="Name"
+              value={memberName}
+              onChange={(e) => setMemberName(e.target.value)}
+            />
+            <input
+              placeholder="Role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+            />
+            <input
+              type="file"
+              onChange={(e) => setTeamImage(e.target.files[0])}
+            />
+
+            <button onClick={addTeam}>Add</button>
+
+            <div style={gridStyle}>
+              {team.map((m) => (
+                <div key={m._id} style={card}>
+                  <img src={m.image} style={img} />
+                  <p>{m.name}</p>
+                  <p>{m.role}</p>
+                  <button onClick={() => deleteTeam(m._id)} style={deleteBtn}>
+                    Delete
+                  </button>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
+
+        {/* ===== CONTACT ===== */}
+        {activeTab === "contact" && (
+          <div style={contactContainer}>
+            {/* 🔹 LEFT - MESSAGES */}
+            <div style={messagesPanel}>
+              <h3>Messages</h3>
+
+              {sortedMessages.length === 0 ? (
+                <p>No messages</p>
+              ) : (
+                sortedMessages.map((msg) => (
+                  <div
+                    key={msg._id}
+                    style={{
+                      ...messageCard,
+                      borderLeft: msg.isRead
+                        ? "4px solid #555"
+                        : "4px solid red",
+                    }}
+                  >
+                    <div style={msgTop}>
+                      <div>
+                        <strong>{msg.name}</strong>
+                        <p style={smallText}>{msg.email}</p>
+                      </div>
+
+                      <button
+                        onClick={() => toggleRead(msg._id)}
+                        style={readBtn}
+                      >
+                        {msg.isRead ? "Unread" : "Read"}
+                      </button>
+                    </div>
+
+                    <p style={msgText}>{msg.message}</p>
+
+                    <textarea
+                      placeholder="Write reply..."
+                      value={replyInputs[msg._id] || ""}
+                      onChange={(e) =>
+                        setReplyInputs({
+                          ...replyInputs,
+                          [msg._id]: e.target.value,
+                        })
+                      }
+                      style={replyBox}
+                    />
+
+                    <div style={msgActions}>
+                      <button
+                        onClick={() => sendReply(msg._id, replyInputs[msg._id])}
+                      >
+                        Reply
+                      </button>
+
+                      <button
+                        onClick={() => deleteMessage(msg._id)}
+                        style={deleteBtn}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* 🔥 RIGHT - BIRTHDAY PANEL */}
+            <div style={birthdayPanel}>
+              <h3>🎂 Birthdays</h3>
+
+              {birthdayUsers.length === 0 ? (
+                <p style={{ color: "#aaa" }}>No birthdays today</p>
+              ) : (
+                birthdayUsers.map((b) => (
+                  <div key={b._id} style={birthdayCard}>
+                    <p style={{ fontWeight: "bold" }}>{b.name}</p>
+
+                    {b.whatsapp && (
+                      <a
+                        href={`https://wa.me/${b.whatsapp}?text=Happy Birthday ${b.name} 🎉`}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={whatsappBtn}
+                      >
+                        🎉 Wish
+                      </a>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 export default Admin;
 
-// ================= LAYOUT =================
+// ================= new STYLES =================
 
-const title = { textAlign: "center", color: "yellow" };
-const section = {
-  marginTop: "30px",
-  padding: "20px",
-  border: "1px solid #370e0e",
-  borderRadius: "10px",
+const previewImg = {
+  width: "50%",
+  maxWidth: "100px",
+  borderRadius: "8px",
+  marginBottom: "10px",
 };
 
-const tabContainer = {
+const headerControls = {
   display: "flex",
   gap: "10px",
-  justifyContent: "center",
-  margin: "20px 0",
-  color: "#ffcc00",
+  alignItems: "center",
+  flexWrap: "wrap", // ✅ mobile wrap
 };
 
-const list = { display: "flex", gap: "20px", flexWrap: "wrap" };
-const mainContainer = {
+const sectionWrapper = {
+  height: "calc(100vh - 60px)", // minus navbar
   display: "flex",
-  flexWrap: "wrap",
-  gap: "20px",
-  alignItems: "flex-start",
-};
-const card = {
-  background: "#111",
-  padding: "15px",
-  borderRadius: "10px",
-  textAlign: "center",
-  width: "180px",
-};
-const img = { width: "100%", height: "120px", objectFit: "cover" };
-const leftPanel = {
-  flex: "2",
-  minWidth: "250px",
+  flexDirection: "column",
 };
 
-const rightPanel = {
-  flex: "1",
-  minWidth: "250px",
-  // background: "#111",
-  // padding: "15px",
-  // borderRadius: "10px",
-  // border: "1px solid #ffcc00",
-  // position: "sticky",
-  // top: "10px",
-};
+// const sectionHeader = {
+//   position: "sticky",
+//   top: "90px",
+//   zIndex: 10,
+//   background: "#000",
+//   padding: "10px",
+//   borderBottom: "1px solid #222",
 
-// ================= MESSAGE CARD =================
-const cardContact = {
-  border: "1px solid #ffcc00",
-  padding: "20px",
-  marginBottom: "20px",
-  borderRadius: "10px",
-  background: "#111",
-  display: "flex",
-  justifyContent: "space-between",
-  gap: "20px",
-  flexWrap: "wrap",
-};
+//   display: "flex",
+//   justifyContent: "space-between",
+//   alignItems: "center",
+//   flexWrap: "wrap", // ✅ important for mobile
+//   gap: "10px",
+// };
 
-const leftBox = {
-  flex: "1",
-  minWidth: "250px",
-};
-
-const rightBox = {
-  flex: "1",
-  minWidth: "250px",
-};
-
-const infoRow = {
-  marginBottom: "5px",
-  fontSize: "13px",
-};
-
-// ================= REPLY =================
-const replyBox = {
-  width: "100%",
+const sectionHeaderBase = {
+  position: "sticky",
+  zIndex: 10,
+  background: "#000",
   padding: "10px",
-  borderRadius: "5px",
-  border: "1px solid #ccc",
-  background: "#222",
-  color: "#fff",
+  borderBottom: "1px solid #222",
 };
 
-const btnGroup = {
-  display: "flex",
-  gap: "10px",
-  marginTop: "10px",
-  flexWrap: "wrap",
+const sectionContent = {
+  overflowY: "auto",
+  padding: "15px",
+  flex: 1,
 };
 
-// ================= BIRTHDAY =================
-const birthdayBox = {
-  marginTop: "10px",
-  display: "flex",
-  gap: "10px",
-  flexWrap: "wrap",
-};
-
-const birthdayCard = {
-  background: "#222",
-  padding: "10px 15px",
-  borderRadius: "10px",
-  border: "1px solid #ffcc00",
-  textAlign: "center",
-};
-
-// ================= COMMON =================
 const container = {
+  width: "100%", // ✅ full width
+  maxWidth: "100%", // ✅ remove restriction
+  margin: 0, // ✅ remove centering
+  padding: 0,
   background: "#000",
   color: "#fff",
-  minHeight: "100vh",
+};
+
+// const  baseSidebar = {
+//   width: "220px",
+//   background: "#0d0d0d",
+//   padding: "20px 15px",
+
+//   /* 🔥 FIXED BELOW NAVBAR */
+//   position: "fixed",
+//   top: "90px", // 👈 navbar height
+//   left: "110px",
+//   height: "calc(100vh - 60px)",
+
+//   display: "flex",
+//   flexDirection: "column",
+//   borderRight: "1px solid #222",
+// };
+const baseSidebar = {
+  background: "#0d0d0d",
+  position: "fixed",
+  top: "110px",
+  left: 0,
+  width: "220px",
+  height: "calc(100vh - 70px)",
+  transition: "transform 0.3s ease",
+  display: "flex",
+  flexDirection: "column",
+  borderRight: "1px solid #222",
+  zIndex: 1000,
+  overflow: "hidden", // ✅ IMPORTANT
+};
+
+const baseHeader = {
+  position: "sticky",
+  zIndex: 10,
+  background: "#000",
+  padding: "10px",
+  borderBottom: "1px solid #222",
+};
+
+const logo = {
+  color: "#ffcc00",
+  marginBottom: "20px",
+  textAlign: "center",
+};
+
+const menu = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px",
+};
+
+const baseContent = {
+  flex: 1,
   padding: "20px",
+  marginLeft: "300px", // same as sidebar width
+  position: "relative",
+  // padding: "20px",
+};
+
+const tabBtn = {
+  padding: "8px",
+  background: "#1a1a1a",
+  color: "#fff",
+  border: "none",
+  borderRadius: "5px",
+  cursor: "pointer",
+  textAlign: "left",
+};
+
+const logoutBtn = {
+  background: "transparent",
+  color: "red",
+  border: "1px solid red",
+  padding: "5px",
+  fontSize: "12px",
+  cursor: "pointer",
+  marginBottom: "20px",
+};
+
+// const grid = {
+//   display: "grid",
+//   gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+//   gap: "12px",
+// };
+const baseGrid = {
+  display: "grid",
+  gap: "10px",
+};
+
+const card = {
+  background: "#111",
+  padding: "10px",
+  borderRadius: "8px",
+  textAlign: "center",
+};
+
+const img = {
+  width: "100%",
+  height: "120px",
+  objectFit: "cover",
+  borderRadius: "5px",
 };
 
 const deleteBtn = {
   background: "red",
   color: "#fff",
+  border: "none",
+  padding: "5px",
+  marginTop: "5px",
+};
+
+const contactContainer = {
+  display: "flex",
+  gap: "20px",
+  flexWrap: "wrap",
+};
+
+const messagesPanel = {
+  flex: 2,
+  minWidth: "300px",
+};
+
+const birthdayPanel = {
+  flex: 1,
+  minWidth: "250px",
+  background: "#111",
+  padding: "15px",
+  borderRadius: "10px",
+  height: "fit-content",
+  position: "sticky",
+  top: "10px",
+  border: "1px solid #333",
+};
+
+const messageCard = {
+  background: "#111",
+  padding: "15px",
+  // borderRadius: "10px",
+  marginBottom: "15px",
+};
+
+const msgTop = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+};
+
+const smallText = {
+  fontSize: "12px",
+  color: "#aaa",
+};
+
+const msgText = {
+  margin: "10px 0",
+};
+
+const msgActions = {
+  display: "flex",
+  gap: "10px",
+  marginTop: "10px",
+};
+
+const readBtn = {
+  background: "#333",
+  color: "#fff",
+  border: "none",
   padding: "5px 10px",
+};
+
+const birthdayCard = {
+  background: "#222",
+  padding: "10px",
+  borderRadius: "8px",
+  marginBottom: "10px",
+  textAlign: "center",
+};
+
+const whatsappBtn = {
+  display: "inline-block",
+  marginTop: "5px",
+  padding: "5px 10px",
+  background: "green",
+  color: "#fff",
+  textDecoration: "none",
+  borderRadius: "5px",
+};
+
+// const tabBtn = {
+//   ...tabBtn,
+//   ':hover': {
+//     background: "#333"
+//   }
+// };
+
+const replyBox = {
+  width: "50%",
+  padding: "10px",
+  borderRadius: "3px",
+  // border: "1px solid #333",
+  background: "#1a1a1a",
+  color: "#fff",
+  marginTop: "10px",
+  resize: "none",
 };
