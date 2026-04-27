@@ -32,17 +32,10 @@ export default SocialBar;
 const container = {
   position: "fixed",
   
-<<<<<<< HEAD
   top: "30%",
   right: "10px",
     color: "#fff",
   transform: "translateY(50%)",
-=======
-  top: "50%",
-  left: "10px",
-    color: "#fff",
-  transform: "translateY(-50%)",
->>>>>>> be47433 (commit)
   display: "flex",
   flexDirection: "column",
    borderRadius: "2px",
@@ -50,29 +43,3 @@ const container = {
   zIndex: 999
 };
 
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-const iconStyle = {
-  background: "#000",
-  color: "#fff",
-  padding: "10px",
-  borderRadius: "50%",
-  fontSize: "18px",
-  cursor: "pointer",
-  transition: "0.3s"
-};
->>>>>>> dec0e17 (initial commit)
-=======
-// const iconStyle = {
-//   // background: "#000",
-//   flexDirection: "column",
-//   color: "#fff",
-//   padding: "10px",
-//   borderRadius: "50%",
-//   fontSize: "18px",
-//   cursor: "pointer",
-//   transition: "0.3s"
-// };
->>>>>>> ada2305 (commit)
->>>>>>> be47433 (commit)
