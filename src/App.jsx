@@ -1,3 +1,4 @@
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -12,11 +13,6 @@ import SocialBar from "./components/SocialBar";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
-
-
-
-
 
 function App() {
   return (
@@ -40,4 +36,5 @@ function App() {
   );
 }
 
+// 
 export default App;
