@@ -1,20 +1,20 @@
 import {
-  CreditCardRefresh,
-  File05,
   Heart,
-  Mail01,
-  SlashCircle01,
-  SwitchHorizontal01,
-} from "@untitledui/icons";
+  Mail,
+  CreditCard,
+  Shield,
+  FileText,
+  RefreshCw,
+} from "lucide-react";
 
 export default function FAQSimple01() {
   const faqs = [
     { question: "Repair cost?", answer: "Starts from ₹499.", icon: Heart },
-    { question: "Time required?", answer: "30–60 minutes.", icon: SwitchHorizontal01 },
-    { question: "Warranty?", answer: "Limited warranty available.", icon: SlashCircle01 },
-    { question: "All brands?", answer: "Supports all major brands.", icon: File05 },
-    { question: "Doorstep service?", answer: "Available in selected areas.", icon: Mail01 },
-    { question: "Payment?", answer: "Pay after service.", icon: CreditCardRefresh },
+    { question: "Time required?", answer: "30–60 minutes.", icon: RefreshCw },
+    { question: "Warranty?", answer: "Limited warranty available.", icon: Shield },
+    { question: "All brands?", answer: "Supports all major brands.", icon: FileText },
+    { question: "Doorstep service?", answer: "Available in selected areas.", icon: Mail },
+    { question: "Payment?", answer: "Pay after service.", icon: CreditCard },
   ];
 
   return (
