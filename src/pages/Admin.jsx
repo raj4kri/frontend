@@ -937,11 +937,11 @@ const tabBtn = {
 };
 
 /* ===== CONTENT ===== */
-// const contentStyle = {
-//   flex: 1,
-//   marginLeft: "240px",
-//   padding: "20px",
-// };
+const contentStyle = {
+  flex: 1,
+  marginLeft: "240px",
+  padding: "20px",
+};
 
 /* ===== HEADER ===== */
 const sectionHeaderBase = {
