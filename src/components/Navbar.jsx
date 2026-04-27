@@ -10,10 +10,16 @@ function Navbar() {
     <nav style={nav}>
       {/* LOGO */}
       <Link to="/" style={logoContainer}>
+<<<<<<< HEAD
         <img src={logoImg} alt="Logo" style={logoImgStyle} />
         <span style={logoText}>Deepak Communication</span>
       </Link>
 
+=======
+  <img src={logoImg} alt="Logo" style={logoImgStyle} />
+  <span style={logoText}>Deepak Communication</span>
+</Link>
+>>>>>>> be47433 (commit)
       {/* DESKTOP MENU */}
       <div className="desktop-menu">
         <Link to="/" style={link}>Home</Link>
@@ -143,6 +149,29 @@ function Navbar() {
 
 export default Navbar;
 
+<<<<<<< HEAD
+=======
+const logoText = {
+  fontWeight: "bold",
+  fontSize: "18px",
+  color: "#fff",
+  textDecoration: "none",
+};
+const logoContainer = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
+  cursor: "pointer",
+  textDecoration: "none"
+};
+
+const logoImgStyle = {
+  height: "60px", // adjust
+  width: "auto",
+};
+
+/* STYLES */
+>>>>>>> be47433 (commit)
 const nav = {
   background: "rgba(0,0,0,0.85)",
   backdropFilter: "blur(10px)",
@@ -157,6 +186,7 @@ const nav = {
   borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
 
+<<<<<<< HEAD
 const logoContainer = {
   display: "flex",
   alignItems: "center",
@@ -173,6 +203,12 @@ const logoText = {
   fontSize: "16px",
   color: "#fff",
 };
+=======
+// const logo = {
+//   fontWeight: "bold",
+//   fontSize: "18px",
+// };
+>>>>>>> be47433 (commit)
 
 const link = {
   color: "#e5e7eb",
@@ -185,6 +221,7 @@ const loginBtn = {
   border: "none",
   borderRadius: "20px",
   cursor: "pointer",
+<<<<<<< HEAD
   fontSize: "14px",
 };
 
@@ -196,3 +233,11 @@ const loginBtnMobile = {
   borderRadius: "25px",
   fontWeight: "600",
 };
+=======
+<<<<<<< HEAD
+};
+>>>>>>> dec0e17 (initial commit)
+=======
+};
+>>>>>>> ada2305 (commit)
+>>>>>>> be47433 (commit)
