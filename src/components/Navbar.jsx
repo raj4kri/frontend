@@ -1,5 +1,4 @@
-// src/components/Navbar.jsx
-import logoImg from "../assets/logo.png"; // adjust path
+import logoImg from "../assets/logo.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 
@@ -11,9 +10,10 @@ function Navbar() {
     <nav style={nav}>
       {/* LOGO */}
       <Link to="/" style={logoContainer}>
-  <img src={logoImg} alt="Logo" style={logoImgStyle} />
-  <span style={logoText}>Deepak Communication</span>
-</Link>
+        <img src={logoImg} alt="Logo" style={logoImgStyle} />
+        <span style={logoText}>Deepak Communication</span>
+      </Link>
+
       {/* DESKTOP MENU */}
       <div className="desktop-menu">
         <Link to="/" style={link}>Home</Link>
@@ -23,11 +23,11 @@ function Navbar() {
         <Link to="/contact" style={link}>Contact</Link>
 
         <button style={loginBtn} onClick={() => navigate("/login")}>
-          Admin Login
+          Admin
         </button>
       </div>
 
-      {/* HAMBURGER (MOBILE ONLY) */}
+      {/* HAMBURGER */}
       <div className="hamburger" onClick={() => setIsOpen(!isOpen)}>
         {isOpen ? "✖" : "☰"}
       </div>
@@ -39,14 +39,14 @@ function Navbar() {
           transform: isOpen ? "translateY(0)" : "translateY(-120%)",
         }}
       >
-        <Link to="/" style={link} onClick={() => setIsOpen(false)}>Home</Link>
-        <Link to="/products" style={link} onClick={() => setIsOpen(false)}>Products</Link>
-        <Link to="/services" style={link} onClick={() => setIsOpen(false)}>Services</Link>
-        <Link to="/about" style={link} onClick={() => setIsOpen(false)}>About</Link>
-        <Link to="/contact" style={link} onClick={() => setIsOpen(false)}>Contact</Link>
+        <Link to="/" onClick={() => setIsOpen(false)}>Home</Link>
+        <Link to="/products" onClick={() => setIsOpen(false)}>Products</Link>
+        <Link to="/services" onClick={() => setIsOpen(false)}>Services</Link>
+        <Link to="/about" onClick={() => setIsOpen(false)}>About</Link>
+        <Link to="/contact" onClick={() => setIsOpen(false)}>Contact</Link>
 
         <button
-          style={loginBtn}
+          style={loginBtnMobile}
           onClick={() => {
             navigate("/login");
             setIsOpen(false);
@@ -60,31 +60,69 @@ function Navbar() {
       <style>{`
         .desktop-menu {
           display: none;
-          gap: 20px;
+          gap: 25px;
           align-items: center;
         }
 
+        .desktop-menu a {
+          color: #e5e7eb;
+          text-decoration: none;
+          font-size: 15px;
+          position: relative;
+          transition: 0.3s;
+        }
+
+        .desktop-menu a:hover {
+          color: #fff;
+        }
+
+        .desktop-menu a::after {
+          content: "";
+          position: absolute;
+          left: 0;
+          bottom: -4px;
+          width: 0%;
+          height: 2px;
+          background: #facc15;
+          transition: 0.3s;
+        }
+
+        .desktop-menu a:hover::after {
+          width: 100%;
+        }
+
         .hamburger {
-          font-size: 24px;
+          font-size: 26px;
           cursor: pointer;
+          color: white;
         }
 
         .mobile-menu {
           position: absolute;
-          top: 60px;
+          top: 70px;
           left: 0;
           width: 100%;
-          background: #111;
+          background: rgba(17,17,17,0.98);
+          backdrop-filter: blur(10px);
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 15px;
-          padding: 20px 0;
+          gap: 18px;
+          padding: 25px 0;
           transition: transform 0.4s ease-in-out;
           z-index: 1000;
         }
 
-        /* ✅ DESKTOP VIEW */
+        .mobile-menu a {
+          color: #e5e7eb;
+          font-size: 16px;
+          text-decoration: none;
+        }
+
+        .mobile-menu a:hover {
+          color: #fff;
+        }
+
         @media (min-width: 768px) {
           .desktop-menu {
             display: flex;
@@ -105,54 +143,56 @@ function Navbar() {
 
 export default Navbar;
 
-const logoText = {
-  fontWeight: "bold",
-  fontSize: "18px",
-  color: "#fff",
-  textDecoration: "none",
-};
-const logoContainer = {
-  display: "flex",
-  alignItems: "center",
-  gap: "8px",
-  cursor: "pointer",
-  textDecoration: "none"
-};
-
-const logoImgStyle = {
-  height: "60px", // adjust
-  width: "auto",
-};
-
-/* STYLES */
 const nav = {
-  background: "#000",
+  background: "rgba(0,0,0,0.85)",
+  backdropFilter: "blur(10px)",
   color: "#fff",
-  padding: "15px 20px",
+  padding: "12px 30px",
   display: "flex",
   justifyContent: "space-between",
   alignItems: "center",
-  position: "sticky", // ⭐ main
-  top: 0,             // ⭐ stick to top
-  zIndex: 1000,       // why: stay above slider
+  position: "sticky",
+  top: 0,
+  zIndex: 1000,
+  borderBottom: "1px solid rgba(255,255,255,0.05)",
 };
 
-// const logo = {
-//   fontWeight: "bold",
-//   fontSize: "18px",
-// };
+const logoContainer = {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+  textDecoration: "none",
+};
+
+const logoImgStyle = {
+  height: "45px",
+};
+
+const logoText = {
+  fontWeight: "600",
+  fontSize: "16px",
+  color: "#fff",
+};
 
 const link = {
-  color: "#fff",
-  textDecoration: "none",
-  fontSize: "16px",
+  color: "#e5e7eb",
 };
 
 const loginBtn = {
-  padding: "8px 15px",
-  background: "red",
+  padding: "7px 16px",
+  background: "linear-gradient(135deg,#ff0000,#ff9900)",
   color: "#fff",
   border: "none",
-  borderRadius: "5px",
+  borderRadius: "20px",
   cursor: "pointer",
+  fontSize: "14px",
+};
+
+const loginBtnMobile = {
+  padding: "10px 20px",
+  background: "#facc15",
+  color: "#000",
+  border: "none",
+  borderRadius: "25px",
+  fontWeight: "600",
 };
