@@ -1,69 +1,38 @@
 import { useEffect, useState } from "react";
 
 function Products() {
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-
-  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const API = import.meta.env.VITE_API_URL;
-
   const [categories, setCategories] = useState([]);
   const [filter, setFilter] = useState("");
 
   const [imageIndexes, setImageIndexes] = useState({});
   const [hovered, setHovered] = useState(null);
-  // ================= DEBOUNCE SEARCH =================
+
+  const API = import.meta.env.VITE_API_URL;
+
+  // 🔍 debounce
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
-    }, 500); // ⏱ delay
-
+    }, 500);
     return () => clearTimeout(timer);
   }, [search]);
 
-  // ================= TOUCH HANDLERS (for mobile swipe) =================
-
-  const handleTouchStart = (e) => {
-    setTouchEnd(null); // reset
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = (id, images) => {
-    if (!touchStart || !touchEnd) return;
-
-    const distance = touchStart - touchEnd;
-
-    // 👇 threshold (avoid accidental swipe)
-    if (distance > 50) {
-      // swipe left → next
-      nextImage(id, images);
-    }
-
-    if (distance < -50) {
-      // swipe right → prev
-      prevImage(id, images);
-    }
-  };
-
-  // ================= FETCH CATEGORIES =================
+  // 📂 categories
   useEffect(() => {
     fetch(`${API}/categories`)
       .then((res) => res.json())
       .then((data) => setCategories(data || []));
   }, []);
 
-  // ================= FETCH PRODUCTS =================
+  // 📦 products
   const fetchProducts = async () => {
     const res = await fetch(
-      `${API}/products?search=${debouncedSearch}&category=${filter}&page=${page}`,
+      `${API}/products?search=${debouncedSearch}&category=${filter}&page=${page}`
     );
     const data = await res.json();
 
@@ -81,7 +50,7 @@ function Products() {
     fetchProducts();
   }, [debouncedSearch, page, filter]);
 
-  // ================= AUTO SLIDER =================
+  // 🔄 auto slider
   useEffect(() => {
     const interval = setInterval(() => {
       setImageIndexes((prev) => {
@@ -100,7 +69,6 @@ function Products() {
     return () => clearInterval(interval);
   }, [products, hovered]);
 
-  // ================= MANUAL CONTROLS =================
   const nextImage = (id, images) => {
     setImageIndexes((prev) => ({
       ...prev,
@@ -124,32 +92,33 @@ function Products() {
 
   return (
     <div style={mainContainer}>
-      {/* 🔍 SEARCH */}
-      <input
-        type="text"
-        placeholder="Search product..."
-        value={search}
-        onChange={(e) => {
-          setSearch(e.target.value);
-          setPage(1);
-        }}
-        style={searchStyle}
-      />
+      {/* 🔍 FILTER */}
+      <div style={filterWrapper}>
+        <input
+          type="text"
+          placeholder="Search products..."
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          style={searchInput}
+        />
 
-      {/* 📂 FILTER */}
-      <select
-        value={filter}
-        onChange={(e) => {
-          setFilter(e.target.value);
-          setPage(1);
-        }}
-        style={searchStyle}
-      >
-        <option value="">All Categories</option>
-        {categories.map((c) => (
-          <option key={c._id}>{c.name}</option>
-        ))}
-      </select>
+        <select
+          value={filter}
+          onChange={(e) => {
+            setFilter(e.target.value);
+            setPage(1);
+          }}
+          style={selectInput}
+        >
+          <option value="">All Categories</option>
+          {categories.map((c) => (
+            <option key={c._id}>{c.name}</option>
+          ))}
+        </select>
+      </div>
 
       {/* 📦 PRODUCTS */}
       <div style={containerStyle}>
@@ -160,12 +129,8 @@ function Products() {
             onMouseEnter={() => setHovered(p._id)}
             onMouseLeave={() => setHovered(null)}
           >
-            <div
-              style={imageWrapper}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={() => handleTouchEnd(p._id, p.images)}
-            >
+            {/* IMAGE */}
+            <div style={imageWrapper}>
               {p.images?.length > 0 && (
                 <img
                   src={p.images[imageIndexes[p._id] || 0]}
@@ -173,7 +138,12 @@ function Products() {
                 />
               )}
 
-              {/* ⬅️➡️ ARROWS */}
+              {/* 🔥 DISCOUNT BADGE */}
+              {p.discount > 0 && (
+                <div style={discountBadge}>{p.discount}% OFF</div>
+              )}
+
+              {/* ARROWS */}
               {p.images?.length > 1 && (
                 <>
                   <button
@@ -193,7 +163,7 @@ function Products() {
               )}
             </div>
 
-            {/* 🔘 DOTS */}
+            {/* DOTS */}
             <div style={dotsContainer}>
               {p.images?.map((_, i) => (
                 <span
@@ -207,29 +177,31 @@ function Products() {
               ))}
             </div>
 
-            <h3 style={nameStyle}>{p.name}</h3>
+            {/* CONTENT */}
+            <div style={{ padding: "10px", textAlign: "left" }}>
+              <h3 style={nameStyle}>{p.name}</h3>
 
-            {/* ✅ DISCOUNT LOGIC */}
-            {p.discount > 0 ? (
-              <>
+              {/* PRICE */}
+              {p.discount > 0 ? (
+                <div style={priceRow}>
+                  <span style={finalPriceStyle}>₹{p.finalPrice}</span>
+                  <span style={oldPriceStyle}>₹{p.price}</span>
+                  <span style={discountStyle}>{p.discount}%</span>
+                </div>
+              ) : (
+                <div style={priceRow}>
+                  <span style={finalPriceStyle}>₹{p.price}</span>
+                </div>
+              )}
 
-                <p style={{ textDecoration: "line-through", color: "#999" }}>
-                  ₹{p.price}
-                </p>
-                <p style={{ color: "green" }}>{p.discount}% OFF</p>
-                                <p style={priceStyle}>₹{p.finalPrice}</p>
-              </>
-            ) : (
-              <p style={priceStyle}>₹{p.price}</p>
-            )}
-
-            <p style={{ color: "#555" }}>{p.category}</p>
-            <span style={availabilityBadge}>Available in Store</span>
+              <p style={categoryStyle}>{p.category}</p>
+              <span style={availabilityBadge}>In Store</span>
+            </div>
           </div>
         ))}
       </div>
 
-      {/* 📄 PAGINATION */}
+      {/* PAGINATION */}
       <div style={paginationStyle}>
         <button disabled={page === 1} onClick={() => setPage(page - 1)}>
           Prev
@@ -252,128 +224,137 @@ function Products() {
 
 export default Products;
 
-// ================= STYLES =================
-
-const cornerBadge = {
-  position: "absolute",
-  top: "8px",
-  left: "8px",
-  background: "red",
-  color: "#fff",
-  padding: "4px 8px",
-  fontSize: "12px",
-  borderRadius: "5px",
-  fontWeight: "bold",
-};
-
-const oldPrice = {
-  textDecoration: "line-through",
-  color: "#999",
-  fontSize: "14px",
-};
-
-const discountBadge = {
-  display: "inline-block",
-  marginTop: "5px",
-  padding: "3px 8px",
-  background: "red",
-  color: "#fff",
-  fontSize: "12px",
-  borderRadius: "5px",
-  fontWeight: "bold",
-};
-const availabilityBadge = {
-  display: "inline-block",
-  marginTop: "8px",
-  padding: "4px 8px",
-  background: "#28a745",
-  color: "#fff",
-  fontSize: "12px",
-  borderRadius: "5px",
-};
+/* ================= STYLES ================= */
 
 const mainContainer = {
-  background: "#000",
+  background: "#0f172a",
   minHeight: "100vh",
   padding: "20px",
 };
 
-const searchStyle = {
-  width: "50%",
-  padding: "10px",
+const filterWrapper = {
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap",
   marginBottom: "20px",
+  justifyContent: "center",
+};
+
+const searchInput = {
+  padding: "10px",
   borderRadius: "8px",
-  border: "1px solid red",
+  border: "1px solid #ddd",
+  minWidth: "250px",
+};
+
+const selectInput = {
+  padding: "10px",
+  borderRadius: "8px",
+  border: "1px solid #ddd",
 };
 
 const containerStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-  gap: "20px",
+  gap: "18px",
 };
 
 const itemStyle = {
-  border: "2px solid red",
-  borderRadius: "15px",
-  padding: "10px",
-  textAlign: "center",
-  backgroundColor: "#fffbea",
-  boxShadow: "0 5px 12px rgba(255,0,0,0.3)",
-  position: "relative",
+  borderRadius: "12px",
+  background: "#fff",
+  boxShadow: "0 4px 10px rgba(0,0,0,0.08)",
+  overflow: "hidden",
 };
 
 const imageWrapper = {
   position: "relative",
+  height: "160px",
 };
 
 const imageStyle = {
   width: "100%",
-  height: "180px",
+  height: "100%",
   objectFit: "cover",
-  borderRadius: "10px",
-  transition: "0.5s",
+};
+
+const discountBadge = {
+  position: "absolute",
+  top: "8px",
+  left: "8px",
+  background: "#ef4444",
+  color: "#fff",
+  padding: "3px 6px",
+  fontSize: "11px",
+  borderRadius: "5px",
 };
 
 const arrow = {
   position: "absolute",
   top: "50%",
   transform: "translateY(-50%)",
-  background: "rgba(0,0,0,0.6)",
+  background: "rgba(0,0,0,0.5)",
   color: "#fff",
   border: "none",
-  fontSize: "20px",
-  padding: "5px 10px",
-  cursor: "pointer",
   borderRadius: "50%",
+  padding: "5px",
+  cursor: "pointer",
 };
 
 const dotsContainer = {
-  marginTop: "5px",
+  textAlign: "center",
 };
 
 const dot = {
   display: "inline-block",
-  width: "8px",
-  height: "8px",
+  width: "6px",
+  height: "6px",
   margin: "3px",
   background: "red",
   borderRadius: "50%",
-  cursor: "pointer",
 };
 
 const nameStyle = {
-  color: "red",
-  fontSize: "16px",
-  fontWeight: "bold",
+  fontSize: "14px",
+  fontWeight: "600",
 };
 
-const priceStyle = {
-  color: "#ff9900",
-  fontWeight: "bold",
+const priceRow = {
+  display: "flex",
+  gap: "6px",
+  alignItems: "center",
+};
+
+const finalPriceStyle = {
+  fontWeight: "700",
+};
+
+const oldPriceStyle = {
+  textDecoration: "line-through",
+  fontSize: "12px",
+  color: "#999",
+};
+
+const discountStyle = {
+  color: "green",
+  fontSize: "12px",
+};
+
+const categoryStyle = {
+  fontSize: "12px",
+  color: "#666",
+};
+
+const availabilityBadge = {
+  fontSize: "10px",
+  background: "#22c55e",
+  color: "#fff",
+  padding: "3px 6px",
+  borderRadius: "6px",
+  marginTop: "5px",
+  display: "inline-block",
 };
 
 const paginationStyle = {
   marginTop: "20px",
   textAlign: "center",
-  color: "white",
 };

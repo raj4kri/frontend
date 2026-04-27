@@ -5,37 +5,37 @@ function Services() {
     {
       title: "Screen Replacement",
       icon: "📱",
-      desc: "We replace broken or damaged screens with high-quality parts ensuring crystal clear display and smooth touch experience.",
+      desc: "High-quality screen replacement with crystal clear display & smooth touch.",
     },
     {
       title: "Battery Replacement",
       icon: "🔋",
-      desc: "Facing battery drain issues? We provide long-lasting battery replacements for all smartphone brands.",
+      desc: "Long-lasting battery replacement for all smartphone brands.",
     },
     {
       title: "Software Issue",
       icon: "💻",
-      desc: "Fix software bugs, hanging issues, app crashes, and OS problems with our expert technicians.",
+      desc: "Fix lag, bugs, crashes & OS issues with expert support.",
     },
     {
       title: "Charging Problem",
       icon: "🔌",
-      desc: "We repair charging ports and fix issues like slow charging or device not charging at all.",
+      desc: "Repair charging ports & fix slow or no charging issues.",
     },
     {
       title: "Network Fix",
       icon: "📶",
-      desc: "No signal or weak network? We solve SIM detection and network-related problems quickly.",
+      desc: "Solve SIM & network problems quickly and efficiently.",
     },
     {
       title: "Mobile Unlock",
       icon: "🔓",
-      desc: "Locked device? We provide safe unlocking services for pattern, PIN, and FRP locks.",
+      desc: "Safe unlocking for PIN, pattern & FRP locks.",
     },
     {
       title: "Motherboard Repair",
       icon: "🛠️",
-      desc: "Advanced-level chip and motherboard repair for dead phones and critical hardware issues.",
+      desc: "Advanced chip-level repair for dead or damaged phones.",
     },
   ];
 
@@ -43,13 +43,16 @@ function Services() {
     <div style={container}>
       <h1 style={title}>Our Services</h1>
       <p style={subtitle}>
-        We provide professional mobile repair services with 7+ years of experience
+        Professional mobile repair with 7+ years of experience
       </p>
 
       <div style={grid}>
         {services.map((s, index) => (
           <div key={index} style={card}>
-            <div style={icon}>{s.icon}</div>
+            <div style={iconWrapper}>
+              <span style={icon}>{s.icon}</span>
+            </div>
+
             <h3 style={cardTitle}>{s.title}</h3>
             <p style={desc}>{s.desc}</p>
           </div>
@@ -61,51 +64,72 @@ function Services() {
 
 export default Services;
 
+/* ================= STYLES ================= */
+
 const container = {
-  background: "#121212",
-  color: "white",
+  background: "linear-gradient(135deg, #0f172a, #020617)",
   minHeight: "100vh",
-  padding: "40px 20px",
+  padding: "60px 20px",
   textAlign: "center",
+  color: "#fff",
 };
 
 const title = {
-  color: "#ffcc00",
-  fontSize: "32px",
+  fontSize: "34px",
+  fontWeight: "700",
+  background: "linear-gradient(90deg, #facc15, #f97316)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
   marginBottom: "10px",
 };
 
 const subtitle = {
-  color: "#aaa",
-  marginBottom: "30px",
+  color: "#94a3b8",
+  marginBottom: "40px",
+  fontSize: "15px",
 };
 
 const grid = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))",
-  gap: "20px",
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gap: "25px",
 };
 
 const card = {
-  background: "#1e1e1e",
-  padding: "20px",
-  borderRadius: "15px",
-  border: "1px solid #ffcc00",
-  transition: "0.3s",
+  background: "rgba(255,255,255,0.05)",
+  borderRadius: "18px",
+  padding: "25px",
+  backdropFilter: "blur(10px)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  transition: "all 0.3s ease",
   cursor: "pointer",
 };
 
+const iconWrapper = {
+  width: "60px",
+  height: "60px",
+  margin: "0 auto 15px",
+  borderRadius: "50%",
+  background: "linear-gradient(135deg, #facc15, #f97316)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  fontSize: "26px",
+  boxShadow: "0 5px 15px rgba(255,165,0,0.4)",
+};
+
 const icon = {
-  fontSize: "40px",
-  marginBottom: "10px",
+  fontSize: "26px",
 };
 
 const cardTitle = {
-  color: "#ff9800",
+  fontSize: "18px",
+  fontWeight: "600",
   marginBottom: "10px",
 };
 
 const desc = {
-  fontSize: "14px",
-  color: "#ccc",
+  fontSize: "13px",
+  color: "#cbd5f5",
+  lineHeight: "1.6",
 };

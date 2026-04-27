@@ -505,7 +505,7 @@ function Admin() {
 
         {/* MENU */}
         <div style={menu}>
-          <button onClick={() => setActiveTab("slider")} style={tabBtn}>
+          <button  onClick={() => setActiveTab("slider")} style={tabBtn}>
             Gallery
           </button>
           <button onClick={() => setActiveTab("product")} style={tabBtn}>
@@ -514,7 +514,7 @@ function Admin() {
           <button onClick={() => setActiveTab("category")} style={tabBtn}>
             Category
           </button>
-          <button onClick={() => setActiveTab("team")} style={tabBtn}>
+          <button  onClick={() => setActiveTab("team")} style={tabBtn}>
             Team
           </button>
           <button onClick={() => setActiveTab("contact")} style={tabBtn}>
@@ -537,6 +537,7 @@ function Admin() {
               >
                 <div style={headerControls}>
                   <input
+                   style={inputStyle}
                     type="file"
                     onChange={(e) => {
                       setSliderImage(e.target.files[0]);
@@ -545,7 +546,7 @@ function Admin() {
                   />
                 </div>
 
-                <button onClick={uploadSlider}>Upload</button>
+                <button style={primaryBtn} onClick={uploadSlider}>Upload</button>
               </div>
             </div>
 
@@ -558,6 +559,7 @@ function Admin() {
                   <div key={s._id} style={card}>
                     <img src={s.image} style={img} />
                     <button
+                   
                       onClick={() => deleteSlider(s._id)}
                       style={deleteBtn}
                     >
@@ -576,16 +578,19 @@ function Admin() {
             <h3>Products</h3>
 
             <input
+             style={inputStyle}
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <input
+             style={inputStyle}
               placeholder="Price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
             <input
+             style={inputStyle}
               type="number"
               placeholder="Discount %"
               onChange={(e) => setDiscount(e.target.value)}
@@ -613,7 +618,7 @@ function Admin() {
 
             {/* <p>Final Price: ₹{finalPrice}</p> */}
 
-            <button onClick={addProduct}>
+            <button style={primaryBtn} onClick={addProduct}>
               {editId ? "Update Product" : "Add Product"}
             </button>
 
@@ -651,6 +656,7 @@ function Admin() {
             <h3>Category</h3>
 
             <input
+             style={inputStyle}
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="New Category"
@@ -680,16 +686,19 @@ function Admin() {
             <h3>Team</h3>
 
             <input
+             style={inputStyle}
               placeholder="Name"
               value={memberName}
               onChange={(e) => setMemberName(e.target.value)}
             />
             <input
+             style={inputStyle}
               placeholder="Role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             />
             <input
+             style={inputStyle}
               type="file"
               onChange={(e) => setTeamImage(e.target.files[0])}
             />
@@ -812,205 +821,59 @@ function Admin() {
 
 export default Admin;
 
-// ================= new STYLES =================
-
-const previewImg = {
-  width: "50%",
-  maxWidth: "100px",
-  borderRadius: "8px",
-  marginBottom: "10px",
-};
-
-const headerControls = {
-  display: "flex",
-  gap: "10px",
-  alignItems: "center",
-  flexWrap: "wrap", // ✅ mobile wrap
-};
-
-const sectionWrapper = {
-  height: "calc(100vh - 60px)", // minus navbar
-  display: "flex",
-  flexDirection: "column",
-};
-
-// const sectionHeader = {
-//   position: "sticky",
-//   top: "90px",
-//   zIndex: 10,
-//   background: "#000",
-//   padding: "10px",
-//   borderBottom: "1px solid #222",
-
-//   display: "flex",
-//   justifyContent: "space-between",
-//   alignItems: "center",
-//   flexWrap: "wrap", // ✅ important for mobile
-//   gap: "10px",
-// };
-
-const sectionHeaderBase = {
-  position: "sticky",
-  zIndex: 10,
-  background: "#000",
-  padding: "10px",
-  borderBottom: "1px solid #222",
-};
-
-const sectionContent = {
-  overflowY: "auto",
-  padding: "15px",
-  flex: 1,
-};
-
 const container = {
-  width: "100%", // ✅ full width
-  maxWidth: "100%", // ✅ remove restriction
-  margin: 0, // ✅ remove centering
-  padding: 0,
-  background: "#000",
+  display: "flex",
+  background: "#0f0f0f",
   color: "#fff",
+  minHeight: "100vh",
 };
 
-// const  baseSidebar = {
-//   width: "220px",
-//   background: "#0d0d0d",
-//   padding: "20px 15px",
-
-//   /* 🔥 FIXED BELOW NAVBAR */
-//   position: "fixed",
-//   top: "90px", // 👈 navbar height
-//   left: "110px",
-//   height: "calc(100vh - 60px)",
-
-//   display: "flex",
-//   flexDirection: "column",
-//   borderRight: "1px solid #222",
-// };
+/* ===== SIDEBAR ===== */
 const baseSidebar = {
-  background: "#0d0d0d",
+  background: "rgba(20,20,20,0.95)",
+  backdropFilter: "blur(10px)",
   position: "fixed",
-  top: "110px",
+  top: "70px",
   left: 0,
   width: "220px",
   height: "calc(100vh - 70px)",
-  transition: "transform 0.3s ease",
   display: "flex",
   flexDirection: "column",
-  borderRight: "1px solid #222",
+  borderRight: "1px solid rgba(255,255,255,0.08)",
   zIndex: 1000,
-  overflow: "hidden", // ✅ IMPORTANT
+  transition: "0.3s",
 };
-
-const baseHeader = {
-  position: "sticky",
-  zIndex: 10,
-  background: "#000",
-  padding: "10px",
-  borderBottom: "1px solid #222",
+const sectionContent = {
+  flex: 2,
+  overflowY: "auto",
+  padding: "15px",
 };
-
-const logo = {
-  color: "#ffcc00",
-  marginBottom: "20px",
-  textAlign: "center",
-};
-
-const menu = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px",
-};
-
-const baseContent = {
-  flex: 1,
-  padding: "20px",
-  marginLeft: "300px", // same as sidebar width
-  position: "relative",
-  // padding: "20px",
-};
-
-const tabBtn = {
-  padding: "8px",
-  background: "#1a1a1a",
-  color: "#fff",
-  border: "none",
-  borderRadius: "5px",
-  cursor: "pointer",
-  textAlign: "left",
-};
-
-const logoutBtn = {
-  background: "transparent",
-  color: "red",
-  border: "1px solid red",
-  padding: "5px",
-  fontSize: "12px",
-  cursor: "pointer",
-  marginBottom: "20px",
-};
-
-// const grid = {
-//   display: "grid",
-//   gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
-//   gap: "12px",
-// };
-const baseGrid = {
-  display: "grid",
-  gap: "10px",
-};
-
-const card = {
-  background: "#111",
-  padding: "10px",
-  borderRadius: "8px",
-  textAlign: "center",
-};
-
-const img = {
-  width: "100%",
-  height: "120px",
-  objectFit: "cover",
-  borderRadius: "5px",
-};
-
-const deleteBtn = {
-  background: "red",
-  color: "#fff",
-  border: "none",
-  padding: "5px",
-  marginTop: "5px",
-};
-
 const contactContainer = {
   display: "flex",
   gap: "20px",
   flexWrap: "wrap",
+  alignItems: "flex-start",
 };
-
 const messagesPanel = {
   flex: 2,
   minWidth: "300px",
 };
 
-const birthdayPanel = {
-  flex: 1,
-  minWidth: "250px",
-  background: "#111",
-  padding: "15px",
-  borderRadius: "10px",
-  height: "fit-content",
-  position: "sticky",
-  top: "10px",
-  border: "1px solid #333",
-};
+// const birthdayPanel = {
+//   flex: 1,
+//   minWidth: "250px",
+//   background: "#151515",
+//   padding: "15px",
+//   borderRadius: "12px",
+//   border: "1px solid #222",
+// };
 
-const messageCard = {
-  background: "#111",
-  padding: "15px",
-  // borderRadius: "10px",
-  marginBottom: "15px",
-};
+// const messageCard = {
+//   background: "#1a1a1a",
+//   padding: "15px",
+//   borderRadius: "10px",
+//   marginBottom: "15px",
+// };
 
 const msgTop = {
   display: "flex",
@@ -1018,26 +881,155 @@ const msgTop = {
   alignItems: "center",
 };
 
-const smallText = {
-  fontSize: "12px",
-  color: "#aaa",
-};
-
-const msgText = {
-  margin: "10px 0",
-};
-
 const msgActions = {
   display: "flex",
   gap: "10px",
   marginTop: "10px",
 };
+const smallText = {
+  fontSize: "12px",
+  color: "#aaa",
+};
+const logo = {
+  color: "#ffcc00",
+  fontSize: "20px",
+  textAlign: "center",
+  marginBottom: "10px",
+};
 
-const readBtn = {
-  background: "#333",
-  color: "#fff",
+const sectionWrapper = {
+  display: "flex",
+  flexDirection: "column",
+  height: "100%",
+};
+const headerControls = {
+  display: "flex",
+  gap: "10px",
+  alignItems: "center",
+  flexWrap: "wrap",
+};
+
+const logoutBtn = {
+  background: "transparent",
+  color: "#ff4d4d",
+  border: "1px solid #ff4d4d",
+  padding: "6px",
+  borderRadius: "6px",
+  fontSize: "12px",
+  cursor: "pointer",
+  marginBottom: "20px",
+};
+
+const menu = {
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px",
+};
+
+const tabBtn = {
+  padding: "10px",
+  background: "#1a1a1a",
+  border: "1px solid transparent",
+  borderRadius: "8px",
+  color: "#ccc",
+  cursor: "pointer",
+  transition: "0.2s",
+};
+
+/* ===== CONTENT ===== */
+// const contentStyle = {
+//   flex: 1,
+//   marginLeft: "240px",
+//   padding: "20px",
+// };
+
+/* ===== HEADER ===== */
+const sectionHeaderBase = {
+  position: "sticky",
+  top: "70px",
+  background: "#0f0f0f",
+  padding: "15px",
+  borderBottom: "1px solid #222",
+  zIndex: 10,
+};
+
+/* ===== GRID ===== */
+const baseGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+  gap: "15px",
+};
+
+/* ===== CARD ===== */
+const card = {
+  background: "linear-gradient(145deg, #1a1a1a, #111)",
+  padding: "12px",
+  borderRadius: "12px",
+  textAlign: "center",
+  border: "1px solid rgba(255,255,255,0.05)",
+  boxShadow: "0 4px 15px rgba(0,0,0,0.5)",
+  transition: "0.3s",
+};
+
+/* ===== IMAGE ===== */
+const img = {
+  width: "100%",
+  height: "130px",
+  objectFit: "cover",
+  borderRadius: "8px",
+  marginBottom: "8px",
+};
+
+/* ===== BUTTONS ===== */
+const deleteBtn = {
+  background: "#ff4d4d",
   border: "none",
-  padding: "5px 10px",
+  padding: "6px 10px",
+  borderRadius: "6px",
+  color: "#fff",
+  cursor: "pointer",
+  marginTop: "5px",
+};
+
+const primaryBtn = {
+  background: "#ffcc00",
+  color: "#000",
+  border: "none",
+  padding: "8px 12px",
+  borderRadius: "6px",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
+
+/* ===== INPUT ===== */
+const inputStyle = {
+  width: "100%",
+  padding: "10px",
+  marginBottom: "10px",
+  borderRadius: "8px",
+  border: "1px solid #333",
+  background: "#111",
+  color: "#fff",
+};
+
+/* ===== MESSAGE CARD ===== */
+const messageCard = {
+  background: "#1a1a1a",
+  padding: "15px",
+  borderRadius: "10px",
+  marginBottom: "15px",
+  border: "1px solid #222",
+};
+
+/* ===== BIRTHDAY PANEL ===== */
+const birthdayPanel = {
+  flex: 1,
+  minWidth: "250px",
+  background: "#151515",
+  padding: "15px",
+  borderRadius: "12px",
+  border: "1px solid #222",
+  boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
 };
 
 const birthdayCard = {
@@ -1051,27 +1043,86 @@ const birthdayCard = {
 const whatsappBtn = {
   display: "inline-block",
   marginTop: "5px",
-  padding: "5px 10px",
-  background: "green",
+  padding: "6px 12px",
+  background: "#25D366",
   color: "#fff",
+  borderRadius: "6px",
   textDecoration: "none",
-  borderRadius: "5px",
 };
 
-// const tabBtn = {
-//   ...tabBtn,
-//   ':hover': {
-//     background: "#333"
-//   }
+
+
+/* ================= FIX ALL MISSING STYLES ================= */
+
+// const sectionWrapper = {
+//   height: "calc(100vh - 70px)",
+//   display: "flex",
+//   flexDirection: "column",
 // };
 
+// const headerControls = {
+//   display: "flex",
+//   gap: "10px",
+//   alignItems: "center",
+//   flexWrap: "wrap",
+// };
+
+// const sectionContent = {
+//   flex: 1,
+//   overflowY: "auto",
+//   padding: "15px",
+// };
+
+// const contactContainer = {
+//   display: "flex",
+//   gap: "20px",
+//   flexWrap: "wrap",
+// };
+
+// const smallText = {
+//   fontSize: "12px",
+//   color: "#aaa",
+// };
+
+// const messageCard = {
+//   background: "#111",
+//   padding: "15px",
+//   marginBottom: "15px",
+//   borderRadius: "10px",
+// };
+
+// const msgTop = {
+//   display: "flex",
+//   justifyContent: "space-between",
+//   alignItems: "center",
+// };
+
+const msgText = {
+  margin: "10px 0",
+  color: "#ddd",
+};
+
+// const msgActions = {
+//   display: "flex",
+//   gap: "10px",
+//   marginTop: "10px",
+// };
+
+const readBtn = {
+  background: "#333",
+  color: "#fff",
+  border: "none",
+  padding: "5px 10px",
+  cursor: "pointer",
+};
+
 const replyBox = {
-  width: "50%",
+  width: "100%",
   padding: "10px",
-  borderRadius: "3px",
-  // border: "1px solid #333",
+  borderRadius: "5px",
   background: "#1a1a1a",
   color: "#fff",
   marginTop: "10px",
   resize: "none",
 };
+
