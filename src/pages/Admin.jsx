@@ -16,6 +16,10 @@ const [newRole, setNewRole] = useState("user");
 
 
 const fetchUsers = async () => {
+  const token =
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
+
   const res = await fetch(`${API}/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -24,7 +28,6 @@ const fetchUsers = async () => {
 
   const data = await res.json();
 
-  // 🔥 SAFE CHECK
   if (Array.isArray(data)) {
     setUsers(data);
   } else {
@@ -545,6 +548,15 @@ useEffect(() => {
   const sortedMessages = [...messages].sort((a, b) => {
     return b.isRead - a.isRead;
   });
+
+  const previewImg = {
+  width: "150px",
+  height: "150px",
+  objectFit: "cover",
+  borderRadius: "10px",
+  border: "2px solid #ccc",
+  marginTop: "10px",
+};
 
   return (
     <div style={container}>
@@ -1251,11 +1263,11 @@ const replyBox = {
   resize: "none",
 };
 
-const previewImg = {
-  width: "150px",
-  height: "150px",
-  objectFit: "cover",
-  borderRadius: "10px",
-  border: "2px solid #ccc",
-  marginTop: "10px",
-};
+// const previewImg = {
+//   width: "150px",
+//   height: "150px",
+//   objectFit: "cover",
+//   borderRadius: "10px",
+//   border: "2px solid #ccc",
+//   marginTop: "10px",
+// };
