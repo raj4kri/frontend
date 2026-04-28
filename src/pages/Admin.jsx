@@ -13,9 +13,9 @@ const [newPassword, setNewPassword] = useState("");
 const [newRole, setNewRole] = useState("user");
 
 // FETCH USERS
-const fetchUsers = async () => {
-  const token = getToken();
 
+
+const fetchUsers = async () => {
   const res = await fetch(`${API}/users`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -23,9 +23,15 @@ const fetchUsers = async () => {
   });
 
   const data = await res.json();
-  setUsers(data);
-};
 
+  // 🔥 SAFE CHECK
+  if (Array.isArray(data)) {
+    setUsers(data);
+  } else {
+    console.error("API Error:", data);
+    setUsers([]);
+  }
+};
 // CREATE USER
 const createUser = async () => {
   const token = getToken();
