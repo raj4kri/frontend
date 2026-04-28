@@ -17,6 +17,8 @@ useEffect(() => {
     localStorage.getItem("token") ||
     sessionStorage.getItem("token");
 
+    console.log("TOKEN:", token);
+
   if (!token) return;
 
   const verifyToken = async () => {
