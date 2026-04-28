@@ -1251,3 +1251,11 @@ const replyBox = {
   resize: "none",
 };
 
+const previewStyle = {
+  width: "150px",
+  height: "150px",
+  objectFit: "cover",
+  borderRadius: "10px",
+  border: "2px solid #ccc",
+  marginTop: "10px",
+};
