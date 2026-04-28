@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login() {
   const API = import.meta.env.VITE_API_URL;
-console.log("API:", API);
+  console.log("API:", API);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
@@ -12,17 +12,34 @@ console.log("API:", API);
   const navigate = useNavigate();
 
   // ✅ AUTO LOGIN
-  useEffect(() => {
+useEffect(() => {
+  const token =
+    localStorage.getItem("token") ||
+    sessionStorage.getItem("token");
 
-   
-    const token =
-      localStorage.getItem("token") ||
-      sessionStorage.getItem("token");
-// console.log("TOKEN:", token);
-    if (token) {
-      navigate("/admin");
+  if (!token) return;
+
+  const verifyToken = async () => {
+    try {
+      const res = await fetch(`${API}/auth/verify`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        navigate("/admin");
+      } else {
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+      }
+    } catch (err) {
+      console.log("Auto login failed", err);
     }
-  }, [navigate]);
+  };
+
+  verifyToken();
+}, [navigate, API]);
 
   const handleLogin = async () => {
     if (!username || !password) {
