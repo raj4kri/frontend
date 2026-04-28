@@ -1251,7 +1251,7 @@ const replyBox = {
   resize: "none",
 };
 
-const previewStyle = {
+const previewImg = {
   width: "150px",
   height: "150px",
   objectFit: "cover",
