@@ -5,7 +5,6 @@ import Home from "./pages/Home";
 import Services from "./pages/Services";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
-import WhatsAppButton from "./components/WhatsAppButton";
 import Products from "./pages/Products";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
@@ -18,7 +17,7 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
-      <WhatsAppButton />
+    
           <SocialBar />
            <ToastContainer />
 

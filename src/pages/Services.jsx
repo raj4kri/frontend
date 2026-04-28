@@ -75,12 +75,13 @@ const container = {
 };
 
 const title = {
-  fontSize: "34px",
+   fontSize: "40px",
   fontWeight: "700",
+  lineHeight: "1.3", // ✅ IMPORTANT
+  paddingBottom: "5px", // ✅ prevent cut
   background: "linear-gradient(90deg, #facc15, #f97316)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
-  marginBottom: "10px",
 };
 
 const subtitle = {

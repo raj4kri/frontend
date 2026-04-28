@@ -108,15 +108,17 @@ function Contact() {
         <div style={card}>
           <h3 style={sectionTitle}>Contact Info</h3>
 
-          <p style={info}>📞 +91 7903182706</p>
+          <p style={info}>📞 +91 9060211167</p>
           <p style={info}>📧 deepakcommunication@gmail.com</p>
           <p style={info}>📍 Rukanpura, Patna</p>
 
-          <iframe
-            title="map"
-            src="https://www.google.com/maps?q=Rukanpura%20Patna&output=embed"
-            style={map}
-          />
+        <iframe
+  title="map"
+  src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14737181.092934467!2d85.0703517!3d25.606757!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39ed57357efa063b%3A0x5a1c560354834672!2sDeepak%20Communication!5e0!3m2!1sen!2sin!4v1777373452245!5m2!1sen!2sin"
+  style={map}
+  loading="lazy"
+  referrerPolicy="no-referrer-when-downgrade"
+/>
         </div>
 
       </div>

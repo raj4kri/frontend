@@ -7,6 +7,73 @@ function Admin() {
   const [activeTab, setActiveTab] = useState("slider");
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const [users, setUsers] = useState([]);
+const [newUsername, setNewUsername] = useState("");
+const [newPassword, setNewPassword] = useState("");
+const [newRole, setNewRole] = useState("user");
+
+// FETCH USERS
+const fetchUsers = async () => {
+  const token = getToken();
+
+  const res = await fetch(`${API}/users`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  const data = await res.json();
+  setUsers(data);
+};
+
+// CREATE USER
+const createUser = async () => {
+  const token = getToken();
+
+  const res = await fetch(`${API}/users`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({
+      username: newUsername,
+      password: newPassword,
+      role: newRole,
+    }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.error);
+    return;
+  }
+
+  fetchUsers();
+  setNewUsername("");
+  setNewPassword("");
+};
+
+// DELETE USER
+const deleteUser = async (id) => {
+  const token = getToken();
+
+  await fetch(`${API}/users/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  fetchUsers();
+};
+useEffect(() => {
+  if (activeTab === "users") {
+    fetchUsers();
+  }
+}, [activeTab]);
+
   // const isMobile = window.innerWidth < 768;
   const API = import.meta.env.VITE_API_URL;
 
@@ -505,6 +572,9 @@ function Admin() {
 
         {/* MENU */}
         <div style={menu}>
+          <button onClick={() => setActiveTab("users")} style={tabBtn}>
+  Users
+</button>
           <button  onClick={() => setActiveTab("slider")} style={tabBtn}>
             Gallery
           </button>
@@ -524,6 +594,59 @@ function Admin() {
       </div>
 
       {/* RIGHT CONTENT */}
+
+      {activeTab === "users" && (
+  <div style={sectionBox}>
+    <h3>User Management</h3>
+
+    {/* ADD USER */}
+    <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+      <input
+        style={inputStyle}
+        placeholder="Username"
+        value={newUsername}
+        onChange={(e) => setNewUsername(e.target.value)}
+      />
+
+      <input
+        style={inputStyle}
+        placeholder="Password"
+        value={newPassword}
+        onChange={(e) => setNewPassword(e.target.value)}
+      />
+
+      <select
+        value={newRole}
+        onChange={(e) => setNewRole(e.target.value)}
+      >
+        <option value="user">User</option>
+        <option value="manager">Manager</option>
+        <option value="admin">Admin</option>
+      </select>
+
+      <button style={primaryBtn} onClick={createUser}>
+        Add
+      </button>
+    </div>
+
+    {/* USERS LIST */}
+    <div style={gridStyle}>
+      {users.map((u) => (
+        <div key={u._id} style={card}>
+          <p><b>{u.username}</b></p>
+          <p>{u.role}</p>
+
+          <button
+            style={deleteBtn}
+            onClick={() => deleteUser(u._id)}
+          >
+            Delete
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+)}
       <div style={contentStyle}>
         {/* ===== GALLERY ===== */}
         {activeTab === "slider" && (
@@ -821,11 +944,20 @@ function Admin() {
 
 export default Admin;
 
+
+/* ===== CONTENT ===== */
+const contentStyle = {
+  flex: 1,
+  marginLeft: "280px",
+  padding: "20px",
+};
+
 const container = {
   display: "flex",
   background: "#0f0f0f",
   color: "#fff",
   minHeight: "100vh",
+  marginLeft: "9%",
 };
 
 /* ===== SIDEBAR ===== */
@@ -859,21 +991,13 @@ const messagesPanel = {
   minWidth: "300px",
 };
 
-// const birthdayPanel = {
-//   flex: 1,
-//   minWidth: "250px",
-//   background: "#151515",
-//   padding: "15px",
-//   borderRadius: "12px",
-//   border: "1px solid #222",
-// };
+const sectionBox = {
+  maxWidth: "1200px",
+  margin: "0 auto",
+  width: "50%",
+};
 
-// const messageCard = {
-//   background: "#1a1a1a",
-//   padding: "15px",
-//   borderRadius: "10px",
-//   marginBottom: "15px",
-// };
+
 
 const msgTop = {
   display: "flex",
@@ -936,12 +1060,7 @@ const tabBtn = {
   transition: "0.2s",
 };
 
-/* ===== CONTENT ===== */
-const contentStyle = {
-  flex: 1,
-  marginLeft: "240px",
-  padding: "20px",
-};
+
 
 /* ===== HEADER ===== */
 const sectionHeaderBase = {

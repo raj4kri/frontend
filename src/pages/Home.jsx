@@ -69,20 +69,20 @@ function Home() {
     <div style={{ width: "100%", overflowX: "hidden" }}>
       {/* 🔥 HERO */}
       <section style={hero}>
-         <h1>Deepak Communication</h1>
+        <h1 style={title}>Deepak Communication</h1>
         <h3>Best Mobile Repair Shop in Rukanpura, Patna</h3>
-       
+
         <p>
           We offers fast & trusted mobile repair services in Rukanpura. Screen
           replacement, battery, charging & software repair at affordable prices.
         </p>
 
         <div>
-          <a href="tel:7903182706">
+          <a href="tel:9060211167">
             <button style={primaryBtn}>Call Now</button>
           </a>
 
-          <a href="https://wa.me/917903182706">
+          <a href="https://wa.me/9060211167">
             <button style={secondaryBtn}>WhatsApp</button>
           </a>
         </div>
@@ -168,7 +168,7 @@ function Home() {
         <h2>Need Mobile Repair?</h2>
         <p>Contact us now</p>
 
-        <a href="https://wa.me/917903182706">
+        <a href="https://wa.me/9060211167">
           <button style={primaryBtn}>Chat Now</button>
         </a>
       </section>
@@ -176,7 +176,7 @@ function Home() {
       {/* 🔥 FOOTER */}
       <footer style={footer}>
         <p>© 2026 Deepak Communication</p>
-        <p>📍 Rukanpura, Patna | 📞 7903182706</p>
+        <p>📍 Rukanpura, Patna | 📞 9060211167</p>
       </footer>
     </div>
   );
@@ -195,10 +195,19 @@ const services = [
 
 /* ================= STYLES ================= */
 
-
+const title = {
+  fontSize: "40px",
+  fontWeight: "700",
+  lineHeight: "1.3",        // ✅ IMPORTANT
+  paddingBottom: "5px",     // ✅ prevent cut
+  background: "linear-gradient(90deg, #facc15, #f97316)",
+  WebkitBackgroundClip: "text",
+  WebkitTextFillColor: "transparent",
+};
 
 const hero = {
-  background: "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/hero.jpg')",
+  background:
+    "linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('/hero.jpg')",
   backgroundSize: "cover",
   backgroundPosition: "center",
   color: "#fff",
@@ -329,13 +338,7 @@ const sliderViewport = {
   width: "100%",
 };
 
-
-
-
 const sliderTrack = {
   display: "flex",
   width: "100%",
 };
-
-
-

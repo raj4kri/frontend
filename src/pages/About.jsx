@@ -39,61 +39,78 @@ function About() {
       <div style={card}>
         <h2 style={heading}>Our Mission</h2>
         <p style={text}>
-         Our mission at Deepak Communication is to deliver fast, reliable, and high-quality mobile repair services that customers can truly depend on. We aim to solve every mobile issue with precision, using advanced tools and genuine spare parts, ensuring long-lasting performance and customer satisfaction.
-
-We believe that every customer deserves transparent pricing, honest diagnosis, and timely service. That’s why we focus on clear communication—explaining the problem, the solution, and the cost upfront, so there are no surprises.
-
-Our goal is not just to repair devices, but to build long-term trust and relationships with our customers. Whether it’s a simple battery replacement or a complex motherboard repair, we treat every device with equal care and professionalism
+          Our mission at Deepak Communication is to deliver fast, reliable, and
+          high-quality mobile repair services that customers can truly depend
+          on. We aim to solve every mobile issue with precision, using advanced
+          tools and genuine spare parts, ensuring long-lasting performance and
+          customer satisfaction. We believe that every customer deserves
+          transparent pricing, honest diagnosis, and timely service. That’s why
+          we focus on clear communication—explaining the problem, the solution,
+          and the cost upfront, so there are no surprises. Our goal is not just
+          to repair devices, but to build long-term trust and relationships with
+          our customers. Whether it’s a simple battery replacement or a complex
+          motherboard repair, we treat every device with equal care and
+          professionalism
         </p>
-
-       
 
         <h2 style={{ ...heading, marginTop: "20px" }}>Our Vision</h2>
         <p style={text}>
-          To become the most trusted mobile repair brand in the region.
+          Our vision is to become the most trusted and preferred mobile repair
+          brand in the region by consistently delivering high-quality, reliable,
+          and affordable repair services. We aim to build long-term
+          relationships with our customers by ensuring transparency, honesty,
+          and excellence in every service we provide. We strive to set new
+          standards in the mobile repair industry through skilled technicians,
+          advanced tools, and customer-first practices. Our goal is not just to
+          fix devices, but to create a seamless and stress-free experience for
+          every customer who trusts us with their valuable gadgets. By
+          continuously improving our services, embracing innovation, and
+          maintaining a strong commitment to customer satisfaction, we envision
+          expanding our presence and becoming a recognized name known for trust,
+          quality, and professionalism.
         </p>
       </div>
 
       {/* 👨‍🔧 TEAM */}
-     <div style={teamGrid}>
-  {team.map((member) => (
-    <div
-      key={member._id}
-      style={teamCard}
-      onMouseEnter={(e) =>
-        (e.currentTarget.style.transform = "translateY(-5px)")
-      }
-      onMouseLeave={(e) =>
-        (e.currentTarget.style.transform = "translateY(0)")
-      }
-    >
-      {/* IMAGE */}
-      <div style={imageWrapper}>
-        <img
-          src={member.image || "/fallback.jpg"}
-          alt={member.name}
-          style={teamImg}
-          onError={(e) => (e.target.src = "/fallback.jpg")}
-        />
+      <div style={teamGrid}>
+        {team.map((member) => (
+          <div
+            key={member._id}
+            style={teamCard}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.transform = "translateY(-5px)")
+            }
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.transform = "translateY(0)")
+            }
+          >
+            {/* IMAGE */}
+            <div style={imageWrapper}>
+              <img
+                src={member.image || "/fallback.jpg"}
+                alt={member.name}
+                style={teamImg}
+                onError={(e) => (e.target.src = "/fallback.jpg")}
+              />
+            </div>
+
+            {/* INFO */}
+            <div style={teamInfo}>
+              <h3 style={teamName}>{member.name}</h3>
+
+              <span style={roleBadge}>{member.role}</span>
+
+              {/* ACTION BUTTONS */}
+              {/* <div style={actionBtns}> */}
+              {/* <a href="tel:7903182706" style={callBtn}>Call</a> */}
+              {/* <a href="https://wa.me/917903182706" style={whatsappBtn}> */}
+              {/* WhatsApp */}
+              {/* </a> */}
+              {/* </div> */}
+            </div>
+          </div>
+        ))}
       </div>
-
-      {/* INFO */}
-      <div style={teamInfo}>
-        <h3 style={teamName}>{member.name}</h3>
-
-        <span style={roleBadge}>{member.role}</span>
-
-        {/* ACTION BUTTONS */}
-        {/* <div style={actionBtns}> */}
-          {/* <a href="tel:7903182706" style={callBtn}>Call</a> */}
-          {/* <a href="https://wa.me/917903182706" style={whatsappBtn}> */}
-            {/* WhatsApp */}
-          {/* </a> */}
-        {/* </div> */}
-      </div>
-    </div>
-  ))}
-</div>
     </div>
   );
 }
@@ -101,9 +118,6 @@ Our goal is not just to repair devices, but to build long-term trust and relatio
 export default About;
 
 /* ================= 🎨 STYLES ================= */
-
-
-
 
 const teamGrid = {
   display: "grid",
@@ -113,7 +127,6 @@ const teamGrid = {
 };
 
 const teamCard = {
- 
   display: "flex",
   gap: "15px",
   alignItems: "center",
@@ -189,8 +202,6 @@ const whatsappBtn = {
 
 /* TEAM */
 
-
-
 const teamRole = {
   fontSize: "13px",
   color: "#94a3b8",
@@ -213,8 +224,10 @@ const hero = {
 };
 
 const heroTitle = {
-  fontSize: "34px",
+  fontSize: "40px",
   fontWeight: "700",
+  lineHeight: "1.3", // ✅ IMPORTANT
+  paddingBottom: "5px", // ✅ prevent cut
   background: "linear-gradient(90deg, #facc15, #f97316)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",
