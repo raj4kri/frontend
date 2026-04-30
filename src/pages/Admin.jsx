@@ -10,7 +10,7 @@ function Admin() {
   const [users, setUsers] = useState([]);
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
-  const [newRole, setNewRole] = useState("user");
+  const [newRole, setNewRole] = useState("manager");
 
   // FETCH USERS
 
@@ -37,6 +37,12 @@ function Admin() {
   const createUser = async () => {
     const token = getToken();
 
+    console.log("SENDING:", {
+      username: newUsername,
+      password: newPassword,
+      role: newRole,
+    });
+
     const res = await fetch(`${API}/users`, {
       method: "POST",
       headers: {
@@ -46,20 +52,22 @@ function Admin() {
       body: JSON.stringify({
         username: newUsername,
         password: newPassword,
-        role: newRole,
+        role: newRole || "manager",
       }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
-      alert(data.error);
+      console.error("ERROR RESPONSE:", data);
+      alert(data.error || data.message || "Error");
       return;
     }
 
     fetchUsers();
     setNewUsername("");
     setNewPassword("");
+    setNewRole("manager");
   };
 
   // DELETE USER
