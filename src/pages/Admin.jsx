@@ -8,80 +8,78 @@ function Admin() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const [users, setUsers] = useState([]);
-const [newUsername, setNewUsername] = useState("");
-const [newPassword, setNewPassword] = useState("");
-const [newRole, setNewRole] = useState("user");
+  const [newUsername, setNewUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newRole, setNewRole] = useState("user");
 
-// FETCH USERS
+  // FETCH USERS
 
+  const fetchUsers = async () => {
+    const token =
+      localStorage.getItem("token") || sessionStorage.getItem("token");
 
-const fetchUsers = async () => {
-  const token =
-    localStorage.getItem("token") ||
-    sessionStorage.getItem("token");
+    const res = await fetch(`${API}/users`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
-  const res = await fetch(`${API}/users`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const data = await res.json();
 
-  const data = await res.json();
+    if (Array.isArray(data)) {
+      setUsers(data);
+    } else {
+      console.error("API Error:", data);
+      setUsers([]);
+    }
+  };
+  // CREATE USER
+  const createUser = async () => {
+    const token = getToken();
 
-  if (Array.isArray(data)) {
-    setUsers(data);
-  } else {
-    console.error("API Error:", data);
-    setUsers([]);
-  }
-};
-// CREATE USER
-const createUser = async () => {
-  const token = getToken();
+    const res = await fetch(`${API}/users`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        username: newUsername,
+        password: newPassword,
+        role: newRole,
+      }),
+    });
 
-  const res = await fetch(`${API}/users`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({
-      username: newUsername,
-      password: newPassword,
-      role: newRole,
-    }),
-  });
+    const data = await res.json();
 
-  const data = await res.json();
+    if (!res.ok) {
+      alert(data.error);
+      return;
+    }
 
-  if (!res.ok) {
-    alert(data.error);
-    return;
-  }
-
-  fetchUsers();
-  setNewUsername("");
-  setNewPassword("");
-};
-
-// DELETE USER
-const deleteUser = async (id) => {
-  const token = getToken();
-
-  await fetch(`${API}/users/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  fetchUsers();
-};
-useEffect(() => {
-  if (activeTab === "users") {
     fetchUsers();
-  }
-}, [activeTab]);
+    setNewUsername("");
+    setNewPassword("");
+  };
+
+  // DELETE USER
+  const deleteUser = async (id) => {
+    const token = getToken();
+
+    await fetch(`${API}/users/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    fetchUsers();
+  };
+  useEffect(() => {
+    if (activeTab === "users") {
+      fetchUsers();
+    }
+  }, [activeTab]);
 
   // const isMobile = window.innerWidth < 768;
   const API = import.meta.env.VITE_API_URL;
@@ -550,13 +548,13 @@ useEffect(() => {
   });
 
   const previewImg = {
-  width: "150px",
-  height: "150px",
-  objectFit: "cover",
-  borderRadius: "10px",
-  border: "2px solid #ccc",
-  marginTop: "10px",
-};
+    width: "150px",
+    height: "150px",
+    objectFit: "cover",
+    borderRadius: "10px",
+    border: "2px solid #ccc",
+    marginTop: "10px",
+  };
 
   return (
     <div style={container}>
@@ -591,9 +589,9 @@ useEffect(() => {
         {/* MENU */}
         <div style={menu}>
           <button onClick={() => setActiveTab("users")} style={tabBtn}>
-  Users
-</button>
-          <button  onClick={() => setActiveTab("slider")} style={tabBtn}>
+            Users
+          </button>
+          <button onClick={() => setActiveTab("slider")} style={tabBtn}>
             Gallery
           </button>
           <button onClick={() => setActiveTab("product")} style={tabBtn}>
@@ -602,7 +600,7 @@ useEffect(() => {
           <button onClick={() => setActiveTab("category")} style={tabBtn}>
             Category
           </button>
-          <button  onClick={() => setActiveTab("team")} style={tabBtn}>
+          <button onClick={() => setActiveTab("team")} style={tabBtn}>
             Team
           </button>
           <button onClick={() => setActiveTab("contact")} style={tabBtn}>
@@ -614,57 +612,57 @@ useEffect(() => {
       {/* RIGHT CONTENT */}
 
       {activeTab === "users" && (
-  <div style={sectionBox}>
-    <h3>User Management</h3>
+        <div style={sectionBox}>
+          <h3>User Management</h3>
 
-    {/* ADD USER */}
-    <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
-      <input
-        style={inputStyle}
-        placeholder="Username"
-        value={newUsername}
-        onChange={(e) => setNewUsername(e.target.value)}
-      />
+          {/* ADD USER */}
+          <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+            <input
+              style={inputStyle}
+              placeholder="Username"
+              value={newUsername}
+              onChange={(e) => setNewUsername(e.target.value)}
+            />
 
-      <input
-        style={inputStyle}
-        placeholder="Password"
-        value={newPassword}
-        onChange={(e) => setNewPassword(e.target.value)}
-      />
+            <input
+              style={inputStyle}
+              placeholder="Password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
 
-      <select
-        value={newRole}
-        onChange={(e) => setNewRole(e.target.value)}
-      >
-        <option value="user">User</option>
-        <option value="manager">Manager</option>
-        <option value="admin">Admin</option>
-      </select>
+            <select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+            >
+              <option value="">Select Role</option>
+              <option value="superadmin">Super Admin</option>
+              <option value="manager">Manager</option>
+              <option value="admin">Admin</option>
+            </select>
 
-      <button style={primaryBtn} onClick={createUser}>
-        Add
-      </button>
-    </div>
+            <button style={primaryBtn} onClick={createUser}>
+              Add
+            </button>
+          </div>
 
-    {/* USERS LIST */}
-    <div style={gridStyle}>
-      {users.map((u) => (
-        <div key={u._id} style={card}>
-          <p><b>{u.username}</b></p>
-          <p>{u.role}</p>
+          {/* USERS LIST */}
+          <div style={gridStyle}>
+            {users.map((u) => (
+              <div key={u._id} style={card}>
+                <p>
+                  <b>{u.username}</b>
+                </p>
+                <p>{u.role}</p>
 
-          <button
-            style={deleteBtn}
-            onClick={() => deleteUser(u._id)}
-          >
-            Delete
-          </button>
+                <button style={deleteBtn} onClick={() => deleteUser(u._id)}>
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
-      ))}
-    </div>
-  </div>
-)}
+      )}
       <div style={contentStyle}>
         {/* ===== GALLERY ===== */}
         {activeTab === "slider" && (
@@ -678,7 +676,7 @@ useEffect(() => {
               >
                 <div style={headerControls}>
                   <input
-                   style={inputStyle}
+                    style={inputStyle}
                     type="file"
                     onChange={(e) => {
                       setSliderImage(e.target.files[0]);
@@ -687,7 +685,9 @@ useEffect(() => {
                   />
                 </div>
 
-                <button style={primaryBtn} onClick={uploadSlider}>Upload</button>
+                <button style={primaryBtn} onClick={uploadSlider}>
+                  Upload
+                </button>
               </div>
             </div>
 
@@ -700,7 +700,6 @@ useEffect(() => {
                   <div key={s._id} style={card}>
                     <img src={s.image} style={img} />
                     <button
-                   
                       onClick={() => deleteSlider(s._id)}
                       style={deleteBtn}
                     >
@@ -719,19 +718,19 @@ useEffect(() => {
             <h3>Products</h3>
 
             <input
-             style={inputStyle}
+              style={inputStyle}
               placeholder="Name"
               value={name}
               onChange={(e) => setName(e.target.value)}
             />
             <input
-             style={inputStyle}
+              style={inputStyle}
               placeholder="Price"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
             />
             <input
-             style={inputStyle}
+              style={inputStyle}
               type="number"
               placeholder="Discount %"
               onChange={(e) => setDiscount(e.target.value)}
@@ -797,7 +796,7 @@ useEffect(() => {
             <h3>Category</h3>
 
             <input
-             style={inputStyle}
+              style={inputStyle}
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
               placeholder="New Category"
@@ -827,19 +826,19 @@ useEffect(() => {
             <h3>Team</h3>
 
             <input
-             style={inputStyle}
+              style={inputStyle}
               placeholder="Name"
               value={memberName}
               onChange={(e) => setMemberName(e.target.value)}
             />
             <input
-             style={inputStyle}
+              style={inputStyle}
               placeholder="Role"
               value={role}
               onChange={(e) => setRole(e.target.value)}
             />
             <input
-             style={inputStyle}
+              style={inputStyle}
               type="file"
               onChange={(e) => setTeamImage(e.target.files[0])}
             />
@@ -962,7 +961,6 @@ useEffect(() => {
 
 export default Admin;
 
-
 /* ===== CONTENT ===== */
 const contentStyle = {
   flex: 1,
@@ -1014,8 +1012,6 @@ const sectionBox = {
   margin: "0 auto",
   width: "50%",
 };
-
-
 
 const msgTop = {
   display: "flex",
@@ -1077,8 +1073,6 @@ const tabBtn = {
   cursor: "pointer",
   transition: "0.2s",
 };
-
-
 
 /* ===== HEADER ===== */
 const sectionHeaderBase = {
@@ -1186,8 +1180,6 @@ const whatsappBtn = {
   borderRadius: "6px",
   textDecoration: "none",
 };
-
-
 
 /* ================= FIX ALL MISSING STYLES ================= */
 
