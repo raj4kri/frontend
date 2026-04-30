@@ -59,10 +59,10 @@ function Admin() {
     const data = await res.json();
 
     if (!res.ok) {
-      console.error("ERROR RESPONSE:", data);
-      alert(data.error || data.message || "Error");
-      return;
-    }
+  console.error("ERROR RESPONSE:", data);
+  alert(data.error || data.message || "Error");
+  return;
+}
 
     fetchUsers();
     setNewUsername("");
