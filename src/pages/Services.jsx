@@ -69,9 +69,10 @@ export default Services;
 const container = {
   background: "linear-gradient(135deg, #0f172a, #020617)",
   minHeight: "100vh",
-  padding: "60px 20px",
+  padding: "40px 10px",
   textAlign: "center",
   color: "#fff",
+  
 };
 
 const title = {
@@ -86,7 +87,7 @@ const title = {
 
 const subtitle = {
   color: "#94a3b8",
-  marginBottom: "40px",
+  marginBottom: "20px",
   fontSize: "15px",
 };
 

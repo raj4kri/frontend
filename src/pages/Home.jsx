@@ -9,6 +9,41 @@ function Home() {
   const [index, setIndex] = useState(1);
   const [transition, setTransition] = useState(true);
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const [todayVisitors, setTodayVisitors] = useState(0);
+
+  useEffect(() => {
+    fetch(`${API}/today`)
+      .then((res) => res.json())
+      .then((data) => setTodayVisitors(data.count));
+  }, []);
+
+  useEffect(() => {
+    fetch(`${API}/visit`)
+      .then((res) => res.json())
+      .catch((err) => console.log(err));
+  }, []);
+
+  useEffect(() => {
+    const checkStatus = () => {
+      const now = new Date();
+      const hours = now.getHours();
+
+      // 9 AM (9) to 9 PM (21)
+      if (hours >= 9 && hours < 21) {
+        setIsOpen(true);
+      } else {
+        setIsOpen(false);
+      }
+    };
+
+    checkStatus(); // initial check
+    const interval = setInterval(checkStatus, 60000); // update every 1 min
+
+    return () => clearInterval(interval);
+  }, []);
+
   // ✅ Fetch images
   useEffect(() => {
     fetch(`${API}/slider`)
@@ -76,6 +111,12 @@ function Home() {
           We offers fast & trusted mobile repair services in Rukanpura. Screen
           replacement, battery, charging & software repair at affordable prices.
         </p>
+        <div style={timeBadge}>
+          🕘 Open Daily: <b>9:00 AM</b> – <b>9:00 PM</b>
+        </div>
+        <p style={statusBadge(isOpen)}>
+          {isOpen ? "🟢 Open Now" : "🔴 Closed Now"}
+        </p>
 
         <div>
           <a href="tel:9060211167">
@@ -86,6 +127,7 @@ function Home() {
             <button style={secondaryBtn}>WhatsApp</button>
           </a>
         </div>
+        <div style={visitorBox}>👥 Today Visitors: {todayVisitors}</div>
       </section>
 
       {/* 🔥 PREMIUM SLIDER */}
@@ -183,7 +225,43 @@ function Home() {
 }
 
 export default Home;
+const visitorBox = {
+  marginTop: "20px",
+  padding: "10px 15px",
+  display: "inline-block",
+  background: "rgba(255,255,255,0.1)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  borderRadius: "20px",
+  color: "#fff",
+  fontSize: "14px",
+};
 
+const statusBadge = (isOpen) => ({
+  marginTop: "10px",
+  display: "inline-block",
+  padding: "8px 14px",
+  borderRadius: "20px",
+  fontSize: "14px",
+  fontWeight: "600",
+  color: "#fff",
+  background: isOpen ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+  border: isOpen
+    ? "1px solid rgba(34,197,94,0.5)"
+    : "1px solid rgba(239,68,68,0.5)",
+  backdropFilter: "blur(10px)",
+});
+
+const timeBadge = {
+  marginTop: "15px",
+  display: "inline-block",
+  padding: "8px 14px",
+  borderRadius: "20px",
+  background: "rgba(255,255,255,0.1)",
+  border: "1px solid rgba(255,255,255,0.2)",
+  color: "#fff",
+  fontSize: "14px",
+  backdropFilter: "blur(10px)",
+};
 /* ================= DATA ================= */
 
 const services = [
@@ -198,8 +276,8 @@ const services = [
 const title = {
   fontSize: "40px",
   fontWeight: "700",
-  lineHeight: "1.3",        // ✅ IMPORTANT
-  paddingBottom: "5px",     // ✅ prevent cut
+  lineHeight: "1.3", // ✅ IMPORTANT
+  paddingBottom: "5px", // ✅ prevent cut
   background: "linear-gradient(90deg, #facc15, #f97316)",
   WebkitBackgroundClip: "text",
   WebkitTextFillColor: "transparent",

@@ -230,6 +230,8 @@ const mainContainer = {
   background: "#0f172a",
   minHeight: "100vh",
   padding: "20px",
+
+  marginTop:"3px"
 };
 
 const filterWrapper = {
