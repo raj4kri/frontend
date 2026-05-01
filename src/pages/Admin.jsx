@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { toast } from "react-toastify";
+import ConfirmDeleteModal from "../components/modals/ConfirmDeleteModal";
+
 
 function Admin() {
   const [loading, setLoading] = useState(false);
@@ -12,6 +13,42 @@ function Admin() {
   const [newUsername, setNewUsername] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newRole, setNewRole] = useState("manager");
+
+  const [deleteId, setDeleteId] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [loadingDelete, setLoadingDelete] = useState(false);
+
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setOpenModal(true);
+  };
+
+  const confirmDeleteCategory = async () => {
+    try {
+      setLoadingDelete(true);
+
+      const token = getToken();
+
+      const res = await fetch(`${API}/categories/${deleteId}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
+
+      alert(data.message || "Deleted successfully");
+
+      fetchCategories();
+      setOpenModal(false);
+      setDeleteId(null);
+    } catch (err) {
+      alert(err.message || "Delete failed");
+    } finally {
+      setLoadingDelete(false);
+    }
+  };
 
   // FETCH USERS
 
@@ -339,33 +376,30 @@ function Admin() {
     }
   };
 
-const deleteCategory = async (id) => {
-  const confirmDelete = window.confirm(
-    "Are you sure you want to delete this category?"
-  );
+  const deleteCategory = async (id) => {
+    
 
-  if (!confirmDelete) return;
+    if (!confirmDelete) return;
 
-  try {
-    const token = getToken();
+    try {
+      const token = getToken();
 
-    const res = await fetch(`${API}/categories/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const res = await fetch(`${API}/categories/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok) throw new Error(data.message);
+      if (!res.ok) throw new Error(data.message);
 
-    toast.success(data.message || "Category deleted successfully");
-    fetchCategories();
-
-  } catch (err) {
-    console.error(err);
-    toast.error(err.message || "Delete failed");
-  }
-};
+      toast.success(data.message || "Category deleted successfully");
+      fetchCategories();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Delete failed");
+    }
+  };
 
   // ================= PRODUCTS =================
   const [products, setProducts] = useState([]);
@@ -833,7 +867,7 @@ const deleteCategory = async (id) => {
                 <div key={c._id} style={card}>
                   <p>{c.name}</p>
                   <button
-                    onClick={() => deleteCategory(c._id)}
+                    onClick={() => handleDeleteClick(c._id)}
                     style={deleteBtn}
                   >
                     Delete
@@ -843,6 +877,20 @@ const deleteCategory = async (id) => {
             </div>
           </>
         )}
+
+         {/* ================= GLOBAL MODAL (OUTSIDE TAB) ================= */}
+    <ConfirmDeleteModal
+      open={openModal}
+      loading={loadingDelete}
+      title="Delete Category"
+      message="Are you sure you want to delete this category? This action cannot be undone."
+      onCancel={() => setOpenModal(false)}
+      onConfirm={confirmDeleteCategory}
+    />
+
+
+
+        
 
         {/* ===== TEAM ===== */}
         {activeTab === "team" && (
