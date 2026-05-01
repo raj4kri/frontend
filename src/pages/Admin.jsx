@@ -338,7 +338,7 @@ function Admin() {
     }
   };
 
-  const deleteCategory = async (id) => {
+ const deleteCategory = async (id) => {
   try {
     const token = getToken();
 
@@ -347,10 +347,13 @@ function Admin() {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    const data = await res.json(); // 👈 IMPORTANT
+    const data = await res.json();
 
     if (res.ok) {
-      alert(data.message); // or toast.success
+      // 👇 SHOW MESSAGE FIRST
+      alert(data.message);
+
+      // 👇 THEN refresh data
       fetchCategories();
     } else {
       alert(data.message || "Delete failed");
