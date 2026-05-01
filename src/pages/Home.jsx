@@ -20,7 +20,7 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    fetch(`${API}/visit`)
+   fetch(`${API}/visit`)
       .then((res) => res.json())
       .catch((err) => console.log(err));
   }, []);
