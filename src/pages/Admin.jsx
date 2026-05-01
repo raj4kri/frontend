@@ -59,10 +59,10 @@ function Admin() {
     const data = await res.json();
 
     if (!res.ok) {
-  console.error("ERROR RESPONSE:", data);
-  alert(data.error || data.message || "Error");
-  return;
-}
+      console.error("ERROR RESPONSE:", data);
+      alert(data.error || data.message || "Error");
+      return;
+    }
 
     fetchUsers();
     setNewUsername("");
@@ -338,7 +338,13 @@ function Admin() {
     }
   };
 
- const deleteCategory = async (id) => {
+  const deleteCategory = async (id) => {
+  const confirmDelete = window.confirm(
+    "Are you sure you want to delete this category?"
+  );
+
+  if (!confirmDelete) return;
+
   try {
     const token = getToken();
 
@@ -350,17 +356,14 @@ function Admin() {
     const data = await res.json();
 
     if (res.ok) {
-      // 👇 SHOW MESSAGE FIRST
-      alert(data.message);
-
-      // 👇 THEN refresh data
+      alert(data.message || "Category deleted successfully");
       fetchCategories();
     } else {
       alert(data.message || "Delete failed");
     }
-
   } catch (err) {
     console.error("Delete failed:", err);
+    alert("Something went wrong while deleting");
   }
 };
   // ================= PRODUCTS =================
@@ -824,7 +827,7 @@ function Admin() {
 
             <button onClick={addCategory}>Add</button>
 
-            <div style={gridStyle}>
+            <div style={baseGrid}>
               {categories.map((c) => (
                 <div key={c._id} style={card}>
                   <p>{c.name}</p>
@@ -1106,8 +1109,8 @@ const sectionHeaderBase = {
 
 /* ===== GRID ===== */
 const baseGrid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+  display: "flex",
+  flexWrap: "wrap",
   gap: "15px",
 };
 
@@ -1274,12 +1277,3 @@ const replyBox = {
   marginTop: "10px",
   resize: "none",
 };
-
-// const previewImg = {
-//   width: "150px",
-//   height: "150px",
-//   objectFit: "cover",
-//   borderRadius: "10px",
-//   border: "2px solid #ccc",
-//   marginTop: "10px",
-// };

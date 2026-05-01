@@ -195,7 +195,7 @@ function Products() {
               )}
 
               <p style={categoryStyle}>{p.category}</p>
-              <span style={availabilityBadge}>In Store</span>
+              <span style={availabilityBadge}>Available in Store</span>
             </div>
           </div>
         ))}
