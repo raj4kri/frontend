@@ -339,18 +339,27 @@ function Admin() {
   };
 
   const deleteCategory = async (id) => {
-    try {
-      const token = getToken(); // ✅ ADD THIS
-      await fetch(`${API}/categories/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchCategories();
-    } catch (err) {
-      console.error("Delete failed:", err);
-    }
-  };
+  try {
+    const token = getToken();
 
+    const res = await fetch(`${API}/categories/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    const data = await res.json(); // 👈 IMPORTANT
+
+    if (res.ok) {
+      alert(data.message); // or toast.success
+      fetchCategories();
+    } else {
+      alert(data.message || "Delete failed");
+    }
+
+  } catch (err) {
+    console.error("Delete failed:", err);
+  }
+};
   // ================= PRODUCTS =================
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
