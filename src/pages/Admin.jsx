@@ -233,7 +233,7 @@ function Admin() {
 
   const contentStyle = {
     padding: "15px",
-    marginLeft: isMobile ? "0" : "240px",
+    marginLeft: isMobile ? "20px" : "250px",
     marginTop: isMobile ? "60px" : "0",
   };
 
@@ -708,6 +708,13 @@ function Admin() {
     marginTop: "10px",
   };
 
+  const handleTabChange = (tab) => {
+  setActiveTab(tab);
+  if (isMobile) setMenuOpen(false);
+};
+
+
+
   return (
     <div style={container}>
       {/* LEFT SIDEBAR */}
@@ -741,42 +748,42 @@ function Admin() {
         {/* MENU */}
         <div style={menu}>
           <button
-            onClick={() => setActiveTab("users")}
+            onClick={() => handleTabChange("users")}
             style={activeTab === "users" ? activeTabBtn : tabBtn}
           >
             Users
           </button>
 
           <button
-            onClick={() => setActiveTab("slider")}
+            onClick={() => handleTabChange("slider")}
             style={activeTab === "slider" ? activeTabBtn : tabBtn}
           >
             Gallery
           </button>
 
           <button
-            onClick={() => setActiveTab("product")}
+            onClick={() => handleTabChange("product")}
             style={activeTab === "product" ? activeTabBtn : tabBtn}
           >
             Products
           </button>
 
           <button
-            onClick={() => setActiveTab("category")}
+            onClick={() => handleTabChange("category")}
             style={activeTab === "category" ? activeTabBtn : tabBtn}
           >
             Category
           </button>
 
           <button
-            onClick={() => setActiveTab("team")}
+            onClick={() =>  handleTabChange("team")}
             style={activeTab === "team" ? activeTabBtn : tabBtn}
           >
             Team
           </button>
 
           <button
-            onClick={() => setActiveTab("contact")}
+            onClick={() =>  handleTabChange("contact")}
             style={activeTab === "contact" ? activeTabBtn : tabBtn}
           >
             Messages {unreadCount > 0 && `(${unreadCount})`}
@@ -785,6 +792,7 @@ function Admin() {
       </div>
 
       {/* RIGHT CONTENT */}
+       <div style={contentStyle}>
 
       {activeTab === "users" && (
         <div style={sectionBox}>
@@ -846,7 +854,7 @@ function Admin() {
           </div>
         </div>
       )}
-      <div style={contentStyle}>
+     
         {/* ===== GALLERY ===== */}
         {activeTab === "slider" && (
           <div style={sectionWrapper}>
@@ -1222,7 +1230,11 @@ function Admin() {
 }
 
 export default Admin;
-
+//   const contentStyle = {
+//   flex: 1,
+//   marginLeft: "250px",
+//   padding: "20px",
+// };
 // ================ STYLES =================
 
 const activeTabBtn = {
@@ -1259,18 +1271,14 @@ const userCard = {
   border: "1px solid #2a2a2a",
 };
 /* ===== CONTENT ===== */
-const contentStyle = {
-  flex: 1,
-  marginLeft: "280px",
-  padding: "20px",
-};
+
 
 const container = {
   display: "flex",
   background: "#0f0f0f",
   color: "#fff",
   minHeight: "100vh",
-  marginLeft: "9%",
+  marginLeft: "0",
 };
 
 /* ===== SIDEBAR ===== */
@@ -1307,7 +1315,8 @@ const messagesPanel = {
 const sectionBox = {
   maxWidth: "1200px",
   margin: "0 auto",
-  width: "50%",
+  width: "100%",
+  
 };
 
 const msgTop = {

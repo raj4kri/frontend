@@ -251,7 +251,7 @@ const slide = {
 };
 
 const galleryImage = {
-  width: "50%",
+  width: "70%",
   height: "110%",
   // objectFit: "contain",
   borderRadius: "10px",
