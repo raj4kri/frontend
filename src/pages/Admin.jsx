@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import ConfirmDeleteModal from "../components/modals/ConfirmDeleteModal";
 
-
 function Admin() {
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("slider");
@@ -15,12 +14,78 @@ function Admin() {
   const [newRole, setNewRole] = useState("manager");
 
   const [deleteId, setDeleteId] = useState(null);
+  const [deleteType, setDeleteType] = useState(""); // category/product/user/slider/team
   const [openModal, setOpenModal] = useState(false);
   const [loadingDelete, setLoadingDelete] = useState(false);
 
-  const handleDeleteClick = (id) => {
+  const handleDeleteClick = (id, type) => {
     setDeleteId(id);
+    setDeleteType(type);
     setOpenModal(true);
+  };
+
+  const confirmDelete = async () => {
+    try {
+      setLoadingDelete(true);
+
+      const token = getToken();
+
+      let url = "";
+
+      switch (deleteType) {
+        case "category":
+          url = `${API}/categories/${deleteId}`;
+          break;
+
+        case "product":
+          url = `${API}/products/${deleteId}`;
+          break;
+
+        case "slider":
+          url = `${API}/slider/${deleteId}`;
+          break;
+
+        case "user":
+          url = `${API}/users/${deleteId}`;
+          break;
+
+        case "team":
+          url = `${API}/team/${deleteId}`;
+          break;
+
+        default:
+          throw new Error("Invalid delete type");
+      }
+
+      const res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) throw new Error(data.message);
+
+      toast.success(data.message || "Deleted successfully");
+
+      // refresh data
+      if (deleteType === "category") fetchCategories();
+      if (deleteType === "product") fetchProducts();
+      if (deleteType === "slider") fetchSlider();
+      if (deleteType === "user") fetchUsers();
+      if (deleteType === "team") fetchTeam();
+
+      setOpenModal(false);
+      setDeleteId(null);
+      setDeleteType("");
+    } catch (err) {
+      console.error(err);
+      toast.error(err.message || "Delete failed");
+    } finally {
+      setLoadingDelete(false);
+    }
   };
 
   const confirmDeleteCategory = async () => {
@@ -72,15 +137,16 @@ function Admin() {
     }
   };
   // CREATE USER
-  const createUser = async () => {
-    const token = getToken();
+const createUser = async () => {
+  const token = getToken();
 
-    console.log("SENDING:", {
-      username: newUsername,
-      password: newPassword,
-      role: newRole,
-    });
+  // ✅ VALIDATION
+  if (!newUsername || !newPassword) {
+    toast.error("Username and password are required");
+    return;
+  }
 
+  try {
     const res = await fetch(`${API}/users`, {
       method: "POST",
       headers: {
@@ -98,15 +164,23 @@ function Admin() {
 
     if (!res.ok) {
       console.error("ERROR RESPONSE:", data);
-      alert(data.error || data.message || "Error");
+      toast.error(data.error || data.message || "User creation failed");
       return;
     }
 
+    // ✅ SUCCESS MESSAGE (MISSING BEFORE)
+    toast.success("User created successfully 🎉");
+
     fetchUsers();
+
     setNewUsername("");
     setNewPassword("");
     setNewRole("manager");
-  };
+  } catch (err) {
+    console.error(err);
+    toast.error("Server error while creating user");
+  }
+};
 
   // DELETE USER
   const deleteUser = async (id) => {
@@ -279,45 +353,54 @@ function Admin() {
 
   const uploadSlider = async () => {
     if (!sliderImage) {
-      alert("Select image first");
+      toast.error("Select image first");
       return;
     }
 
     const formData = new FormData();
     formData.append("image", sliderImage);
+
     const token = getToken();
-    console.log("FRONTEND TOKEN:", token);
-    const res = await fetch(`${API}/slider`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: formData,
-    });
 
-    const data = await res.json();
+    try {
+      const res = await fetch(`${API}/slider`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
 
-    if (!res.ok) {
-      alert(data.message || "Upload failed");
-      return;
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data.message || data.error || "Upload failed");
+        return;
+      }
+
+      // ✅ SUCCESS MESSAGE (THIS WAS MISSING)
+      toast.success("Slider uploaded successfully 🎉");
+
+      fetchSlider();
+      setSliderImage(null);
+      setSliderPreview("");
+    } catch (err) {
+      console.log("UPLOAD ERROR:", err);
+      toast.error("Server error while uploading slider");
     }
-
-    fetchSlider();
-    setSliderImage(null);
-    setSliderPreview("");
   };
-  const deleteSlider = async (id) => {
-    const token = getToken();
+  // const deleteSlider = async (id) => {
+  //   const token = getToken();
 
-    await fetch(`${API}/slider/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
+  //   await fetch(`${API}/slider/${id}`, {
+  //     method: "DELETE",
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //   });
 
-    fetchSlider();
-  };
+  //   fetchSlider();
+  // };
 
   // ================= CATEGORY =================
   const [categories, setCategories] = useState([]);
@@ -376,30 +459,28 @@ function Admin() {
     }
   };
 
-  const deleteCategory = async (id) => {
-    
+  // const deleteCategory = async (id) => {
+  //   if (!confirmDelete) return;
 
-    if (!confirmDelete) return;
+  //   try {
+  //     const token = getToken();
 
-    try {
-      const token = getToken();
+  //     const res = await fetch(`${API}/categories/${id}`, {
+  //       method: "DELETE",
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
 
-      const res = await fetch(`${API}/categories/${id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
+  //     const data = await res.json();
 
-      const data = await res.json();
+  //     if (!res.ok) throw new Error(data.message);
 
-      if (!res.ok) throw new Error(data.message);
-
-      toast.success(data.message || "Category deleted successfully");
-      fetchCategories();
-    } catch (err) {
-      console.error(err);
-      toast.error(err.message || "Delete failed");
-    }
-  };
+  //     toast.success(data.message || "Category deleted successfully");
+  //     fetchCategories();
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error(err.message || "Delete failed");
+  //   }
+  // };
 
   // ================= PRODUCTS =================
   const [products, setProducts] = useState([]);
@@ -538,10 +619,10 @@ function Admin() {
   }, []);
 
   const addTeam = async () => {
-    if (!teamImage) return alert("Select image");
-
-    // const token =
-    //   localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!teamImage) {
+      toast.error("Select image");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("image", teamImage);
@@ -554,27 +635,30 @@ function Admin() {
       const res = await fetch(`${API}/team`, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`, // ✅ ADD HERE
+          Authorization: `Bearer ${token}`,
         },
-
         body: formData,
       });
 
       const data = await res.json();
-      console.log("TEAM RESPONSE:", data);
 
       if (!res.ok) {
-        alert(data.error || "Upload failed");
+        toast.error(data.error || "Upload failed");
         return;
       }
 
+      // ✅ SUCCESS MESSAGE (THIS WAS MISSING)
+      toast.success("Team member added successfully 🎉");
+
       fetchTeam();
+
       setTeamImage(null);
       setTeamPreview("");
       setMemberName("");
       setRole("");
     } catch (err) {
       console.log("TEAM ERROR:", err);
+      toast.error("Server error while adding team");
     }
   };
 
@@ -671,10 +755,10 @@ function Admin() {
 
       {activeTab === "users" && (
         <div style={sectionBox}>
-          <h3>User Management</h3>
+          <h3 style={{ marginBottom: "15px" }}>User Management</h3>
 
-          {/* ADD USER */}
-          <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+          {/* ================= ADD USER ================= */}
+          <div style={formRow}>
             <input
               style={inputStyle}
               placeholder="Username"
@@ -690,6 +774,7 @@ function Admin() {
             />
 
             <select
+              style={inputStyle}
               value={newRole}
               onChange={(e) => setNewRole(e.target.value)}
             >
@@ -700,20 +785,27 @@ function Admin() {
             </select>
 
             <button style={primaryBtn} onClick={createUser}>
-              Add
+              Add User
             </button>
           </div>
 
-          {/* USERS LIST */}
-          <div style={gridStyle}>
+          {/* ================= USERS LIST ================= */}
+          <div style={userGrid}>
             {users.map((u) => (
-              <div key={u._id} style={card}>
-                <p>
-                  <b>{u.username}</b>
-                </p>
-                <p>{u.role}</p>
+              <div key={u._id} style={userCard}>
+                <div>
+                  <p style={{ margin: 0, fontWeight: "bold" }}>{u.username}</p>
+                  <p
+                    style={{ margin: "5px 0", fontSize: "13px", color: "#aaa" }}
+                  >
+                    {u.role}
+                  </p>
+                </div>
 
-                <button style={deleteBtn} onClick={() => deleteUser(u._id)}>
+                <button
+                  onClick={() => handleDeleteClick(u._id, "user")}
+                  style={deleteBtn}
+                >
                   Delete
                 </button>
               </div>
@@ -758,7 +850,7 @@ function Admin() {
                   <div key={s._id} style={card}>
                     <img src={s.image} style={img} />
                     <button
-                      onClick={() => deleteSlider(s._id)}
+                      onClick={() => handleDeleteClick(s._id, "slider")}
                       style={deleteBtn}
                     >
                       Delete
@@ -836,7 +928,7 @@ function Admin() {
                     <p style={{ color: "green" }}>{p.discount}% OFF</p>
                   )}
                   <button
-                    onClick={() => deleteProduct(p._id)}
+                    onClick={() => handleDeleteClick(p._id, "product")}
                     style={deleteBtn}
                   >
                     Delete
@@ -867,7 +959,7 @@ function Admin() {
                 <div key={c._id} style={card}>
                   <p>{c.name}</p>
                   <button
-                    onClick={() => handleDeleteClick(c._id)}
+                    onClick={() => handleDeleteClick(c._id, "category")}
                     style={deleteBtn}
                   >
                     Delete
@@ -877,20 +969,6 @@ function Admin() {
             </div>
           </>
         )}
-
-         {/* ================= GLOBAL MODAL (OUTSIDE TAB) ================= */}
-    <ConfirmDeleteModal
-      open={openModal}
-      loading={loadingDelete}
-      title="Delete Category"
-      message="Are you sure you want to delete this category? This action cannot be undone."
-      onCancel={() => setOpenModal(false)}
-      onConfirm={confirmDeleteCategory}
-    />
-
-
-
-        
 
         {/* ===== TEAM ===== */}
         {activeTab === "team" && (
@@ -923,7 +1001,10 @@ function Admin() {
                   <img src={m.image} style={img} />
                   <p>{m.name}</p>
                   <p>{m.role}</p>
-                  <button onClick={() => deleteTeam(m._id)} style={deleteBtn}>
+                  <button
+                    onClick={() => handleDeleteClick(m._id, "team")}
+                    style={deleteBtn}
+                  >
                     Delete
                   </button>
                 </div>
@@ -1026,6 +1107,15 @@ function Admin() {
             </div>
           </div>
         )}
+
+        <ConfirmDeleteModal
+          open={openModal}
+          loading={loadingDelete}
+          title={`Delete ${deleteType}`}
+          message={`Are you sure you want to delete this ${deleteType}? This action cannot be undone.`}
+          onCancel={() => setOpenModal(false)}
+          onConfirm={confirmDelete}
+        />
       </div>
     </div>
   );
@@ -1033,6 +1123,29 @@ function Admin() {
 
 export default Admin;
 
+// ================user management styles================
+const formRow = {
+  display: "flex",
+  gap: "10px",
+  flexWrap: "wrap",
+  marginBottom: "20px",
+};
+
+const userGrid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+  gap: "15px",
+};
+
+const userCard = {
+  background: "#1a1a1a",
+  padding: "12px",
+  borderRadius: "10px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  border: "1px solid #2a2a2a",
+};
 /* ===== CONTENT ===== */
 const contentStyle = {
   flex: 1,
