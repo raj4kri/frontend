@@ -11,19 +11,9 @@ function Home() {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [todayVisitors, setTodayVisitors] = useState(0);
+ 
 
-  useEffect(() => {
-    fetch(`${API}/today`)
-      .then((res) => res.json())
-      .then((data) => setTodayVisitors(data.count));
-  }, []);
 
-  useEffect(() => {
-   fetch(`${API}/visit`)
-      .then((res) => res.json())
-      .catch((err) => console.log(err));
-  }, []);
 
   useEffect(() => {
     const checkStatus = () => {
@@ -127,7 +117,7 @@ function Home() {
             <button style={secondaryBtn}>WhatsApp</button>
           </a>
         </div>
-        <div style={visitorBox}>👥 Today Visitors: {todayVisitors}</div>
+        
       </section>
 
       {/* 🔥 PREMIUM SLIDER */}
@@ -225,16 +215,7 @@ function Home() {
 }
 
 export default Home;
-const visitorBox = {
-  marginTop: "20px",
-  padding: "10px 15px",
-  display: "inline-block",
-  background: "rgba(255,255,255,0.1)",
-  border: "1px solid rgba(255,255,255,0.2)",
-  borderRadius: "20px",
-  color: "#fff",
-  fontSize: "14px",
-};
+
 
 const statusBadge = (isOpen) => ({
   marginTop: "10px",
