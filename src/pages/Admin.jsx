@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { toast } from "react-toastify";
 
 function Admin() {
   const [loading, setLoading] = useState(false);
@@ -338,7 +339,7 @@ function Admin() {
     }
   };
 
-  const deleteCategory = async (id) => {
+const deleteCategory = async (id) => {
   const confirmDelete = window.confirm(
     "Are you sure you want to delete this category?"
   );
@@ -355,17 +356,17 @@ function Admin() {
 
     const data = await res.json();
 
-    if (res.ok) {
-      alert(data.message || "Category deleted successfully");
-      fetchCategories();
-    } else {
-      alert(data.message || "Delete failed");
-    }
+    if (!res.ok) throw new Error(data.message);
+
+    toast.success(data.message || "Category deleted successfully");
+    fetchCategories();
+
   } catch (err) {
-    console.error("Delete failed:", err);
-    alert("Something went wrong while deleting");
+    console.error(err);
+    toast.error(err.message || "Delete failed");
   }
 };
+
   // ================= PRODUCTS =================
   const [products, setProducts] = useState([]);
   const [name, setName] = useState("");
