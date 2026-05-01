@@ -137,50 +137,50 @@ function Admin() {
     }
   };
   // CREATE USER
-const createUser = async () => {
-  const token = getToken();
+  const createUser = async () => {
+    const token = getToken();
 
-  // ✅ VALIDATION
-  if (!newUsername || !newPassword) {
-    toast.error("Username and password are required");
-    return;
-  }
-
-  try {
-    const res = await fetch(`${API}/users`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        username: newUsername,
-        password: newPassword,
-        role: newRole || "manager",
-      }),
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      console.error("ERROR RESPONSE:", data);
-      toast.error(data.error || data.message || "User creation failed");
+    // ✅ VALIDATION
+    if (!newUsername || !newPassword) {
+      toast.error("Username and password are required");
       return;
     }
 
-    // ✅ SUCCESS MESSAGE (MISSING BEFORE)
-    toast.success("User created successfully 🎉");
+    try {
+      const res = await fetch(`${API}/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          username: newUsername,
+          password: newPassword,
+          role: newRole || "manager",
+        }),
+      });
 
-    fetchUsers();
+      const data = await res.json();
 
-    setNewUsername("");
-    setNewPassword("");
-    setNewRole("manager");
-  } catch (err) {
-    console.error(err);
-    toast.error("Server error while creating user");
-  }
-};
+      if (!res.ok) {
+        console.error("ERROR RESPONSE:", data);
+        toast.error(data.error || data.message || "User creation failed");
+        return;
+      }
+
+      // ✅ SUCCESS MESSAGE (MISSING BEFORE)
+      toast.success("User created successfully 🎉");
+
+      fetchUsers();
+
+      setNewUsername("");
+      setNewPassword("");
+      setNewRole("manager");
+    } catch (err) {
+      console.error(err);
+      toast.error("Server error while creating user");
+    }
+  };
 
   // DELETE USER
   const deleteUser = async (id) => {
@@ -405,6 +405,11 @@ const createUser = async () => {
   // ================= CATEGORY =================
   const [categories, setCategories] = useState([]);
   const [newCategory, setNewCategory] = useState("");
+  const [categorySearch, setCategorySearch] = useState("");
+
+  const filteredCategories = categories.filter((c) =>
+    c.name.toLowerCase().includes(categorySearch.toLowerCase()),
+  );
 
   const fetchCategories = async () => {
     try {
@@ -491,8 +496,13 @@ const createUser = async () => {
   const [category, setCategory] = useState("");
   const [editId, setEditId] = useState(null);
   const [files, setFiles] = useState([]);
+  const [productSearch, setProductSearch] = useState("");
 
   const [discount, setDiscount] = useState("");
+
+  const filteredProducts = products.filter((p) =>
+    p.name.toLowerCase().includes(productSearch.toLowerCase()),
+  );
 
   const handleChange = (e) => {
     if (e.target.name === "discount") {
@@ -570,15 +580,15 @@ const createUser = async () => {
       toast.error("Server error");
     }
   };
-  const deleteProduct = async (id) => {
-    const token = getToken(); // ✅
-    await fetch(`${API}/products/${id}`, {
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` },
-    });
+  // const deleteProduct = async (id) => {
+  //   const token = getToken(); // ✅
+  //   await fetch(`${API}/products/${id}`, {
+  //     method: "DELETE",
+  //     headers: { Authorization: `Bearer ${token}` },
+  //   });
 
-    fetchProducts();
-  };
+  //   fetchProducts();
+  // };
 
   const handleEdit = (product) => {
     setEditId(product._id);
@@ -730,22 +740,45 @@ const createUser = async () => {
 
         {/* MENU */}
         <div style={menu}>
-          <button onClick={() => setActiveTab("users")} style={tabBtn}>
+          <button
+            onClick={() => setActiveTab("users")}
+            style={activeTab === "users" ? activeTabBtn : tabBtn}
+          >
             Users
           </button>
-          <button onClick={() => setActiveTab("slider")} style={tabBtn}>
+
+          <button
+            onClick={() => setActiveTab("slider")}
+            style={activeTab === "slider" ? activeTabBtn : tabBtn}
+          >
             Gallery
           </button>
-          <button onClick={() => setActiveTab("product")} style={tabBtn}>
+
+          <button
+            onClick={() => setActiveTab("product")}
+            style={activeTab === "product" ? activeTabBtn : tabBtn}
+          >
             Products
           </button>
-          <button onClick={() => setActiveTab("category")} style={tabBtn}>
+
+          <button
+            onClick={() => setActiveTab("category")}
+            style={activeTab === "category" ? activeTabBtn : tabBtn}
+          >
             Category
           </button>
-          <button onClick={() => setActiveTab("team")} style={tabBtn}>
+
+          <button
+            onClick={() => setActiveTab("team")}
+            style={activeTab === "team" ? activeTabBtn : tabBtn}
+          >
             Team
           </button>
-          <button onClick={() => setActiveTab("contact")} style={tabBtn}>
+
+          <button
+            onClick={() => setActiveTab("contact")}
+            style={activeTab === "contact" ? activeTabBtn : tabBtn}
+          >
             Messages {unreadCount > 0 && `(${unreadCount})`}
           </button>
         </div>
@@ -866,6 +899,35 @@ const createUser = async () => {
         {activeTab === "product" && (
           <>
             <h3>Products</h3>
+            <div
+              style={{
+                display: "flex",
+                gap: "10px",
+                alignItems: "center",
+                marginBottom: "10px",
+              }}
+            >
+              <input
+                style={inputStyle}
+                placeholder="Search product..."
+                value={productSearch}
+                onChange={(e) => setProductSearch(e.target.value)}
+              />
+
+              <button
+                onClick={() => setProductSearch("")}
+                style={{
+                  padding: "10px",
+                  background: "#444",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                Clear
+              </button>
+            </div>
 
             <input
               style={inputStyle}
@@ -913,29 +975,38 @@ const createUser = async () => {
             </button>
 
             <div style={gridStyle}>
-              {products.map((p) => (
-                <div key={p._id} style={card}>
-                  {p.images?.[0] && <img src={p.images[0]} style={img} />}
-                  <p>{p.name}</p>
-                  <p>
-                    <span style={{ textDecoration: "line-through" }}>
-                      ₹{p.price}
-                    </span>{" "}
-                    <b>₹{p.finalPrice}</b>
-                  </p>
+              {filteredProducts.length === 0 ? (
+                <p style={{ color: "#aaa", marginTop: "10px" }}>
+                  No products found
+                </p>
+              ) : (
+                filteredProducts.map((p) => (
+                  <div key={p._id} style={card}>
+                    {p.images?.[0] && <img src={p.images[0]} style={img} />}
+                    <p>{p.name}</p>
 
-                  {p.discount > 0 && (
-                    <p style={{ color: "green" }}>{p.discount}% OFF</p>
-                  )}
-                  <button
-                    onClick={() => handleDeleteClick(p._id, "product")}
-                    style={deleteBtn}
-                  >
-                    Delete
-                  </button>
-                  <button onClick={() => handleEdit(p)}>Edit</button>
-                </div>
-              ))}
+                    <p>
+                      <span style={{ textDecoration: "line-through" }}>
+                        ₹{p.price}
+                      </span>{" "}
+                      <b>₹{p.finalPrice}</b>
+                    </p>
+
+                    {p.discount > 0 && (
+                      <p style={{ color: "green" }}>{p.discount}% OFF</p>
+                    )}
+
+                    <button
+                      onClick={() => handleDeleteClick(p._id, "product")}
+                      style={deleteBtn}
+                    >
+                      Delete
+                    </button>
+
+                    <button onClick={() => handleEdit(p)}>Edit</button>
+                  </div>
+                ))
+              )}
             </div>
           </>
         )}
@@ -944,6 +1015,29 @@ const createUser = async () => {
         {activeTab === "category" && (
           <>
             <h3>Category</h3>
+
+            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+              <input
+                style={inputStyle}
+                placeholder="Search category..."
+                value={categorySearch}
+                onChange={(e) => setCategorySearch(e.target.value)}
+              />
+
+              <button
+                onClick={() => setCategorySearch("")}
+                style={{
+                  padding: "10px",
+                  background: "#444",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                Clear
+              </button>
+            </div>
 
             <input
               style={inputStyle}
@@ -955,17 +1049,23 @@ const createUser = async () => {
             <button onClick={addCategory}>Add</button>
 
             <div style={baseGrid}>
-              {categories.map((c) => (
-                <div key={c._id} style={card}>
-                  <p>{c.name}</p>
-                  <button
-                    onClick={() => handleDeleteClick(c._id, "category")}
-                    style={deleteBtn}
-                  >
-                    Delete
-                  </button>
-                </div>
-              ))}
+              {filteredCategories.length === 0 ? (
+                <p style={{ color: "#aaa", marginTop: "10px" }}>
+                  No categories found
+                </p>
+              ) : (
+                filteredCategories.map((c) => (
+                  <div key={c._id} style={card}>
+                    <p>{c.name}</p>
+                    <button
+                      onClick={() => handleDeleteClick(c._id, "category")}
+                      style={deleteBtn}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
             </div>
           </>
         )}
@@ -1122,6 +1222,18 @@ const createUser = async () => {
 }
 
 export default Admin;
+
+// ================ STYLES =================
+
+const activeTabBtn = {
+  padding: "10px",
+  background: "#ffcc00",
+  border: "1px solid transparent",
+  borderRadius: "8px",
+  color: "#000",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
 
 // ================user management styles================
 const formRow = {
