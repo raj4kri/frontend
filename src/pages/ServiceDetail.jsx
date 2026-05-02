@@ -672,28 +672,8 @@ function ServiceDetail() {
           ))}
         </div>
 
-        {/* RIGHT SIDE (CTA CARD) */}
-        {/* ✅ MOBILE STICKY CTA */}
-       <div className="mobile-cta" style={stickyBarMobile}>
-          <button
-            style={stickyCall}
-            onClick={() => (window.location.href = "tel:9060211167")}
-          >
-            📞 Call Now
-          </button>
-
-          <button
-            style={stickyWhats}
-            onClick={() =>
-              window.open(
-                "https://wa.me/919060211167?text=Hi%20I%20need%20mobile%20repair%20service",
-                "_blank",
-              )
-            }
-          >
-            💬 WhatsApp
-          </button>
-        </div>
+     
+      
       </div>
 
       {/* STICKY MOBILE CTA */}
@@ -702,19 +682,6 @@ function ServiceDetail() {
 }
 
 export default ServiceDetail;
-
-
-const stickyBarMobile = {
-  position: "fixed",
-  bottom: 0,
-  left: 0,
-  width: "100%",
-  display: "flex",
-  zIndex: 999,
-};
-
-/* Add this in index.css */
-
 
 
 const list = {
@@ -737,7 +704,7 @@ const listItem = {
 const container = {
   display: "flex",
   gap: "30px",
- 
+  padding: "40px",
   background: "linear-gradient(135deg, #020617, #0f172a)",
   minHeight: "100vh",
   flexDirection: window.innerWidth < 768 ? "column" : "row",
@@ -749,12 +716,7 @@ const left = {
   flex: 3,
 };
 
-const right = {
-  flex: 1,
-  position: "sticky",
-  top: "100px",
-  height: "fit-content",
-};
+
 
 const heroTitle = {
   fontSize: "36px",
@@ -780,101 +742,3 @@ const sectionTitle = {
   marginBottom: "10px",
 };
 
-const ctaCard = {
-  background: "#020617",
-  padding: "25px",
-  borderRadius: "12px",
-  textAlign: "center",
-  border: "1px solid rgba(255,255,255,0.08)",
-};
-
-const callBtn = {
-  width: "100%",
-  padding: "12px",
-  marginTop: "15px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#22c55e",
-  color: "#fff",
-  fontWeight: "bold",
-  cursor: "pointer",
-};
-
-const whatsappBtn = {
-  width: "100%",
-  padding: "12px",
-  marginTop: "10px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#2563eb",
-  color: "#fff",
-  fontWeight: "bold",
-  cursor: "pointer",
-};
-
-const hero = {
-  textAlign: "center",
-  marginBottom: "30px",
-};
-
-const ctaBox = {
-  marginTop: "30px",
-  textAlign: "center",
-};
-
-const stickyBar = {
-  position: "fixed",
-  bottom: 0,
-  left: 0,
-  width: "100%",
-  display: "flex",
-};
-
-const stickyCall = {
-  width: "100%",
-  padding: "15px",
-  background: "#22c55e",
-  color: "#fff",
-  border: "none",
-};
-
-const stickyWhats = {
-  width: "100%",
-  padding: "15px",
-  background: "#2563eb",
-  color: "#fff",
-  border: "none",
-};
-
-/* styles same as before */
-
-/* STYLES */
-
-const card = {
-  maxWidth: "800px",
-  width: "100%",
-  background: "#0f172a",
-  padding: "30px",
-  borderRadius: "16px",
-  boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
-  border: "1px solid rgba(255,255,255,0.1)",
-};
-
-const title = {
-  fontSize: "28px",
-  marginBottom: "20px",
-  color: "#38bdf8",
-};
-
-const content = {
-  whiteSpace: "pre-line",
-  lineHeight: "1.8",
-  color: "#cbd5f5",
-  fontSize: "15px",
-};
-
-const btnContainer = {
-  marginTop: "30px",
-  display: "flex",
-  gap: "15px",
-};

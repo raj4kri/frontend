@@ -18,10 +18,7 @@ const FAQSimple01 = () => {
       question: "Do you support all mobile brands?",
       answer: "We repair all major brands including Samsung, Vivo, Oppo, Xiaomi, Realme, and more."
     },
-    {
-      question: "Is doorstep service available?",
-      answer: "Yes, doorstep service is available in selected areas."
-    },
+  
     {
       question: "How can I contact support?",
       answer: "You can contact us via WhatsApp, call, or the contact form on our website."
@@ -101,13 +98,7 @@ const FAQSimple01 = () => {
           })}
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-white/70 mt-10">
-          Didn’t find your answer?{" "}
-          <a href="/contact" className="text-blue-400 hover:underline">
-            Contact us
-          </a>
-        </p>
+       
       </div>
     </section>
   );

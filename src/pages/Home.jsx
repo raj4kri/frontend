@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FAQSimple01 from "../components/FAQSimple01";
+import { useNavigate } from "react-router-dom";
 function Home() {
   const API = import.meta.env.VITE_API_URL;
 
@@ -10,10 +11,18 @@ function Home() {
   const [transition, setTransition] = useState(true);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [products, setProducts] = useState([]);
 
- 
+  const navigate = useNavigate();
 
-
+  useEffect(() => {
+    fetch(`${API}/products?page=1&limit=8`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProducts(data.products || []);
+      })
+      .catch((err) => console.log(err));
+  }, []);
 
   useEffect(() => {
     const checkStatus = () => {
@@ -92,6 +101,43 @@ function Home() {
 
   return (
     <div style={{ width: "100%", overflowX: "hidden" }}>
+     <section style={exploreSection}>
+  <div style={exploreRow}>
+    
+    {/* PRODUCTS */}
+    <div style={exploreGrid}>
+      {products.map((p) => (
+        <div
+          key={p._id}
+          style={exploreItem}
+          onClick={() => navigate(`/products/${p._id}`)}
+        >
+          <div style={circle}>
+            <img
+              src={p.images?.[0]}
+              alt={p.name}
+              style={circleImg}
+              onError={(e) => (e.target.src = "/fallback.jpg")}
+            />
+          </div>
+
+          <span style={productName}>{p.name}</span>
+        </div>
+      ))}
+    </div>
+
+    {/* 👉 EXPLORE BUTTON */}
+    <div style={exploreBtnBox}>
+      <button
+        style={exploreBtn}
+        onClick={() => navigate("/products")}
+      >
+        Explore →
+      </button>
+    </div>
+
+  </div>
+</section>
       {/* 🔥 HERO */}
       <section style={hero}>
         <h1 style={title}>Deepak Communication</h1>
@@ -117,7 +163,6 @@ function Home() {
             <button style={secondaryBtn}>WhatsApp</button>
           </a>
         </div>
-        
       </section>
 
       {/* 🔥 PREMIUM SLIDER */}
@@ -215,6 +260,79 @@ function Home() {
 }
 
 export default Home;
+
+const exploreSection = {
+  padding: "5px",
+  background: "#020617",
+};
+
+const exploreRow = {
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
+};
+
+const exploreGrid = {
+  display: "flex",
+  gap: "15px",
+  overflowX: "auto",
+  flex: 1, // ✅ takes full space
+};
+
+const exploreItem = {
+  minWidth: "65px",
+  textAlign: "center",
+  cursor: "pointer",
+  flexShrink: 0,
+};
+
+const circle = {
+  width: "55px",
+  height: "55px",
+  borderRadius: "50%",
+  overflow: "hidden",
+  background: "rgba(255,255,255,0.05)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  border: "1px solid rgba(255,255,255,0.1)",
+};
+
+const circleImg = {
+  width: "100%",
+  height: "100%",
+  objectFit: "cover",
+};
+
+const productName = {
+  display: "block",
+  marginTop: "5px",
+  fontSize: "11px",
+  color: "#cbd5f5",
+  whiteSpace: "nowrap",
+};
+
+const exploreBtnBox = {
+  flexShrink: 0,
+};
+
+const exploreBtn = {
+  padding: "8px 12px",
+  fontSize: "12px",
+  borderRadius: "20px",
+  border: "1px solid #2563eb",
+  background: "transparent",
+  color: "#2563eb",
+  cursor: "pointer",
+  whiteSpace: "nowrap",
+};
+
+
+
+
+
+
+
 
 
 const statusBadge = (isOpen) => ({
