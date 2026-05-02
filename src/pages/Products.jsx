@@ -270,13 +270,19 @@ const itemStyle = {
 
 const imageWrapper = {
   position: "relative",
-  height: "160px",
+  width: "100%",
+  paddingTop: "100%", // ✅ makes perfect square
+  overflow: "hidden",
 };
 
 const imageStyle = {
+  position: "absolute",
+  top: 0,
+  left: 0,
   width: "100%",
   height: "100%",
-  objectFit: "cover",
+  objectFit: "contain", // ✅ IMPORTANT (no crop)
+  background: "#fff",   // optional clean bg
 };
 
 const discountBadge = {
