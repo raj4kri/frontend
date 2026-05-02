@@ -5,7 +5,10 @@ function Section({ title, children }) {
   return (
     <div style={section}>
       <h2 style={sectionTitle}>{title}</h2>
-      <p style={sectionText}>{children}</p>
+
+      {/* ✅ FIX HERE */}
+      <div style={sectionText}>{children}</div>
+
     </div>
   );
 }
