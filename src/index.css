@@ -49,7 +49,12 @@
     filter: invert(1) brightness(2);
   }
 }
-
+/* ✅ Only show on mobile */
+@media (min-width: 768px) {
+  .mobile-cta {
+    display: none;
+  }
+}
 body {
   margin: 0;
 }
