@@ -1,39 +1,54 @@
 import React from "react";
 
+
+import { useNavigate } from "react-router-dom";
+
+;
+
+
+
 function Services() {
+  const navigate = useNavigate()
   const services = [
     {
       title: "Screen Replacement",
+       slug: "screen-replacement",
       icon: "📱",
       desc: "High-quality screen replacement with crystal clear display & smooth touch.",
     },
     {
       title: "Battery Replacement",
+      slug: "battery-replacement",
       icon: "🔋",
       desc: "Long-lasting battery replacement for all smartphone brands.",
     },
     {
       title: "Software Issue",
+      slug: "software-issue",
       icon: "💻",
       desc: "Fix lag, bugs, crashes & OS issues with expert support.",
     },
     {
       title: "Charging Problem",
+      slug: "charging-problem",
       icon: "🔌",
       desc: "Repair charging ports & fix slow or no charging issues.",
     },
     {
       title: "Network Fix",
+      slug: "network-fix",
       icon: "📶",
       desc: "Solve SIM & network problems quickly and efficiently.",
     },
     {
       title: "Mobile Unlock",
+      slug: "mobile-unlock",
       icon: "🔓",
       desc: "Safe unlocking for PIN, pattern & FRP locks.",
     },
     {
       title: "Motherboard Repair",
+      slug: "motherboard-repair",
       icon: "🛠️",
       desc: "Advanced chip-level repair for dead or damaged phones.",
     },
@@ -48,7 +63,11 @@ function Services() {
 
       <div style={grid}>
         {services.map((s, index) => (
-          <div key={index} style={card}>
+          <div key={index} style={card}
+
+          onClick={() => navigate(`/services/${s.slug}`)}
+          
+          >
             <div style={iconWrapper}>
               <span style={icon}>{s.icon}</span>
             </div>
@@ -63,6 +82,13 @@ function Services() {
 }
 
 export default Services;
+
+// ================= DATA =================
+
+
+
+
+
 
 /* ================= STYLES ================= */
 

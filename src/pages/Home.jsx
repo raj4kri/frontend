@@ -246,7 +246,7 @@ const timeBadge = {
 /* ================= DATA ================= */
 
 const services = [
-  { icon: "📱", title: "Screen Repair", desc: "Original display replacement" },
+  { icon: "📱", title: "Screen Repair", desc: "Display replacement" },
   { icon: "🔋", title: "Battery", desc: "Fast battery replacement" },
   { icon: "🔌", title: "Charging Issue", desc: "Fix charging problems" },
   { icon: "💻", title: "Software", desc: "All software issues fixed" },

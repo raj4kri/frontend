@@ -49,8 +49,8 @@ const handleSubmit = async (e) => {
     }
 
     // ✅ SUCCESS
-    showToast("Message sent successfully 🎉", "success");
-
+    // ✅ FIX (use backend message)
+showToast(data.message || "Message sent successfully 🎉", "success");
     // ✅ CLEAR FORM
     setForm({
       name: "",
@@ -68,7 +68,7 @@ const handleSubmit = async (e) => {
 };
 
   const showToast = (message, type) => {
-    setToast({ show: true, message, type });
+    setToast({ show: false, message: "", type: "" });
     setTimeout(() => setToast({ show: false }), 3000);
   };
 
@@ -137,7 +137,7 @@ const handleSubmit = async (e) => {
               onChange={handleChange}
             />
 
-           <button style={button} disabled={loading}>
+     <button style={button} disabled={loading}>
   {loading ? "Sending..." : "Send Message"}
 </button>
           </form>
@@ -230,17 +230,7 @@ const wrapper = {
   justifyContent: "center",
 };
 
-// const card = {
-//   flex: "1",
-//   minWidth: "320px",
-//   maxWidth: "500px",
-//   background: "rgba(255,255,255,0.05)",
-//   backdropFilter: "blur(12px)",
-//  padding: "18px",
-// borderRadius: "12px",
-//   border: "1px solid rgba(255,255,255,0.1)",
-//   boxShadow: "0 6px 15px rgba(0,0,0,0.25)",
-// };
+
 
 const sectionTitle = {
   marginBottom: "15px",
@@ -248,32 +238,14 @@ const sectionTitle = {
   fontWeight: "600",
 };
 
-// const input = {
-//   width: "100%",
-//   padding: "10px",
-//   marginBottom: "8px",
-//   borderRadius: "10px",
-//   border: "1px solid rgba(255,255,255,0.2)",
-//   background: "rgba(255,255,255,0.08)",
-//   color: "#fff",
-//   outline: "none",
-// };
+
 
 const textarea = {
   ...input,
   height: "100px",
 };
 
-// const button = {
-//   width: "100%",
-//   padding: "10px",
-//   borderRadius: "10px",
-//   border: "none",
-//   background: "linear-gradient(90deg, #3b82f6, #06b6d4)",
-//   color: "#fff",
-//   fontWeight: "600",
-//   cursor: "pointer",
-// };
+
 
 const info = {
   marginBottom: "10px",

@@ -9,9 +9,11 @@ import Products from "./pages/Products";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import SocialBar from "./components/SocialBar";
+import ServiceDetail from "./pages/ServiceDetail";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+
 
 function App() {
   return (
@@ -25,6 +27,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
         <Route path="/services" element={<Services />} />
+         <Route path="/services/:slug" element={<ServiceDetail />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
