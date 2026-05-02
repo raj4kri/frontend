@@ -651,8 +651,24 @@ function ServiceDetail() {
           <div style={ctaCard}>
             <h2>Need Repair Now?</h2>
 
-            <button style={callBtn}>📞 Call Now</button>
-            <button style={whatsappBtn}>💬 WhatsApp</button>
+           <button
+  style={callBtn}
+  onClick={() => window.location.href = "tel:9060211167"}
+>
+  📞 Call Now
+</button>
+
+<button
+  style={whatsappBtn}
+  onClick={() =>
+    window.open(
+      "https://wa.me/919060211167?text=Hi%20I%20need%20mobile%20repair%20service",
+      "_blank"
+    )
+  }
+>
+  💬 WhatsApp
+</button>
 
             <p
               style={{ marginTop: "15px", fontSize: "13px", color: "#94a3b8" }}
