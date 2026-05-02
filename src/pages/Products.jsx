@@ -178,7 +178,7 @@ function Products() {
             </div>
 
             {/* CONTENT */}
-            <div style={{ padding: "10px", textAlign: "left" }}>
+            <div style={{ padding: "6px", textAlign: "left" }}>
               <h3 style={nameStyle}>{p.name}</h3>
 
               {/* PRICE */}
@@ -226,6 +226,8 @@ export default Products;
 
 /* ================= STYLES ================= */
 
+const isMobile = window.innerWidth < 600;
+
 const mainContainer = {
   background: "#0f172a",
   minHeight: "100vh",
@@ -257,7 +259,9 @@ const selectInput = {
 
 const containerStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+gridTemplateColumns: isMobile
+  ? "repeat(2, 1fr)"   // ✅ 2 per row mobile
+  : "repeat(auto-fill, minmax(180px, 1fr))",
   gap: "18px",
 };
 
@@ -271,7 +275,7 @@ const itemStyle = {
 const imageWrapper = {
   position: "relative",
   width: "100%",
-  paddingTop: "100%", // ✅ makes perfect square
+  paddingTop: "85%", // ✅ makes perfect square
   overflow: "hidden",
 };
 
@@ -281,8 +285,8 @@ const imageStyle = {
   left: 0,
   width: "100%",
   height: "100%",
-  objectFit: "contain", // ✅ IMPORTANT (no crop)
-  background: "#fff",   // optional clean bg
+  objectFit: "contain",
+  padding: "5px", // ✅ gives breathing space
 };
 
 const discountBadge = {
@@ -322,9 +326,15 @@ const dot = {
 };
 
 const nameStyle = {
-  fontSize: "14px",
+  fontSize: "12px", // ✅ smaller
   fontWeight: "600",
 };
+
+const categoryStyle = {
+  fontSize: "10px",
+};
+
+
 
 const priceRow = {
   display: "flex",
@@ -347,10 +357,6 @@ const discountStyle = {
   fontSize: "12px",
 };
 
-const categoryStyle = {
-  fontSize: "12px",
-  color: "#666",
-};
 
 const availabilityBadge = {
   fontSize: "10px",
