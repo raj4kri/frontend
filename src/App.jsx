@@ -10,6 +10,7 @@ import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import SocialBar from "./components/SocialBar";
 import ServiceDetail from "./pages/ServiceDetail";
+import ProductDetail from "./pages/ProductDetail";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,6 +27,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/services" element={<Services />} />
          <Route path="/services/:slug" element={<ServiceDetail />} />
         <Route path="/contact" element={<Contact />} />
