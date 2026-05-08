@@ -246,12 +246,12 @@ function Admin() {
     gap: "10px",
   };
 
-  const gridStyle = {
-    ...baseGrid,
-    gridTemplateColumns: isMobile
-      ? "repeat(2, 1fr)"
-      : "repeat(auto-fill, minmax(140px, 1fr))",
-  };
+ const gridStyle = {
+  ...baseGrid,
+  gridTemplateColumns: isMobile
+    ? "repeat(2, 1fr)"
+    : "repeat(auto-fill, minmax(220px, 1fr))",
+};
   // ================= CONTACT =================
   const [messages, setMessages] = useState([]);
   const unreadCount = messages.filter((m) => !m.isRead).length;
@@ -1392,8 +1392,8 @@ const sectionHeaderBase = {
 
 /* ===== GRID ===== */
 const baseGrid = {
-  display: "flex",
-  flexWrap: "wrap",
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
   gap: "15px",
 };
 
