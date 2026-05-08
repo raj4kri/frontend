@@ -520,9 +520,16 @@ function Admin() {
     fetchProducts();
   }, []);
 
-  const handleFileChange = (e) => {
-    setFiles(Array.from(e.target.files)); // convert FileList → array
-  };
+const handleFileChange = (e) => {
+  const selectedFiles = Array.from(e.target.files);
+
+  if (selectedFiles.length > 5) {
+    toast.error("Maximum 5 images allowed");
+    return;
+  }
+
+  setFiles(selectedFiles);
+};
 
   const addProduct = async () => {
     const token = getToken();
@@ -988,7 +995,7 @@ function Admin() {
                   No products found
                 </p>
               ) : (
-                filteredProducts.map((p) => (
+               [...new Map(filteredProducts.map((p) => [p._id, p])).values()].map((p) => ( 
                   <div key={p._id} style={card}>
                     {p.images?.[0] && <img src={p.images[0]} style={img} />}
                     <p>{p.name}</p>
