@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import FAQSimple01 from "../components/FAQSimple01";
 import { useNavigate } from "react-router-dom";
+import HomeSkeleton from "../components/skeletons/HomeSkeleton";
 function Home() {
   const API = import.meta.env.VITE_API_URL;
 
@@ -9,6 +10,7 @@ function Home() {
   const [loopSlider, setLoopSlider] = useState([]);
   const [index, setIndex] = useState(1);
   const [transition, setTransition] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   const [isOpen, setIsOpen] = useState(false);
   const [products, setProducts] = useState([]);
@@ -16,13 +18,26 @@ function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch(`${API}/products?page=1&limit=8`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.products || []);
-      })
-      .catch((err) => console.log(err));
-  }, []);
+  Promise.all([
+    fetch(`${API}/products?page=1&limit=8`).then((res) => res.json()),
+    fetch(`${API}/slider`).then((res) => res.json()),
+  ])
+    .then(([productData, sliderData]) => {
+      setProducts(productData.products || []);
+      setSlider(sliderData || []);
+    })
+    .catch((err) => console.log(err))
+    .finally(() => setLoading(false));
+}, []);
+
+  // useEffect(() => {
+  //   fetch(`${API}/products?page=1&limit=8`)
+  //     .then((res) => res.json())
+  //     .then((data) => {
+  //       setProducts(data.products || []);
+  //     })
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   useEffect(() => {
     const checkStatus = () => {
@@ -44,12 +59,12 @@ function Home() {
   }, []);
 
   // ✅ Fetch images
-  useEffect(() => {
-    fetch(`${API}/slider`)
-      .then((res) => res.json())
-      .then((data) => setSlider(data))
-      .catch((err) => console.log(err));
-  }, []);
+  // useEffect(() => {
+  //   fetch(`${API}/slider`)
+  //     .then((res) => res.json())
+  //     .then((data) => setSlider(data))
+  //     .catch((err) => console.log(err));
+  // }, []);
 
   // ✅ Create infinite loop array
   useEffect(() => {
@@ -98,6 +113,8 @@ function Home() {
   const handleImageError = (e) => {
     e.target.src = "/fallback.jpg";
   };
+
+    if (loading) return <HomeSkeleton />;
 
   return (
     <div style={{ width: "100%", overflowX: "hidden" }}>

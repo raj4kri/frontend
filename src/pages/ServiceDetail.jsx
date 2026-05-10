@@ -1,5 +1,7 @@
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
+import ServiceDetailSkeleton from "../components/skeletons/ServiceSkeleton";
+import { useEffect, useState } from "react";
 
 function Section({ title, children }) {
   return (
@@ -13,6 +15,15 @@ function Section({ title, children }) {
 }
 
 function ServiceDetail() {
+  const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setLoading(false);
+  }, 1200);
+
+  return () => clearTimeout(timer);
+}, []);
   const { slug } = useParams();
 
   const serviceData = {
@@ -623,6 +634,10 @@ function ServiceDetail() {
   };
 
   const service = serviceData[slug];
+
+  if (loading) {
+  return <ServiceDetailSkeleton />;
+}
 
   if (!service) return <h2>Service Not Found</h2>;
 

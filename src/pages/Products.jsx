@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import ProductSkeleton from "../components/skeletons/ProductSkeleton";
 
 function Products() {
   const [products, setProducts] = useState([]);
+const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -30,21 +32,33 @@ function Products() {
   }, []);
 
   // 📦 products
-  const fetchProducts = async () => {
+const fetchProducts = async () => {
+  try {
+    setLoading(true);
+
     const res = await fetch(
       `${API}/products?search=${debouncedSearch}&category=${filter}&page=${page}`
     );
+
     const data = await res.json();
 
     setProducts(data.products || []);
     setTotalPages(data.pages || 1);
 
     const initial = {};
+
     (data.products || []).forEach((p) => {
       initial[p._id] = 0;
     });
+
     setImageIndexes(initial);
-  };
+
+  } catch (err) {
+    console.log(err);
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     fetchProducts();
@@ -121,8 +135,11 @@ function Products() {
       </div>
 
       {/* 📦 PRODUCTS */}
-      <div style={containerStyle}>
-        {products.map((p) => (
+      {loading ? (
+  <ProductSkeleton />
+) : (
+  <div style={containerStyle}>
+    {products.map((p) => (
           <div
             key={p._id}
             style={itemStyle}
@@ -200,6 +217,7 @@ function Products() {
           </div>
         ))}
       </div>
+      )}
 
       {/* PAGINATION */}
       <div style={paginationStyle}>
