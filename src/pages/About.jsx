@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from "react";
-
+import AboutSkeleton from "../components/skeletons/AboutSkeleton";
 function About() {
+  const [loading, setLoading] = useState(true);
   const [team, setTeam] = useState([]);
   const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     fetch(`${API}/team`)
       .then((res) => res.json())
-      .then((data) => setTeam(data))
+      .then((data) => {
+  setTeam(data);
+  setLoading(false);
+})
       .catch((err) => console.log("TEAM FETCH ERROR:", err));
+      setLoading(false);
   }, []);
+
+  if (loading) return <AboutSkeleton />;
 
   return (
     <div style={container}>

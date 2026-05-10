@@ -1,14 +1,22 @@
-import React from "react";
 
 
+import ServiceSkeleton from "../components/skeletons/ServiceSkeleton";
 import { useNavigate } from "react-router-dom";
 
-
+import React, { useEffect, useState } from "react";
 
 
 
 function Services() {
+const [loading, setLoading] = useState(true);
 
+useEffect(() => {
+  const timer = setTimeout(() => {
+    setLoading(false);
+  }, 1200);
+
+  return () => clearTimeout(timer);
+}, []);
 
   const navigate = useNavigate()
   const services = [
@@ -55,6 +63,8 @@ function Services() {
       desc: "Advanced chip-level repair for dead or damaged phones.",
     },
   ];
+
+  if (loading) return <ServiceSkeleton />;
 
   return (
     <div style={container}>

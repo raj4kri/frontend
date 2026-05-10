@@ -1,22 +1,20 @@
-function ServiceDetailSkeleton() {
+function ServicesSkeleton() {
   return (
     <div style={container}>
-      <div style={left}>
-        {/* HERO */}
-        <div style={heroTitle}></div>
-        <div style={heroSub}></div>
+      {/* TITLE */}
+      <div style={title}></div>
+      <div style={subtitle}></div>
 
-        {/* SECTIONS */}
-        {[1, 2, 3, 4].map((item) => (
-          <div key={item} style={section}>
-            <div style={sectionHeading}></div>
+      {/* GRID */}
+      <div style={grid}>
+        {[1, 2, 3, 4, 5, 6].map((item) => (
+          <div key={item} style={card}>
+            <div style={icon}></div>
+
+            <div style={cardTitle}></div>
 
             <div style={line}></div>
-            <div style={line}></div>
-            <div style={{ ...line, width: "70%" }}></div>
-
-            <div style={card}></div>
-            <div style={card}></div>
+            <div style={{ ...line, width: "75%" }}></div>
           </div>
         ))}
       </div>
@@ -24,86 +22,72 @@ function ServiceDetailSkeleton() {
   );
 }
 
-export default ServiceDetailSkeleton;
+export default ServicesSkeleton;
 
-/* ================= STYLES ================= */
+/* ===== SHIMMER ===== */
 
 const shimmer = {
   background:
-    "linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%)",
+    "linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.12) 50%, rgba(255,255,255,0.05) 75%)",
   backgroundSize: "200% 100%",
-  animation: "loading 1.5s infinite",
+  animation: "shimmer 1.5s infinite",
 };
 
 const container = {
-  padding: "20px",
-  background: "linear-gradient(135deg, #020617, #0f172a)",
+  background: "linear-gradient(135deg, #0f172a, #020617)",
   minHeight: "100vh",
+  padding: "40px 10px",
 };
 
-const left = {
-  maxWidth: "1000px",
-  margin: "0 auto",
-};
-
-const heroTitle = {
+const title = {
   ...shimmer,
-  height: "40px",
-  width: "60%",
-  borderRadius: "10px",
-  marginBottom: "15px",
-};
-
-const heroSub = {
-  ...shimmer,
-  height: "18px",
-  width: "40%",
+  width: "260px",
+  height: "42px",
   borderRadius: "8px",
-  marginBottom: "30px",
+  margin: "0 auto 15px",
 };
 
-const section = {
-  background: "#020617",
-  borderRadius: "14px",
-  padding: "20px",
-  marginBottom: "20px",
-  border: "1px solid rgba(255,255,255,0.05)",
-};
-
-const sectionHeading = {
+const subtitle = {
   ...shimmer,
-  height: "28px",
-  width: "45%",
-  borderRadius: "8px",
-  marginBottom: "20px",
+  width: "320px",
+  height: "16px",
+  borderRadius: "6px",
+  margin: "0 auto 40px",
+};
+
+const grid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+  gap: "25px",
+};
+
+const card = {
+  background: "rgba(255,255,255,0.05)",
+  borderRadius: "18px",
+  padding: "25px",
+  border: "1px solid rgba(255,255,255,0.08)",
+};
+
+const icon = {
+  ...shimmer,
+  width: "60px",
+  height: "60px",
+  borderRadius: "50%",
+  margin: "0 auto 20px",
+};
+
+const cardTitle = {
+  ...shimmer,
+  width: "70%",
+  height: "20px",
+  borderRadius: "6px",
+  margin: "0 auto 20px",
 };
 
 const line = {
   ...shimmer,
-  height: "14px",
   width: "100%",
+  height: "12px",
   borderRadius: "6px",
   marginBottom: "12px",
 };
-
-const card = {
-  ...shimmer,
-  height: "80px",
-  width: "100%",
-  borderRadius: "12px",
-  marginTop: "15px",
-};
-
-/* GLOBAL ANIMATION */
-const style = document.createElement("style");
-style.innerHTML = `
-@keyframes loading {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-`;
-document.head.appendChild(style);

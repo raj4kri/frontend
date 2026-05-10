@@ -1,7 +1,17 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
+
+import ContactSkeleton from "../components/skeletons/ContactSkeleton";
 
 function Contact() {
   const API = import.meta.env.VITE_API_URL;
+  const [pageLoading, setPageLoading] = useState(true);
+
+  useEffect(() => {
+  setTimeout(() => {
+    setPageLoading(false);
+  }, 1200);
+}, []);
 
   const [form, setForm] = useState({
     name: "",
@@ -71,6 +81,8 @@ showToast(data.message || "Message sent successfully 🎉", "success");
     setToast({ show: false, message: "", type: "" });
     setTimeout(() => setToast({ show: false }), 3000);
   };
+
+  if (pageLoading) return <ContactSkeleton />;
 
   return (
     <div style={container}>
