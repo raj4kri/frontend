@@ -13,7 +13,7 @@ function SocialBar() {
         <FaInstagram />
       </a>
 
-      <a href="https://wa.me/917903182706" target="_blank" rel="noreferrer">
+      <a href="https://wa.me/919060211167" target="_blank" rel="noreferrer">
         <FaWhatsapp />
       </a>
 
