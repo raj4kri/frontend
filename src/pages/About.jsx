@@ -31,15 +31,49 @@ function About() {
       {/* 🧾 WHO WE ARE */}
       <div style={card}>
         <h2 style={heading}>Who We Are</h2>
-        <p style={text}>
-          We are a trusted mobile repair center with{" "}
-          <b>7+ years of experience</b>. We specialize in fixing all types of
-          mobile issues with speed, accuracy, and care.
-          <br />
-          <br />
-          Our focus is simple — provide <b>honest service, fair pricing</b>, and
-          long-lasting repair solutions using quality parts.
-        </p>
+  <p style={text}>
+  Deepak Communication is a trusted mobile repair center with{" "}
+  <b>7+ years of experience</b> in providing reliable and professional mobile
+  repair services. Over the years, we have successfully repaired hundreds of
+  smartphones from leading brands including Samsung, Xiaomi, Vivo, Oppo,
+  Realme, iPhone, Motorola, and more.
+
+  <br />
+  <br />
+
+  We specialize in fixing all types of mobile problems including{" "}
+  <b>
+    broken screens, battery issues, charging problems, software errors,
+    network issues, motherboard faults, water damage,
+  </b>{" "}
+  and many other hardware and software related problems. Our experienced
+  technicians use modern tools and advanced repair techniques to ensure every
+  device is repaired safely and efficiently.
+
+  <br />
+  <br />
+
+  At Deepak Communication, our focus is simple — to provide{" "}
+  <b>honest service, fair pricing, and long-lasting repair solutions</b>.
+  We believe customers deserve transparency and quality service, which is why
+  we always explain the issue clearly before starting any repair work.
+
+  <br />
+  <br />
+
+  We use high-quality spare parts and carefully test every device after repair
+  to ensure proper performance and customer satisfaction. Whether it’s a minor
+  repair or a complex motherboard issue, we treat every phone with care and
+  professionalism.
+
+  <br />
+  <br />
+
+  Our goal is not just to repair mobile phones, but to build long-term trust
+  with our customers through fast service, reliable solutions, and excellent
+  support. That’s why many customers in Rukanpura and nearby areas choose
+  Deepak Communication as their preferred mobile repair shop.
+</p>
       </div>
 
       {/* 🎯 MISSION + VISION */}
@@ -79,7 +113,14 @@ function About() {
       </div>
 
       {/* 👨‍🔧 TEAM */}
-      <div style={teamGrid}>
+     {/* 👨‍🔧 TEAM */}
+<div style={teamSection}>
+  <h2 style={teamHeading}>Our Team</h2>
+  <p style={teamSubheading}>
+    Meet our skilled mobile repair experts
+  </p>
+
+  <div style={teamGrid}>
         {team.map((member) => (
           <div
             key={member._id}
@@ -118,6 +159,7 @@ function About() {
           </div>
         ))}
       </div>
+      </div>
     </div>
   );
 }
@@ -125,6 +167,26 @@ function About() {
 export default About;
 
 /* ================= 🎨 STYLES ================= */
+
+
+const teamSection = {
+  padding: "25px",
+};
+
+const teamHeading = {
+  fontSize: "28px",
+  fontWeight: "700",
+  textAlign: "center",
+  color: "#facc15",
+  marginBottom: "8px",
+};
+
+const teamSubheading = {
+  textAlign: "center",
+  color: "#94a3b8",
+  marginBottom: "25px",
+  fontSize: "14px",
+};
 
 const teamGrid = {
   display: "grid",

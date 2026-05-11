@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ProductSkeleton from "../components/skeletons/ProductSkeleton";
 
 function Products() {
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
 const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -212,7 +214,16 @@ const fetchProducts = async () => {
               )}
 
               <p style={categoryStyle}>{p.category}</p>
-              <span style={availabilityBadge}>Available in Store</span>
+             <div style={bottomRow}>
+  <span style={availabilityBadge}>Available in Store</span>
+
+  <button
+    style={detailsBtn}
+    onClick={() => navigate(`/products/${p._id}`)}
+  >
+    View Details
+  </button>
+</div>
             </div>
           </div>
         ))}
@@ -243,6 +254,28 @@ const fetchProducts = async () => {
 export default Products;
 
 /* ================= STYLES ================= */
+
+
+const bottomRow = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginTop: "10px",
+  gap: "8px",
+  flexWrap: "wrap",
+};
+
+const detailsBtn = {
+  border: "none",
+  background: "linear-gradient(135deg, #3b82f6, #06b6d4)",
+  color: "#fff",
+  padding: "6px 10px",
+  borderRadius: "8px",
+  fontSize: "11px",
+  fontWeight: "600",
+  cursor: "pointer",
+  transition: "0.3s",
+};
 
 const isMobile = window.innerWidth < 600;
 
